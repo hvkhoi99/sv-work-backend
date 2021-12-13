@@ -186,10 +186,10 @@ class AdminController extends Controller
                 Carbon::now()->month
             )->get()->count();
 
-            $student_percent = round((($student_currentMonth_count / $student_lastMonth_count) * 100), 2);
-            $recruiter_percent = round((($recruiter_currentMonth_count / $recruiter_lastMonth_count) * 100), 2);
-            $application_percent = round((($application_currentMonth_count / $application_lastMonth_count) * 100), 2);
-            $event_percent =  round((($event_currentMonth_count / $event_lastMonth_count) * 100), 2);
+            $student_percent = $student_lastMonth_count === 0 ? 100 : round((($student_currentMonth_count / $student_lastMonth_count) * 100), 2);
+            $recruiter_percent = $recruiter_lastMonth_count === 0 ? 100 : round((($recruiter_currentMonth_count / $recruiter_lastMonth_count) * 100), 2);
+            $application_percent = $application_lastMonth_count === 0 ? 100 : round((($application_currentMonth_count / $application_lastMonth_count) * 100), 2);
+            $event_percent = $event_lastMonth_count === 0 ? 100 :  round((($event_currentMonth_count / $event_lastMonth_count) * 100), 2);
 
             $student["isUp"] = $student_percent === 0.00 ? 0 : ($student_percent > 0 ? 1 : -1
             );
