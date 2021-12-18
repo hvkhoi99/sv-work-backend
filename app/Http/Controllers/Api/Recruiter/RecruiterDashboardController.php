@@ -66,7 +66,7 @@ class RecruiterDashboardController extends Controller
                     $rec['hashtags'] = $hashtags;
                 }
 
-                $perPage = 10;
+                $perPage = $request["_limit"];
                 $current_page = LengthAwarePaginator::resolveCurrentPage();
 
                 $new_recruiments = new LengthAwarePaginator(
@@ -74,7 +74,7 @@ class RecruiterDashboardController extends Controller
                     $recruitments->count(),
                     $perPage,
                     $current_page,
-                    ['path' => url('api/student/recruiter/recruitment/index')]
+                    ['path' => url('api/student/recruiter/dashboard/available-recruitments')]
                 );
 
                 return response()->json([
