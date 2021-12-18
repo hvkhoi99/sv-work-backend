@@ -66,7 +66,7 @@ class RecruiterDashboardController extends Controller
                     $rec['hashtags'] = $hashtags;
                 }
 
-                $perPage = 10;
+                $perPage = $request["_limit"];
                 $current_page = LengthAwarePaginator::resolveCurrentPage();
 
                 $new_recruiments = new LengthAwarePaginator(
