@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\Auth;
 
 class StudentDashboardController extends Controller
 {
-    public function appliedJobs() {
+    public function appliedJobs()
+    {
         $user = Auth::user();
 
         if (isset($user)) {
@@ -24,7 +25,6 @@ class StudentDashboardController extends Controller
 
             if (isset($s_profile)) {
                 $applied_jobs = [];
-                $hashtags = [];
 
                 $applications = Application::where('user_id', $user->id)->where('is_applied', true)->where('is_invited', null)->orderBy('created_at', 'desc')->get();
 
@@ -33,6 +33,7 @@ class StudentDashboardController extends Controller
 
                     $recruitment_tags = RecruitmentTag::where('recruitment_id', $application->recruitment_id)->get();
 
+                    $hashtags = [];
                     foreach ($recruitment_tags as $recruitment_tag) {
                         $hashtag = Hashtag::whereId($recruitment_tag->hashtag_id)->first()->name;
                         array_push($hashtags, $hashtag);
@@ -73,7 +74,8 @@ class StudentDashboardController extends Controller
         }
     }
 
-    public function companyFollowed() {
+    public function companyFollowed()
+    {
         $user = Auth::user();
 
         if (isset($user)) {
@@ -97,7 +99,6 @@ class StudentDashboardController extends Controller
                     'code' => 200,
                     'data' => $companies
                 ], 200);
-
             } else {
                 return response()->json([
                     'status' => 0,
@@ -114,7 +115,8 @@ class StudentDashboardController extends Controller
         }
     }
 
-    public function savedJobs() {
+    public function savedJobs()
+    {
         $user = Auth::user();
 
         if (isset($user)) {
@@ -122,7 +124,7 @@ class StudentDashboardController extends Controller
 
             if (isset($s_profile)) {
                 $saved_jobs = [];
-                $hashtags = [];
+
 
                 $applications = Application::where('user_id', $user->id)->where('is_saved', true)->orderBy('created_at', 'desc')->get();
 
@@ -131,6 +133,7 @@ class StudentDashboardController extends Controller
 
                     $recruitment_tags = RecruitmentTag::where('recruitment_id', $application->recruitment_id)->get();
 
+                    $hashtags = [];
                     foreach ($recruitment_tags as $recruitment_tag) {
                         $hashtag = Hashtag::whereId($recruitment_tag->hashtag_id)->first()->name;
                         array_push($hashtags, $hashtag);
@@ -171,7 +174,8 @@ class StudentDashboardController extends Controller
         }
     }
 
-    public function invitedJobs() {
+    public function invitedJobs()
+    {
         $user = Auth::user();
 
         if (isset($user)) {
@@ -179,7 +183,6 @@ class StudentDashboardController extends Controller
 
             if (isset($s_profile)) {
                 $invited_jobs = [];
-                $hashtags = [];
 
                 $applications = Application::where('user_id', $user->id)->where('is_invited', true)->orderBy('created_at', 'desc')->get();
 
@@ -188,6 +191,7 @@ class StudentDashboardController extends Controller
 
                     $recruitment_tags = RecruitmentTag::where('recruitment_id', $application->recruitment_id)->get();
 
+                    $hashtags = [];
                     foreach ($recruitment_tags as $recruitment_tag) {
                         $hashtag = Hashtag::whereId($recruitment_tag->hashtag_id)->first()->name;
                         array_push($hashtags, $hashtag);

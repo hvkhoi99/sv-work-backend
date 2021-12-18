@@ -54,15 +54,17 @@ class RecruiterDashboardController extends Controller
             $recruitments = Recruitment::where('user_id', $user->id)->where('is_closed', false)->orderBy('created_at', 'DESC')->get();
 
             if (isset($r_profile) && isset($recruitments)) {
-                $hashtags = [];
                 foreach ($recruitments as $rec) {
                     $applicant = Application::where('recruitment_id', $rec->id)->get();
                     $rec['applicants'] = count($applicant);
                     $recruitments_tag = RecruitmentTag::where('recruitment_id', $rec->id)->get();
+
+                    $hashtags = [];
                     foreach ($recruitments_tag as $rec_tag) {
                         $hashtag = Hashtag::whereId($rec_tag->hashtag_id)->first();
                         array_push($hashtags, $hashtag);
                     }
+                    // array_push($hashtags, $recruitments_tag);
                     $rec['hashtags'] = $hashtags;
                 }
 
