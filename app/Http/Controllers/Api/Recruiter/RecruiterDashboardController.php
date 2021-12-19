@@ -21,15 +21,20 @@ class RecruiterDashboardController extends Controller
         if (isset($user)) {
             $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
             $recruitments = Recruitment::where('user_id', $user->id)->get();
-            $recruitments->transform(function ($recruitment) {
-                $recruitment->applicants = Application::whereHas('recruitments', function ($q) use ($recruitment) {
-                    $q->where('id', $recruitment->id);
-                })
-                    ->get()
-                    ->count();
-                return $recruitment;
-            });
-
+            // $recruitments->transform(function ($recruitment) {
+            //     $recruitment->applicants = Application::whereHas('recruitments', function ($q) use ($recruitment) {
+            //         $q->where('recruitment_id', $recruitment->id);
+            //     })
+            //         ->get();
+            //     return $recruitment;
+            // });
+            $total_applicants = 0;
+            foreach ($recruitments as $recruitment) {
+                $count_applicant = Application::where('recruitment_id', $recruitment->id)->where('is_applied', true)->count();
+                if (isset($count_applicant)) {
+                    $total_applicants += $count_applicant;
+                }
+            }
 
             if (isset($r_profile)) {
                 $availableJobs = Recruitment::where('user_id', $r_profile->user_id)->where('is_closed', false)->get();
@@ -37,7 +42,7 @@ class RecruiterDashboardController extends Controller
                 $data['profile'] = $r_profile;
                 $data['availableJobs'] = count($availableJobs);
                 $data['closedJobs'] = count($closedJobs);
-                $data['applicants'] = count($recruitments);
+                $data['total_applicants'] = $total_applicants;
                 return response()->json([
                     'status' => 1,
                     'code' => 200,
