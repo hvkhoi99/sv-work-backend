@@ -17,26 +17,27 @@ class StudentApplicationController extends Controller
 
         if (isset($user)) {
             $s_profile = StudentProfile::where('user_id', $user->id)->first();
-            
+
             if (isset($s_profile) && $s_profile->open_for_job) {
                 $exist_recruitment = Recruitment::whereId($id)->first();
 
                 if (isset($exist_recruitment) && !($exist_recruitment->is_closed)) {
-    
+
                     // $exist_invited_recruitment = Application::where('is_invited', true)->first();
-    
+
                     // if (!isset($exist_invited_recruitment)) {
-    
-                        $exist_application = Application::where('recruitment_id', $id)->first();
-    
-                        if (isset($exist_application)) {
-    
+
+                    $exist_application = Application::where('recruitment_id', $id)->first();
+
+                    if (isset($exist_application)) {
+
+                        if ($exist_application->user_id === $user->id) {
+
                             if ($exist_application->is_invited == false) {
-    
                                 $exist_application->update([
                                     'is_applied' => !($exist_application->is_applied)
                                 ]);
-    
+
                                 return response()->json([
                                     'status' => 1,
                                     'code' => 200,
@@ -51,7 +52,6 @@ class StudentApplicationController extends Controller
                                 ], 405);
                             }
                         } else {
-    
                             $new_application = Application::create([
                                 'state' => null,
                                 'is_invited' => null,
@@ -60,7 +60,7 @@ class StudentApplicationController extends Controller
                                 'user_id' => $user->id,
                                 'recruitment_id' => $id
                             ]);
-    
+
                             return response()->json([
                                 'status' => 1,
                                 'code' => 200,
@@ -68,6 +68,24 @@ class StudentApplicationController extends Controller
                                 'data' => $new_application
                             ], 200);
                         }
+                    } else {
+
+                        $new_application = Application::create([
+                            'state' => null,
+                            'is_invited' => null,
+                            'is_applied' => true,
+                            'is_saved' => false,
+                            'user_id' => $user->id,
+                            'recruitment_id' => $id
+                        ]);
+
+                        return response()->json([
+                            'status' => 1,
+                            'code' => 200,
+                            'message' => 'Successfully applied.',
+                            'data' => $new_application
+                        ], 200);
+                    }
                     // } else {
                     //     return response()->json([
                     //         'status' => 0,
@@ -90,7 +108,6 @@ class StudentApplicationController extends Controller
                     'data' => $user
                 ], 404);
             }
-            
         } else {
             return response()->json([
                 'status' => 0,
