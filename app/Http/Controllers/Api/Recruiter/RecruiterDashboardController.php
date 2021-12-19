@@ -20,12 +20,24 @@ class RecruiterDashboardController extends Controller
 
         if (isset($user)) {
             $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
+            $recruitments = Recruitment::where('user_id', $user->id)->get();
+            $recruitments->transform(function ($recruitment) {
+                $recruitment->applicants = Application::whereHas('recruitments', function ($q) use ($recruitment) {
+                    $q->where('id', $recruitment->id);
+                })
+                    ->get()
+                    ->count();
+                return $recruitment;
+            });
+
+
             if (isset($r_profile)) {
                 $availableJobs = Recruitment::where('user_id', $r_profile->user_id)->where('is_closed', false)->get();
                 $closedJobs = Recruitment::where('user_id', $r_profile->user_id)->where('is_closed', true)->get();
                 $data['profile'] = $r_profile;
                 $data['availableJobs'] = count($availableJobs);
                 $data['closedJobs'] = count($closedJobs);
+                $data['applicants'] = count($recruitments);
                 return response()->json([
                     'status' => 1,
                     'code' => 200,
