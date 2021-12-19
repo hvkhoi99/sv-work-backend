@@ -23,6 +23,7 @@ class RecruiterDashboardController extends Controller
             if (isset($r_profile)) {
                 $availableJobs = Recruitment::where('user_id', $r_profile->user_id)->where('is_closed', false)->get();
                 $closedJobs = Recruitment::where('user_id', $r_profile->user_id)->where('is_closed', true)->get();
+                $data['profile'] = $r_profile;
                 $data['availableJobs'] = count($availableJobs);
                 $data['closedJobs'] = count($closedJobs);
                 return response()->json([
