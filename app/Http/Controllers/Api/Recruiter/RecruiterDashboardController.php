@@ -113,6 +113,15 @@ class RecruiterDashboardController extends Controller
                 foreach ($recruitments as $rec) {
                     $applicant = Application::where('recruitment_id', $rec->id)->get();
                     $rec['applicants'] = count($applicant);
+                    $recruitments_tag = RecruitmentTag::where('recruitment_id', $rec->id)->get();
+
+                    $hashtags = [];
+                    foreach ($recruitments_tag as $rec_tag) {
+                        $hashtag = Hashtag::whereId($rec_tag->hashtag_id)->first();
+                        array_push($hashtags, $hashtag);
+                    }
+                    // array_push($hashtags, $recruitments_tag);
+                    $rec['hashtags'] = $hashtags;
                 }
 
                 $perPage = $request["_limit"];
