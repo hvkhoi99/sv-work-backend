@@ -19,7 +19,7 @@ class CreateRecruiterProfilesTable extends Migration
             $table->string('company_name');
             $table->string('logo_image_link')->nullable();
             // $table->string('description_image_link');
-            $table->string('description')->nullable();
+            $table->string('description');
             $table->string('phone_number');
             $table->boolean('verify')->nullable();
             $table->string('address');
