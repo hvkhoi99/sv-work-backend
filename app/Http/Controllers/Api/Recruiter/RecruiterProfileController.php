@@ -17,9 +17,9 @@ class RecruiterProfileController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $user = $request->user();
+        $user = Auth::user();
         if (isset($user)) {
             $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
             if (isset($r_profile)) {
@@ -33,7 +33,6 @@ class RecruiterProfileController extends Controller
                     'status' => 0,
                     'code' => 404,
                     'message' => 'Your recruiter profile was not found or has not been created.',
-                    'data' => $user
                 ], 404);
             }
         } else {
@@ -63,14 +62,20 @@ class RecruiterProfileController extends Controller
      */
     public function store(ApiRecruiterProfileRequest $request)
     {
-        $user = $request->user();
+        $user = Auth::user();
         if (isset($user)) {
             $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
+            $s_profile = StudentProfile::where('user_id', $user->id)->first();
+            $user["s_profile"] = isset($s_profile) ? $s_profile : null;
+
             if (isset($r_profile)) {
+                $user["r_profile"] = $r_profile;
+
                 return response()->json([
                     'status' => 1,
                     'code' => 200,
-                    'message' => 'Your recruiter profile already exists.'
+                    'message' => 'Your recruiter profile already exists.',
+                    'data' => $user
                 ], 200);
             } else {
                 $new_r_profile = RecruiterProfile::create([
@@ -87,10 +92,14 @@ class RecruiterProfileController extends Controller
                     'tax_code' => $request['tax_code'],
                     'user_id' => $user->id
                 ]);
+
+                $user["r_profile"] = $new_r_profile;
+
                 return response()->json([
                     'status' => 1,
                     'code' => 200,
-                    'data' => $new_r_profile
+                    'message' => 'Your recruiter profile was successfully created.',
+                    'data' => $user
                 ], 200);
             }
         } else {
@@ -110,7 +119,7 @@ class RecruiterProfileController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $user = $request->user();
+        $user = Auth::user();
         $s_profile = StudentProfile::where('user_id', $user->id)->first();
         $r_profile = RecruiterProfile::where('id', $id)->first();
         if (isset($r_profile)) {
@@ -160,16 +169,22 @@ class RecruiterProfileController extends Controller
      */
     public function update(ApiRecruiterProfileRequest $request, $id)
     {
-        $user = $request->user();
+        $user = Auth::user();
         if (isset($user)) {
-            $r_profile = RecruiterProfile::whereId($id)->where('user_id', $user->id)->first();
+            $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
+            $s_profile = StudentProfile::where('user_id', $user->id)->first();
+            $user["s_profile"] = isset($s_profile) ? $s_profile : null;
+
             if (isset($r_profile)) {
                 $r_profile->update($request->all());
+
+                $user["r_profile"] = $r_profile;
+
                 return response()->json([
                     'status' => 1,
                     'code' => 200,
                     'mesage' => 'Your recruiter profile was successfully updated.',
-                    'data' => $r_profile
+                    'data' => $user
                 ], 200);
             } else {
                 return response()->json([

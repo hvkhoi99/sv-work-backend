@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Student;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ApiStudentProfileRequest;
+use App\Models\RecruiterProfile;
 use App\Models\StudentProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -132,16 +133,21 @@ class StudentProfileController extends Controller
      */
     public function update(ApiStudentProfileRequest $request, $id)
     {
-        $user = $request->user();
-        if (isset($user)) {
+        $user = Auth::user();
+        if (isset($user)) {            
+            $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
+            $user["r_profile"] = isset($r_profile) ? $r_profile : null;
+
             $s_profile = StudentProfile::where('user_id', $user->id)->first();
+
             if (isset($s_profile)) {
                 $s_profile->update($request->all());
+                $user["s_profile"] = $s_profile;
                 return response()->json([
                     'status' => 1,
                     'code' => 200,
                     'mesage' => 'Your student profile was successfully updated.',
-                    'data' => $s_profile
+                    'data' => $user
                 ], 200);
             } else {
                 return response()->json([

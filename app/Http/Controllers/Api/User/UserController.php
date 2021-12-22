@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ApiLoginRequest;
 use App\Http\Requests\ApiRegisterRequest;
+use App\Models\RecruiterProfile;
+use App\Models\StudentProfile;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -54,6 +56,13 @@ class UserController extends Controller
         if (Auth::attempt($login)) {
             $user = User::whereEmail($request['email'])->first();
             $user->token = $user->createToken('App')->accessToken;
+
+            $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
+            $s_profile = StudentProfile::where('user_id', $user->id)->first();
+
+            $user["r_profile"] = isset($r_profile) ? $r_profile : null;
+            $user["s_profile"] = isset($s_profile) ? $s_profile : null;
+
             return response()->json([
                 'status' => 1,
                 'code' => 200,
