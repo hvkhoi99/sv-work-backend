@@ -212,4 +212,39 @@ class RecruiterProfileController extends Controller
     {
         //
     }
+
+    public function updateDescription(Request $request, $id) {
+        $user = Auth::user();
+        if (isset($user)) {
+            $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
+            $s_profile = StudentProfile::where('user_id', $user->id)->first();
+            $user["s_profile"] = isset($s_profile) ? $s_profile : null;
+
+            if (isset($r_profile)) {
+                $r_profile->update($request->all());
+
+                $user["r_profile"] = $r_profile;
+
+                return response()->json([
+                    'status' => 1,
+                    'code' => 200,
+                    'mesage' => 'Your recruiter profile was successfully updated.',
+                    'data' => $user
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => 0,
+                    'code' => 404,
+                    'message' => 'Your recruiter profile was not found or has not been created.'
+                ], 404);
+            }
+        } else {
+            return response()->json([
+                'status' => 0,
+                'code' => 401,
+                'message' => 'UNAUTHORIZED'
+            ], 401);
+        }
+    }
 }
+

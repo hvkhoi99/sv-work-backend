@@ -159,6 +159,7 @@ Route::group([
                 Route::post('store', [RecruiterProfileController::class, 'store']);
                 Route::get('{id}', [RecruiterProfileController::class, 'show']);
                 Route::put('{id}', [RecruiterProfileController::class, 'update']);
+                Route::put('{id}/updateDescription', [RecruiterProfileController::class, 'updateDescription']);
             });
 
             // Student -> Recruiter -> Follow
@@ -217,6 +218,7 @@ Route::group([
             Route::post('store', [RecruiterProfileController::class, 'store']);
             Route::post('{id}', [RecruiterProfileController::class, 'edit']);
             Route::put('{id}', [RecruiterProfileController::class, 'update']);
+            Route::put('{id}/updateDescription', [RecruiterProfileController::class, 'updateDescription']);
         });
 
         // Recruiter -> Recruitment
