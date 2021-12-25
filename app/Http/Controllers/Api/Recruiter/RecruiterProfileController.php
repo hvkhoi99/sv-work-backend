@@ -66,7 +66,7 @@ class RecruiterProfileController extends Controller
         if (isset($user)) {
             $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
             $s_profile = StudentProfile::where('user_id', $user->id)->first();
-            $user["s_profile"] = isset($s_profile) && $user->role_id === 3 ? $s_profile : null;
+            $user->role_id === 3 && $user["s_profile"] = isset($s_profile) ? $s_profile : null;
 
             if (isset($r_profile)) {
                 $user["r_profile"] = $r_profile;
@@ -173,7 +173,7 @@ class RecruiterProfileController extends Controller
         if (isset($user)) {
             $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
             $s_profile = StudentProfile::where('user_id', $user->id)->first();
-            $user["s_profile"] = isset($s_profile) && $user->role_id === 3 ? $s_profile : null;
+            $user->role_id === 3 && $user["s_profile"] = isset($s_profile) ? $s_profile : null;
 
             if (isset($r_profile)) {
                 $r_profile->update($request->all());

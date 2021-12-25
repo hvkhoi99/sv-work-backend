@@ -61,7 +61,7 @@ class UserController extends Controller
             $s_profile = StudentProfile::where('user_id', $user->id)->first();
 
             $user["r_profile"] = isset($r_profile) ? $r_profile : null;
-            $user["s_profile"] = isset($s_profile) ? $s_profile : null;
+            $user->role_id === 3 && $user["s_profile"] = isset($s_profile) ? $s_profile : null;
 
             return response()->json([
                 'status' => 1,
