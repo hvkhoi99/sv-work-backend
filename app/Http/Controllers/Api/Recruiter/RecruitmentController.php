@@ -132,7 +132,7 @@ class RecruitmentController extends Controller
         $user = $request->user();
         if (isset($user)) {
             
-            $recruitment = Recruitment::whereId($id)->first();
+            $recruitment = Recruitment::whereId($id)->where('user_id', $user->id)->first();
 
             if (isset($recruitment)) {
 
@@ -152,6 +152,7 @@ class RecruitmentController extends Controller
                     'code' => 200,
                     'data' => $recruitment
                 ], 200);
+                
             } else {
                 return response()->json([
                     'status' => 0,
