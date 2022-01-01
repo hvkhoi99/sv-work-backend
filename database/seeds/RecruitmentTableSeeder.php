@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\JobTags;
 use App\Models\Recruitment;
 use App\Models\RecruitmentTag;
 use Illuminate\Database\Seeder;
@@ -21,7 +22,7 @@ class RecruitmentTableSeeder extends Seeder
             $arr_size = rand(2, 5);
             $hashtags_id = array_rand(array_flip($keys_id), $arr_size);
             $new_recruiment = Recruitment::create([
-                'title' => 'bài tuyển dụng số ' . $i,
+                'title' => 'bài tuyển dụng số '.$i,
                 'position' => $position,
                 'is_full_time' => (bool)random_int(0, 1),
                 'job_category' => 'Software engineer',
@@ -42,6 +43,11 @@ class RecruitmentTableSeeder extends Seeder
                     'hashtag_id' => $hashtag_id
                 ]);
             }
+            
+            JobTags::create([
+                'hashtags' => '[{value: "'.$i.'", label: "'.$i.'"}, {value: "'.($i+1).'", label: "'.($i+1).'"}]',
+                'recruitment_id' => $i
+            ]);
         }
 
         // Recruitment::create([

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ApiRecruitmentRequest;
 use App\Models\Application;
 use App\Models\Hashtag;
+use App\Models\JobTags;
 use App\Models\RecruiterProfile;
 use App\Models\Recruitment;
 use App\Models\RecruitmentTag;
@@ -136,16 +137,16 @@ class RecruitmentController extends Controller
 
             if (isset($recruitment)) {
 
-                $hashtags = [];
+                // $hashtags = [];
 
-                $recruitment_tags = RecruitmentTag::where('recruitment_id', $id)->get();
+                $job_tags = JobTags::where('recruitment_id', $id)->get();
 
-                foreach ($recruitment_tags as $recruitment_tag) {
-                    $hashtag = Hashtag::whereId($recruitment_tag->hashtag_id)->first();
-                    array_push($hashtags, $hashtag);
-                }
+                // foreach ($recruitment_tags as $recruitment_tag) {
+                //     $hashtag = Hashtag::whereId($recruitment_tag->hashtag_id)->first();
+                //     array_push($hashtags, $hashtag);
+                // }
 
-                $recruitment['hashtags'] = $hashtags;
+                $recruitment['hashtags'] = $job_tags;
 
                 return response()->json([
                     'status' => 1,
