@@ -137,14 +137,7 @@ class RecruitmentController extends Controller
 
             if (isset($recruitment)) {
 
-                // $hashtags = [];
-
-                $job_tags = JobTags::where('recruitment_id', $id)->get();
-
-                // foreach ($recruitment_tags as $recruitment_tag) {
-                //     $hashtag = Hashtag::whereId($recruitment_tag->hashtag_id)->first();
-                //     array_push($hashtags, $hashtag);
-                // }
+                $job_tags = JobTags::where('recruitment_id', $id)->first();
 
                 $recruitment['hashtags'] = $job_tags;
 
