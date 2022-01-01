@@ -137,7 +137,7 @@ class RecruitmentController extends Controller
 
             if (isset($recruitment)) {
 
-                $job_tags = JobTags::where('recruitment_id', $id)->first();
+                $job_tags = JobTags::where('recruitment_id', $id)->first()->hashtags;
 
                 $recruitment['hashtags'] = $job_tags;
 
