@@ -16,7 +16,7 @@ class CreateJobTagsTable extends Migration
         Schema::create('job_tags', function (Blueprint $table) {
             $table->id();
             $table->string('hashtags');
-            $table->unsignedBigInteger('recruitment_id')->unique();
+            $table->unsignedBigInteger('recruitment_id')->uniqid();
             $table->foreign('recruitment_id')->references('id')->on('recruitments')->onDelete('cascade');
             $table->timestamps();
         });

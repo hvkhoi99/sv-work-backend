@@ -65,6 +65,7 @@ class RecruitmentController extends Controller
                 $verify = $r_profile->verify;
 
                 if ($verify) {
+
                     $new_recruiment = Recruitment::create([
                         'title' => $request['title'],
                         'position' => $request['position'],
@@ -81,20 +82,33 @@ class RecruitmentController extends Controller
                         'user_id' => $user->id,
                     ]);
 
-                    $hashtags_id = array_map('intval', explode(',', $request['hashtags_id']));
+                    // $hashtags_id = array_map('intval', explode(',', $request['hashtags_id']));
 
-                    foreach ($hashtags_id as $hashtag_id) {
-                        RecruitmentTag::create([
-                            'recruitment_id' => $new_recruiment->id,
-                            'hashtag_id' => $hashtag_id
+                    // foreach ($hashtags_id as $hashtag_id) {
+                    //     RecruitmentTag::create([
+                    //         'recruitment_id' => $new_recruiment->id,
+                    //         'hashtag_id' => $hashtag_id
+                    //     ]);
+                    // }
+                    $hashtags = JobTags::where('recruitment_id', $new_recruiment->id)->first();
+
+                    if (isset($hashtags)) {
+                        $hashtags->update([
+                            'hashtags' => json_encode($request['hashtags']),
                         ]);
+                        $recruitment["hashtags"] = $hashtags;
+                    } else {
+                        $newHashtags = JobTags::create([
+                            'hashtags' => json_encode($request['hashtags']),
+                            'recruitment_id' => $new_recruiment->id
+                        ]);
+                        $recruitment["hashtags"] = $newHashtags;
                     }
-
-                    $new_recruiment['hashtags_id'] = $hashtags_id;
 
                     return response()->json([
                         'status' => 1,
                         'code' => 200,
+                        'message' => 'Successfully created.',
                         'data' => $new_recruiment
                     ], 200);
                 } else {
@@ -132,21 +146,20 @@ class RecruitmentController extends Controller
     {
         $user = $request->user();
         if (isset($user)) {
-            
+
             $recruitment = Recruitment::whereId($id)->where('user_id', $user->id)->first();
 
             if (isset($recruitment)) {
 
                 $job_tags = JobTags::where('recruitment_id', $id)->first()->hashtags;
 
-                $recruitment['hashtags'] = $job_tags;
+                $recruitment['hashtags'] = json_decode($job_tags);
 
                 return response()->json([
                     'status' => 1,
                     'code' => 200,
                     'data' => $recruitment
                 ], 200);
-                
             } else {
                 return response()->json([
                     'status' => 0,
@@ -204,17 +217,36 @@ class RecruitmentController extends Controller
                     'is_closed' => $request['is_closed']
                 ]);
 
-                $deleted_hashtags = RecruitmentTag::where('recruitment_id', $recruitment->id)->delete();
-                if ($deleted_hashtags) {
-                    $hashtags_id = array_map('intval', explode(',', $request['hashtags_id']));
+                // $deleted_hashtags = RecruitmentTag::where('recruitment_id', $recruitment->id)->delete();
+                // if ($deleted_hashtags) {
+                //     $hashtags_id = array_map('intval', explode(',', $request['hashtags_id']));
 
-                    foreach ($hashtags_id as $hashtag_id) {
-                        RecruitmentTag::create([
-                            'recruitment_id' => $recruitment->id,
-                            'hashtag_id' => $hashtag_id
-                        ]);
-                    }
-                    $recruitment['hashtags_id'] = $hashtags_id;
+                //     foreach ($hashtags_id as $hashtag_id) {
+                //         RecruitmentTag::create([
+                //             'recruitment_id' => $recruitment->id,
+                //             'hashtag_id' => $hashtag_id
+                //         ]);
+                //     }
+                //     $recruitment['hashtags_id'] = $hashtags_id;
+                // }
+                $hashtags = JobTags::where('recruitment_id', $recruitment->id)->first();
+
+                if (isset($hashtags)) {
+                    $hashtags->update([
+                        'hashtags' => json_encode($request['hashtags']),
+                    ]);
+                    $recruitment["hashtags"] = $hashtags;
+                } else {
+                    $newHashtags = JobTags::create([
+                        'hashtags' => json_encode($request['hashtags']),
+                        'recruitment_id' => $recruitment->id
+                    ]);
+                    $recruitment["hashtags"] = $newHashtags;
+                    // return response()->json([
+                    //     "status" => 0,
+                    //     "code" => 400,
+                    //     "message" => "The hashtags field cannot be left blank. Please try again."
+                    // ], 400);
                 }
 
                 return response()->json([
@@ -338,7 +370,8 @@ class RecruitmentController extends Controller
         }
     }
 
-    public function close($id) {
+    public function close($id)
+    {
         $user = Auth::user();
         if (isset($user)) {
             $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
@@ -350,7 +383,7 @@ class RecruitmentController extends Controller
                     $recruitment->update([
                         'is_closed' => !($recruitment->is_closed)
                     ]);
-    
+
                     return response()->json([
                         'status' => 1,
                         'code' => 200,
@@ -364,7 +397,6 @@ class RecruitmentController extends Controller
                         'message' => 'Current data not available.'
                     ], 404);
                 }
-                
             } else {
                 return response()->json([
                     'status' => 0,
