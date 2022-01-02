@@ -58,7 +58,7 @@ class AdminController extends Controller
 
         if (isset($user)) {
 
-            $recruiter = RecruiterProfile::where('user_id', $id)->first();
+            $recruiter = RecruiterProfile::whereId($id)->first();
 
             if (isset($recruiter)) {
 
