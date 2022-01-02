@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Recruiter;
 use App\Http\Controllers\Controller;
 use App\Models\Application;
 use App\Models\Hashtag;
+use App\Models\JobTags;
 use App\Models\RecruiterProfile;
 use App\Models\Recruitment;
 use App\Models\RecruitmentTag;
@@ -75,15 +76,16 @@ class RecruiterDashboardController extends Controller
                 foreach ($recruitments as $rec) {
                     $applicant = Application::where('recruitment_id', $rec->id)->get();
                     $rec['applicants'] = count($applicant);
-                    $recruitments_tag = RecruitmentTag::where('recruitment_id', $rec->id)->get();
+                    // $recruitments_tag = RecruitmentTag::where('recruitment_id', $rec->id)->get();
 
-                    $hashtags = [];
-                    foreach ($recruitments_tag as $rec_tag) {
-                        $hashtag = Hashtag::whereId($rec_tag->hashtag_id)->first();
-                        array_push($hashtags, $hashtag);
-                    }
+                    // $hashtags = [];
+                    // foreach ($recruitments_tag as $rec_tag) {
+                    //     $hashtag = Hashtag::whereId($rec_tag->hashtag_id)->first();
+                    //     array_push($hashtags, $hashtag);
+                    // }
                     // array_push($hashtags, $recruitments_tag);
-                    $rec['hashtags'] = $hashtags;
+                    $hashtags = JobTags::where('recruitment_id', $rec->id)->first()->hashtags;
+                    $rec['hashtags'] = json_decode($hashtags);
                 }
 
                 $perPage = $request["_limit"];
