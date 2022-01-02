@@ -11,6 +11,10 @@ class Recruitment extends Model
 {
     protected $guarded = [];
 
+    protected $casts = [
+        'expiry_date' => 'datetime:m/d/Y', // Change your format
+    ];
+
     // public function city() {
     //     return $this->belongsTo('App\Models\City');
     // }

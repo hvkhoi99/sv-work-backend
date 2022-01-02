@@ -25,7 +25,7 @@ class CreateRecruitmentsTable extends Migration
             $table->unsignedInteger('min_salary');
             $table->unsignedInteger('max_salary');
             $table->string('benefits');
-            $table->dateTime('expiry_date');
+            $table->date('expiry_date');
             $table->boolean('is_closed')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
