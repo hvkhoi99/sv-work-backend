@@ -30,4 +30,8 @@ class Recruitment extends Model
     public function applications() {
         return $this->hasMany('App\Models\Application');
     }
+
+    public function jobtag() {
+        return $this->hasOne('App\Models\JobTags');
+    }
 }

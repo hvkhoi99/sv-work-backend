@@ -90,20 +90,12 @@ class RecruitmentController extends Controller
                     //         'hashtag_id' => $hashtag_id
                     //     ]);
                     // }
-                    $hashtags = JobTags::where('recruitment_id', $new_recruiment->id)->first();
 
-                    if (isset($hashtags)) {
-                        $hashtags->update([
-                            'hashtags' => json_encode($request['hashtags']),
-                        ]);
-                        $recruitment["hashtags"] = $hashtags;
-                    } else {
-                        $newHashtags = JobTags::create([
-                            'hashtags' => json_encode($request['hashtags']),
-                            'recruitment_id' => $new_recruiment->id
-                        ]);
-                        $recruitment["hashtags"] = $newHashtags;
-                    }
+                    $hashtags = JobTags::create([
+                        'hashtags' => json_encode($request['hashtags']),
+                        'recruitment_id' => $new_recruiment->id
+                    ]);
+                    $new_recruiment["hashtags"] = $hashtags;
 
                     return response()->json([
                         'status' => 1,

@@ -35,7 +35,7 @@ class ApiRecruitmentRequest extends FormRequest
             'max_salary' => 'required|numeric',
             'benefits' => 'required|min:5',
             'expiry_date' => 'required|date',
-            'hashtags_id' => 'required'
+            'hashtags' => 'required'
         ];
     }
 }
