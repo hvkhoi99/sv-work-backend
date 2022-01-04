@@ -176,16 +176,26 @@ class RecruiterProfileController extends Controller
             $user->role_id === 3 && $user["s_profile"] = isset($s_profile) ? $s_profile : null;
 
             if (isset($r_profile)) {
-                $r_profile->update($request->all());
+                $verify = $request["verify"];
+                
+                if ($verify) {
+                    return response()->json([
+                        'status' => 0,
+                        'code' => 400,
+                        'message' => 'Something went wrong. Please try again.'
+                    ], 400);
+                } else {
+                    $r_profile->update($request->all());
+                    $user["r_profile"] = $r_profile;
 
-                $user["r_profile"] = $r_profile;
-
-                return response()->json([
-                    'status' => 1,
-                    'code' => 200,
-                    'mesage' => 'Your recruiter profile was successfully updated.',
-                    'data' => $user
-                ], 200);
+                    return response()->json([
+                        'status' => 1,
+                        'code' => 200,
+                        'mesage' => 'Your recruiter profile was successfully updated.',
+                        'data' => $user
+                    ], 200);
+                }
+                
             } else {
                 return response()->json([
                     'status' => 0,
