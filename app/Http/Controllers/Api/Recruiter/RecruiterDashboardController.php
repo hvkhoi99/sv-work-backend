@@ -73,7 +73,7 @@ class RecruiterDashboardController extends Controller
             $recruitments = 
             Recruitment::where('user_id', $user->id)
             // ->where('is_closed', false)
-            ->where('is_closed', '<>', true)
+            ->where('is_closed', false)
             ->orderBy('created_at', 'DESC')->get();
 
             if (isset($r_profile) && isset($recruitments)) {
