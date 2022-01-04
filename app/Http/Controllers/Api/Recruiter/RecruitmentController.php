@@ -330,21 +330,21 @@ class RecruitmentController extends Controller
                     array_push($candidates, $candidate);
                 }
 
-                // $perPage = $request["_limit"];
-                // $current_page = LengthAwarePaginator::resolveCurrentPage();
+                $perPage = $request["_limit"];
+                $current_page = LengthAwarePaginator::resolveCurrentPage();
 
-                // $new_recruiments = new LengthAwarePaginator(
-                //     collect($candidates)->forPage($current_page, $perPage)->values(),
-                //     count($candidates),
-                //     $perPage,
-                //     $current_page,
-                //     ['path' => url('api/student/recruiter/recruitment/' . $id . '/candidates')]
-                // );
+                $new_recruiments = new LengthAwarePaginator(
+                    collect($candidates)->forPage($current_page, $perPage)->values(),
+                    count($candidates),
+                    $perPage,
+                    $current_page,
+                    ['path' => url('api/student/recruiter/recruitment/' . $id . '/candidates')]
+                );
 
                 return response()->json([
                     'status' => 1,
                     'code' => 200,
-                    'data' => $candidates
+                    'data' => $new_recruiments
                 ], 200);
             } else {
                 return response()->json([
