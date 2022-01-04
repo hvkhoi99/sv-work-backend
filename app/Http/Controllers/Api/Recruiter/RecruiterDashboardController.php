@@ -91,21 +91,21 @@ class RecruiterDashboardController extends Controller
           $rec['hashtags'] = json_decode($hashtags);
         }
 
-        // $perPage = $request["_limit"];
-        // $current_page = LengthAwarePaginator::resolveCurrentPage();
+        $perPage = $request["_limit"];
+        $current_page = LengthAwarePaginator::resolveCurrentPage();
 
-        // $new_recruiments = new LengthAwarePaginator(
-        //   collect($recruitments)->forPage($current_page, $perPage)->values(),
-        //   $recruitments->count(),
-        //   $perPage,
-        //   $current_page,
-        //   ['path' => url('api/student/recruiter/dashboard/available-recruitments')]
-        // );
+        $new_recruiments = new LengthAwarePaginator(
+          collect($recruitments)->forPage($current_page, $perPage)->values(),
+          $recruitments->count(),
+          $perPage,
+          $current_page,
+          ['path' => url('api/student/recruiter/dashboard/available-recruitments')]
+        );
 
         return response()->json([
           'status' => 1,
           'code' => 200,
-          'data' => $recruitments,
+          'data' => $new_recruiments,
         ], 200);
       } else {
         return response()->json([
