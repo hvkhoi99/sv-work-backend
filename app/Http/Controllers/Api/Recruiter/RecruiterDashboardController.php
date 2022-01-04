@@ -67,10 +67,10 @@ class RecruiterDashboardController extends Controller
 
     public function availableRecruitments(Request $request)
     {
-        $user = $request->user();
+        $user = Auth::user();
         if (isset($user)) {
             $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
-            $recruitments = Recruitment::where('user_id', $user->id)->where('is_closed', "<>", true)->orderBy('created_at', 'DESC')->get();
+            $recruitments = Recruitment::where('user_id', $user->id)->where('is_closed', '<>', true)->orderBy('created_at', 'DESC')->get();
 
             if (isset($r_profile) && isset($recruitments)) {
                 foreach ($recruitments as $rec) {
