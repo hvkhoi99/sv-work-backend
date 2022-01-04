@@ -314,7 +314,7 @@ class RecruitmentController extends Controller
 
     public function candidates(Request $request, $id)
     {
-        $user = $request->user();
+        $user = Auth::user();
 
         if (isset($user)) {
 
@@ -330,7 +330,7 @@ class RecruitmentController extends Controller
                     array_push($candidates, $candidate);
                 }
 
-                $perPage = 10;
+                $perPage = $request["_limit"];
                 $current_page = LengthAwarePaginator::resolveCurrentPage();
 
                 $new_recruiments = new LengthAwarePaginator(
