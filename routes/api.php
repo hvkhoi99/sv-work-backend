@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Admin\AdminController;
 use App\Http\Controllers\Api\HomeController;
+use App\Http\Controllers\Api\Recruiter\CandidateController;
 use App\Http\Controllers\Api\Recruiter\RecruiterDashboardController;
 use App\Http\Controllers\Api\Recruiter\RecruiterEventController;
 use App\Http\Controllers\Api\User\UserController;
@@ -180,6 +181,11 @@ Route::group([
                 Route::get('posted', [RecruiterEventController::class, 'posted']);
                 Route::get('closed', [RecruiterEventController::class, 'closed']);
             });
+
+            // Candidate
+            Route::prefix('candidate')->group(function () {
+                Route::get('{id}', [CandidateController::class, 'candidateInfo']);
+            });
         });
 
         // Student -> Dashboard
@@ -255,6 +261,11 @@ Route::group([
             Route::get('index', [RecruiterEventController::class, 'dashboardIndex']);
             Route::get('posted', [RecruiterEventController::class, 'posted']);
             Route::get('closed', [RecruiterEventController::class, 'closed']);
+        });
+
+        // Student -> Recruiter -> Candidate
+        Route::prefix('candidate')->group(function () {
+            Route::get('{id}', [CandidateController::class, 'candidateInfo']);
         });
     });
 
