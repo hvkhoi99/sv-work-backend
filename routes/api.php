@@ -143,7 +143,7 @@ Route::group([
                 Route::put('{id}/close', [RecruitmentController::class, 'close']);
 
                 // Application (invite)
-                Route::put('{id}/approve', [StudentApplicationController::class, 'approve']);
+                Route::put('{id}/candidate/{candidateId}/approve', [CandidateController::class, 'approve']);
                 Route::get('{id}/candidates', [RecruitmentController::class, 'candidates']);
             });
 
@@ -236,7 +236,7 @@ Route::group([
             Route::put('{id}/close', [RecruitmentController::class, 'close']);
 
             // Application (invite)
-            Route::put('{id}/approve', [StudentApplicationController::class, 'approve']);
+            Route::put('{id}/candidate/{candidateId}/approve', [CandidateController::class, 'approve']);
             Route::get('{id}/candidates', [RecruitmentController::class, 'candidates']);
         });
 

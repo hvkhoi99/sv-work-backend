@@ -8,6 +8,7 @@ use App\Models\RecruiterProfile;
 use App\Models\Recruitment;
 use App\Models\StudentProfile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class StudentApplicationController extends Controller
 {
@@ -163,54 +164,6 @@ class StudentApplicationController extends Controller
                     'status' => 1,
                     'code' => 404,
                     'message' => 'The recruitment or your student profile doesn\'t exist.'
-                ], 404);
-            }
-        } else {
-            return response()->json([
-                'status' => 0,
-                'code' => 401,
-                'message' => 'UNAUTHORIZED'
-            ], 401);
-        }
-    }
-
-    public function approve(Request $request, $id)
-    {
-        $user = $request->user();
-
-        if (isset($user)) {
-
-            $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
-            $exist_recruitment = Recruitment::whereId($id)->first();
-
-            if (isset($r_profile) && isset($exist_recruitment)) {
-
-                $exist_application = Application::where('recruitment_id', $id)->first();
-
-                if (isset($exist_application) && $exist_application->is_applied) {
-
-                    $exist_application->update([
-                        'is_invited' => !($exist_application->is_invited)
-                    ]);
-
-                    return response()->json([
-                        'status' => 1,
-                        'code' => 200,
-                        'message' => $exist_application->is_invited ? 'Successfully approve.' : 'Successfully reject.',
-                        'data' => $exist_application
-                    ], 200);
-                } else {
-                    return response()->json([
-                        'status' => 0,
-                        'code' => 404,
-                        'message' => 'No applications found.'
-                    ], 404);
-                }
-            } else {
-                return response()->json([
-                    'status' => 1,
-                    'code' => 404,
-                    'message' => 'The recruitment doesn\'t exist or your recruiter profile does not exist.'
                 ], 404);
             }
         } else {
