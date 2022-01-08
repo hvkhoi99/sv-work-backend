@@ -71,7 +71,6 @@ class RecruiterDashboardController extends Controller
     if (isset($user)) {
       $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
       $recruitments = Recruitment::where('user_id', $user->id)
-        // ->where('is_closed', false)
         ->where('is_closed', '<>', true)
         ->orderBy('created_at', 'DESC')->get();
 
@@ -125,7 +124,7 @@ class RecruiterDashboardController extends Controller
 
   public function closedRecruitments(Request $request)
   {
-    $user = $request->user();
+    $user = Auth::user();
     if (isset($user)) {
       $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
       $recruitments = Recruitment::where('user_id', $user->id)->where('is_closed', true)->orderBy('updated_at', 'DESC')->get();
@@ -135,15 +134,9 @@ class RecruiterDashboardController extends Controller
         foreach ($recruitments as $rec) {
           $applicant = Application::where('recruitment_id', $rec->id)->get();
           $rec['applicants'] = count($applicant);
-          $recruitments_tag = RecruitmentTag::where('recruitment_id', $rec->id)->get();
 
-          $hashtags = [];
-          foreach ($recruitments_tag as $rec_tag) {
-            $hashtag = Hashtag::whereId($rec_tag->hashtag_id)->first();
-            array_push($hashtags, $hashtag);
-          }
-          // array_push($hashtags, $recruitments_tag);
-          $rec['hashtags'] = $hashtags;
+          $hashtags = JobTags::where('recruitment_id', $rec->id)->first()->hashtags;
+          $rec['hashtags'] = json_decode($hashtags);
         }
 
         $perPage = $request["_limit"];
