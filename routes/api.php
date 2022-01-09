@@ -47,6 +47,11 @@ Route::get('/error', [UserController::class, 'showError'])->name('showError');
 Route::group([
     'middleware' => 'auth:api',
 ], function () {
+    // Change Password
+    Route::prefix('auth/password')->group(function () {
+        Route::put('change', [UserController::class, 'changePassword']);
+    });
+
 
     // Admin
     Route::group([

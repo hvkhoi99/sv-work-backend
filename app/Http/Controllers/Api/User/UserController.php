@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ApiChangePasswordRequest;
 use App\Http\Requests\ApiLoginRequest;
 use App\Http\Requests\ApiRegisterRequest;
 use App\Models\RecruiterProfile;
@@ -29,7 +30,7 @@ class UserController extends Controller
             switch ($role_id) {
                 case 2:
                     $name = 'Recruiter';
-                    break;                
+                    break;
                 default:
                     $name = 'Student';
                     break;
@@ -87,52 +88,42 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function showError() {
+    public function showError()
+    {
         return response()->json([
             'error' => 'Access is not allowed.'
         ], 403);
     }
 
-    public function changePassword(Request $request) {
-        
-        // if (!(Hash::check($request['current-password'], Auth::user()->password))) {
-        //     // The passwords matches
-        //     return response()->json([
-        //         'status' => 0,
-        //         'code' => 400,
-        //         'message' => 'Your current password does not matches with the password you provided. Please try again.'
-        //     ]);
-        // }
+    public function changePassword(ApiChangePasswordRequest $request)
+    {
+        $user = Auth::user();
 
-        // if(strcmp($request['current-password'], $request['new-password']) == 0){
-        //     //Current password and new password are same
-        //     return response()->json([
-        //         'status' => 0,
-        //         'code' => 400,
-        //         'message' => 'New Password cannot be same as your current password. Please choose a different password.'
-        //     ]);
-        // }
+        if (isset($user)) {
 
-        // $validatedData = $request->validate([
-        //     'current-password' => 'required',
-        //     'new-password' => 'required|string|min:6|confirmed',
-        // ]);
-
-        // //Change Password
-        // if ($validatedData) {
-        //     $user = User::whereToken($request->user()->token)->first();
+            if (!Hash::check($request->current_password, $user->password)) {
+                return response()->json([
+                    'status' => 0,
+                    'code' => 400,
+                    'message' => 'Current password does not match!'
+                ], 400);
+            }
             
-        //     $user->update([
-        //         'password' => bcrypt($request['new-password'])
-        //     ]);
+            $user->update([
+                'password' => Hash::make($request->password)
+            ]);
 
-        //     return response()->json([
-        //         'message' => 'Password changed successfully.'
-        //     ]);
-        // } else {
-        //     return response()->json([
-        //         'message' => 'The given data was invalid.'
-        //     ]);
-        // }
+            return response()->json([
+                'status' => 1,
+                'code' => 200,
+                'data' => $user
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 0,
+                'code' => 401,
+                'message' => 'UNAUTHORIZED'
+            ], 401);
+        }
     }
 }

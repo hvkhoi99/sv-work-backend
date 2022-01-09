@@ -182,7 +182,7 @@ class RecruiterProfileController extends Controller
                     return response()->json([
                         'status' => 0,
                         'code' => 400,
-                        'message' => 'Your recruiter profile has not been verified. Please try again later.'
+                        'message' => 'You cannot verify your own profile. Please try again later.'
                     ], 400);
                 } else {
                     $r_profile->update($request->all());
