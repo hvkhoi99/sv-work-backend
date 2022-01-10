@@ -31,7 +31,11 @@ class RecruiterDashboardController extends Controller
       // });
       $total_applicants = 0;
       foreach ($recruitments as $recruitment) {
-        $count_applicant = Application::where('recruitment_id', $recruitment->id)->where('is_applied', true)->count();
+        $count_applicant = Application::where([
+          ['recruitment_id', $recruitment->id],
+          ['state', null],
+          ['is_applied', true]
+        ])->count();
         if (isset($count_applicant)) {
           $total_applicants += $count_applicant;
         }
@@ -76,7 +80,11 @@ class RecruiterDashboardController extends Controller
 
       if (isset($r_profile) && isset($recruitments)) {
         foreach ($recruitments as $rec) {
-          $applicant = Application::where('recruitment_id', $rec->id)->get();
+          $applicant = Application::where(
+            ['recruitment_id', $rec->id],
+            ['state', null],
+            ['is_applied', true]
+          )->get();
           $rec['applicants'] = count($applicant);
           // $recruitments_tag = RecruitmentTag::where('recruitment_id', $rec->id)->get();
 
@@ -132,7 +140,11 @@ class RecruiterDashboardController extends Controller
       if (isset($r_profile) && isset($recruitments)) {
 
         foreach ($recruitments as $rec) {
-          $applicant = Application::where('recruitment_id', $rec->id)->get();
+          $applicant = Application::where(
+            ['recruitment_id', $rec->id],
+            ['state', null],
+            ['is_applied', true]
+          )->get();
           $rec['applicants'] = count($applicant);
 
           $hashtags = JobTags::where('recruitment_id', $rec->id)->first()->hashtags;
