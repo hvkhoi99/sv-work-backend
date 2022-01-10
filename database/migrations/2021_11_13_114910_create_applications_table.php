@@ -15,8 +15,8 @@ class CreateApplicationsTable extends Migration
     {
         Schema::create('applications', function (Blueprint $table) {
             $table->id();
-            $table->string('state')->nullable();
-            $table->boolean('is_invited')->nullable();
+            $table->boolean('state')->nullable();
+            $table->boolean('is_invited');
             $table->boolean('is_applied');
             $table->boolean('is_saved');
             $table->unsignedBigInteger('user_id');

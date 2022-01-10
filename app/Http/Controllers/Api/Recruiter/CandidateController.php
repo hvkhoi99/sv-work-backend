@@ -90,13 +90,13 @@ class CandidateController extends Controller
           if (isset($exist_application) && $exist_application->is_applied) {
 
             $exist_application->update([
-              'is_invited' => !($exist_application->is_invited)
+              'state' => !($exist_application->state)
             ]);
 
             return response()->json([
               'status' => 1,
               'code' => 200,
-              'message' => $exist_application->is_invited ? 'Successfully approve.' : 'Successfully reject.',
+              'message' => $exist_application->state ? 'Successfully approve.' : 'Successfully reject.',
               'data' => $exist_application
             ], 200);
           } else {

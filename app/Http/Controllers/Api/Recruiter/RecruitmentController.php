@@ -323,7 +323,7 @@ class RecruitmentController extends Controller
 
       if (isset($r_profile) && isset($exist_recruitment)) {
         $candidates = [];
-        $applications = Application::where('recruitment_id', $id)->where('is_invited', null)->where('is_applied', true)->orderBy('id', 'DESC')->get();
+        $applications = Application::where('recruitment_id', $id)->where('state', null)->where('is_applied', true)->orderBy('id', 'DESC')->get();
 
         foreach ($applications as $application) {
           $candidate = StudentProfile::where('user_id', $application->user_id)->first();
