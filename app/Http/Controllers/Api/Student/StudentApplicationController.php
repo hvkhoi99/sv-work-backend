@@ -34,7 +34,7 @@ class StudentApplicationController extends Controller
 
                         if ($exist_application->user_id === $user->id) {
 
-                            if ($exist_application->is_invited == false) {
+                            if ($exist_application->state !== true) {
                                 $exist_application->update([
                                     'is_applied' => !($exist_application->is_applied)
                                 ]);
@@ -55,7 +55,7 @@ class StudentApplicationController extends Controller
                         } else {
                             $new_application = Application::create([
                                 'state' => null,
-                                'is_invited' => null,
+                                'is_invited' => false,
                                 'is_applied' => true,
                                 'is_saved' => false,
                                 'user_id' => $user->id,
@@ -73,7 +73,7 @@ class StudentApplicationController extends Controller
 
                         $new_application = Application::create([
                             'state' => null,
-                            'is_invited' => null,
+                            'is_invited' => false,
                             'is_applied' => true,
                             'is_saved' => false,
                             'user_id' => $user->id,
@@ -145,7 +145,7 @@ class StudentApplicationController extends Controller
                 } else {
                     $new_application = Application::create([
                         'state' => null,
-                        'is_invited' => null,
+                        'is_invited' => false,
                         'is_applied' => false,
                         'is_saved' => true,
                         'user_id' => $user->id,
