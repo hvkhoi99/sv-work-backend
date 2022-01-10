@@ -80,11 +80,11 @@ class RecruiterDashboardController extends Controller
 
       if (isset($r_profile) && isset($recruitments)) {
         foreach ($recruitments as $rec) {
-          $applicant = Application::where(
+          $applicant = Application::where([
             ['recruitment_id', $rec->id],
             ['state', null],
             ['is_applied', true]
-          )->get();
+          ])->get();
           $rec['applicants'] = count($applicant);
           // $recruitments_tag = RecruitmentTag::where('recruitment_id', $rec->id)->get();
 
@@ -140,11 +140,11 @@ class RecruiterDashboardController extends Controller
       if (isset($r_profile) && isset($recruitments)) {
 
         foreach ($recruitments as $rec) {
-          $applicant = Application::where(
+          $applicant = Application::where([
             ['recruitment_id', $rec->id],
             ['state', null],
             ['is_applied', true]
-          )->get();
+          ])->get();
           $rec['applicants'] = count($applicant);
 
           $hashtags = JobTags::where('recruitment_id', $rec->id)->first()->hashtags;
