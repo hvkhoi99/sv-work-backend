@@ -64,12 +64,19 @@ class StudentProfileController extends Controller
     {
         $user = $request->user();
         if (isset($user)) {
+            $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
+            $user["r_profile"] = isset($r_profile) ? $r_profile : null;
+
             $s_profile = StudentProfile::where('user_id', $user->id)->first();
+            
             if (isset($s_profile)) {
+                $user["s_profile"] = $s_profile;
+
                 return response()->json([
                     'status' => 1,
                     'code' => 200,
-                    'message' => 'Your student profile already exists.'
+                    'message' => 'Your student profile already exists.',
+                    'data' => $user
                 ], 200);
             } else {
                 $new_s_profile = StudentProfile::create([
@@ -87,10 +94,14 @@ class StudentProfileController extends Controller
                     'job_title' => $request['job_title'],
                     'user_id' => $user->id
                 ]);
+
+                $user["s_profile"] = $new_s_profile;
+
                 return response()->json([
                     'status' => 1,
                     'code' => 200,
-                    'data' => $new_s_profile
+                    'message' => 'Your student profile has been created.',
+                    'data' => $user
                 ], 200);
             }
         } else {
@@ -134,7 +145,7 @@ class StudentProfileController extends Controller
     public function update(ApiStudentProfileRequest $request, $id)
     {
         $user = Auth::user();
-        if (isset($user)) {            
+        if (isset($user)) {
             $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
             $user["r_profile"] = isset($r_profile) ? $r_profile : null;
 
