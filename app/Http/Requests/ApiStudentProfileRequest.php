@@ -33,7 +33,7 @@ class ApiStudentProfileRequest extends FormRequest
             'nationality' => 'required|max:255',
             'address' => 'required|min:5|max:255',
             'gender' => 'required',
-            'over_view' => 'required|min:5|max:255',
+            // 'over_view' => 'required|min:5|max:255',
             // 'open_for_job' => 'required',
             'job_title' => 'required|min:5|max:255'
         ];
