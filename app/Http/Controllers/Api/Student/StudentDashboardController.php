@@ -30,15 +30,15 @@ class StudentDashboardController extends Controller
 
                 foreach ($applications as $application) {
                     $applied_job = Recruitment::whereId($application->recruitment_id)->first();
+                    $applied_job["status"] = $application->status;
+                    // $recruitment_tags = RecruitmentTag::where('recruitment_id', $application->recruitment_id)->get();
 
-                    $recruitment_tags = RecruitmentTag::where('recruitment_id', $application->recruitment_id)->get();
-
-                    $hashtags = [];
-                    foreach ($recruitment_tags as $recruitment_tag) {
-                        $hashtag = Hashtag::whereId($recruitment_tag->hashtag_id)->first()->name;
-                        array_push($hashtags, $hashtag);
-                    }
-                    $applied_job['hashtags'] = $hashtags;
+                    // $hashtags = [];
+                    // foreach ($recruitment_tags as $recruitment_tag) {
+                    //     $hashtag = Hashtag::whereId($recruitment_tag->hashtag_id)->first()->name;
+                    //     array_push($hashtags, $hashtag);
+                    // }
+                    // $applied_job['hashtags'] = $hashtags;
                     array_push($applied_jobs, $applied_job);
                 }
 
