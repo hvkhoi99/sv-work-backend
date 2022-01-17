@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Auth;
 
 class StudentDashboardController extends Controller
 {
-    public function appliedJobs()
+    public function appliedJobs(Request $request)
     {
         $user = Auth::user();
 
@@ -42,7 +42,7 @@ class StudentDashboardController extends Controller
                     array_push($applied_jobs, $applied_job);
                 }
 
-                $perPage = 10;
+                $perPage = $request["_limit"];
                 $current_page = LengthAwarePaginator::resolveCurrentPage();
 
                 $new_applied_jobs = new LengthAwarePaginator(
@@ -74,7 +74,7 @@ class StudentDashboardController extends Controller
         }
     }
 
-    public function companyFollowed()
+    public function companyFollowed(Request $request)
     {
         $user = Auth::user();
 
@@ -94,10 +94,21 @@ class StudentDashboardController extends Controller
                     array_push($companies, $company);
                 }
 
+                $perPage = $request["_limit"];
+                $current_page = LengthAwarePaginator::resolveCurrentPage();
+
+                $new_companies = new LengthAwarePaginator(
+                    collect($companies)->forPage($current_page, $perPage)->values(),
+                    count($companies),
+                    $perPage,
+                    $current_page,
+                    ['path' => url('api/student/dashboard/followed-jobs')]
+                );
+
                 return response()->json([
                     'status' => 1,
                     'code' => 200,
-                    'data' => $companies
+                    'data' => $new_companies
                 ], 200);
             } else {
                 return response()->json([
@@ -115,7 +126,7 @@ class StudentDashboardController extends Controller
         }
     }
 
-    public function savedJobs()
+    public function savedJobs(Request $request)
     {
         $user = Auth::user();
 
@@ -142,7 +153,7 @@ class StudentDashboardController extends Controller
                     array_push($saved_jobs, $saved_job);
                 }
 
-                $perPage = 10;
+                $perPage = $request["_limit"];
                 $current_page = LengthAwarePaginator::resolveCurrentPage();
 
                 $new_saved_jobs = new LengthAwarePaginator(
@@ -174,7 +185,7 @@ class StudentDashboardController extends Controller
         }
     }
 
-    public function invitedJobs()
+    public function invitedJobs(Request $request)
     {
         $user = Auth::user();
 
@@ -200,7 +211,7 @@ class StudentDashboardController extends Controller
                     array_push($invited_jobs, $invited_job);
                 }
 
-                $perPage = 10;
+                $perPage = $request["_limit"];
                 $current_page = LengthAwarePaginator::resolveCurrentPage();
 
                 $new_invited_jobs = new LengthAwarePaginator(
