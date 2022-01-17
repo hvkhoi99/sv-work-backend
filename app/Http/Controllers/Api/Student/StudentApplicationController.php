@@ -128,7 +128,7 @@ class StudentApplicationController extends Controller
 
       if (isset($s_profile) && isset($exist_recruitment)) {
 
-        $exist_application = Application::where('recruitment_id', $exist_recruitment->id)->first();
+        $exist_application = Application::where('recruitment_id', $id)->first();
 
         if (isset($exist_application) && $exist_application->user_id === $user->id) {
 
