@@ -130,7 +130,7 @@ class StudentApplicationController extends Controller
 
         $exist_application = Application::where('recruitment_id', $id)->first();
 
-        if (isset($exist_application) && $exist_application->user_id === $user->id) {
+        if (isset($exist_application)) {
 
           $exist_application->update([
             'is_saved' => !($exist_application->is_saved)
@@ -139,7 +139,7 @@ class StudentApplicationController extends Controller
           return response()->json([
             'status' => 1,
             'code' => 200,
-            'message' => 'Successfully update saved.',
+            'message' => 'Successfully saved/unsave job.',
             'data' => $exist_application
           ], 200);
           
