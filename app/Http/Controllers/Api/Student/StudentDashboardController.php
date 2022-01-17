@@ -26,7 +26,7 @@ class StudentDashboardController extends Controller
             if (isset($s_profile)) {
                 $applied_jobs = [];
 
-                $applications = Application::where('user_id', $user->id)->where('is_applied', true)->orderBy('created_at', 'desc')->get();
+                $applications = Application::where('user_id', $user->id)->where('is_applied', true)->orderBy('updated_at', 'desc')->get();
 
                 foreach ($applications as $application) {
                     $applied_job = Recruitment::whereId($application->recruitment_id)->first();
