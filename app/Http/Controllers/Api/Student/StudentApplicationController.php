@@ -23,51 +23,29 @@ class StudentApplicationController extends Controller
         $exist_recruitment = Recruitment::whereId($id)->first();
 
         if (isset($exist_recruitment) && !($exist_recruitment->is_closed)) {
-
-          // $exist_invited_recruitment = Application::where('is_invited', true)->first();
-
-          // if (!isset($exist_invited_recruitment)) {
-
-          $exist_application = Application::where('recruitment_id', $id)->first();
+          $exist_application = Application::where([
+            ['user_id', $user->id],
+            ['recruitment_id', $id]
+          ])->first();
 
           if (isset($exist_application)) {
-
-            if ($exist_application->user_id === $user->id) {
-
-              if ($exist_application->state !== true) {
-                $exist_application->update([
-                  'is_applied' => !($exist_application->is_applied)
-                ]);
-
-                return response()->json([
-                  'status' => 1,
-                  'code' => 200,
-                  'message' => 'Successfully updated.',
-                  'data' => $exist_application
-                ], 200);
-              } else {
-                return response()->json([
-                  'status' => 0,
-                  'code' => 405,
-                  'message' => 'You cannot take this action because your application has been approved.'
-                ], 405);
-              }
-            } else {
-              $new_application = Application::create([
-                'state' => null,
-                'is_invited' => false,
-                'is_applied' => true,
-                'is_saved' => false,
-                'user_id' => $user->id,
-                'recruitment_id' => $id
+            if ($exist_application->state !== true) {
+              $exist_application->update([
+                'is_applied' => !($exist_application->is_applied)
               ]);
 
               return response()->json([
                 'status' => 1,
                 'code' => 200,
-                'message' => 'Successfully applied.',
-                'data' => $new_application
+                'message' => 'Successfully updated.',
+                'data' => $exist_application
               ], 200);
+            } else {
+              return response()->json([
+                'status' => 0,
+                'code' => 405,
+                'message' => 'You cannot take this action because your application has been approved.'
+              ], 405);
             }
           } else {
 
@@ -87,13 +65,6 @@ class StudentApplicationController extends Controller
               'data' => $new_application
             ], 200);
           }
-          // } else {
-          //     return response()->json([
-          //         'status' => 0,
-          //         'code' => 405,
-          //         'message' => 'You cannot take this action because your job has been opened.'
-          //     ], 405);
-          // }
         } else {
           return response()->json([
             'status' => 1,
@@ -127,11 +98,12 @@ class StudentApplicationController extends Controller
       $exist_recruitment = Recruitment::whereId($id)->first();
 
       if (isset($s_profile) && isset($exist_recruitment)) {
-
-        $exist_application = Application::where('recruitment_id', $id)->first();
+        $exist_application = Application::where([
+          ['user_id', $user->id],
+          ['recruitment_id', $id]
+        ])->first();
 
         if (isset($exist_application)) {
-
           $exist_application->update([
             'is_saved' => !($exist_application->is_saved)
           ]);
@@ -142,7 +114,6 @@ class StudentApplicationController extends Controller
             'message' => 'Successfully saved/unsave job.',
             'data' => $exist_application
           ], 200);
-          
         } else {
           $new_application = Application::create([
             'state' => null,
