@@ -128,20 +128,43 @@ class StudentApplicationController extends Controller
 
       if (isset($s_profile) && isset($exist_recruitment)) {
 
-        $exist_application = Application::where('recruitment_id', $id)->first();
+        $exist_application = Application::where('recruitment_id', $exist_recruitment->id)->first();
 
         if (isset($exist_application)) {
 
-          $exist_application->update([
-            'is_saved' => !($exist_application->is_saved)
-          ]);
+          if ($exist_application->user_id === $user->id) {
 
-          return response()->json([
-            'status' => 1,
-            'code' => 200,
-            'message' => 'Successfully updated.',
-            'data' => $exist_application
-          ], 200);
+            $exist_application->update([
+              'is_saved' => !($exist_application->is_saved)
+            ]);
+
+            return response()->json([
+              'status' => 1,
+              'code' => 200,
+              'message' => 'Successfully updated.',
+              'data' => $exist_application
+            ], 200);
+
+          } else {
+
+            $new_application = Application::create([
+              'state' => null,
+              'is_invited' => false,
+              'is_applied' => false,
+              'is_saved' => true,
+              'user_id' => $user->id,
+              'recruitment_id' => $id
+            ]);
+
+            return response()->json([
+              'status' => 1,
+              'code' => 200,
+              'message' => 'Successfully saved.',
+              'data' => $new_application
+            ], 200);
+
+          }
+
         } else {
           $new_application = Application::create([
             'state' => null,
