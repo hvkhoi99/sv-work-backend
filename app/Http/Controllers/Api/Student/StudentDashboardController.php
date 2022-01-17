@@ -26,11 +26,14 @@ class StudentDashboardController extends Controller
             if (isset($s_profile)) {
                 $applied_jobs = [];
 
-                $applications = Application::where('user_id', $user->id)->where('is_applied', true)->orderBy('updated_at', 'desc')->get();
+                $applications = Application::where([
+                    ['is_applied', true],
+                    ['user_id', $user->id]
+                ])->orderBy('updated_at', 'desc')->get();
 
                 foreach ($applications as $application) {
                     $applied_job = Recruitment::whereId($application->recruitment_id)->first();
-                    $applied_job["status"] = $application->status;
+                    $applied_job["status"] = $application->state;
                     // $recruitment_tags = RecruitmentTag::where('recruitment_id', $application->recruitment_id)->get();
 
                     // $hashtags = [];
