@@ -130,41 +130,19 @@ class StudentApplicationController extends Controller
 
         $exist_application = Application::where('recruitment_id', $exist_recruitment->id)->first();
 
-        if (isset($exist_application)) {
+        if (isset($exist_application) && $exist_application->user_id === $user->id) {
 
-          if ($exist_application->user_id === $user->id) {
+          $exist_application->update([
+            'is_saved' => !($exist_application->is_saved)
+          ]);
 
-            $exist_application->update([
-              'is_saved' => !($exist_application->is_saved)
-            ]);
-
-            return response()->json([
-              'status' => 1,
-              'code' => 200,
-              'message' => 'Successfully updated.',
-              'data' => $exist_application
-            ], 200);
-
-          } else {
-
-            $new_application = Application::create([
-              'state' => null,
-              'is_invited' => false,
-              'is_applied' => false,
-              'is_saved' => true,
-              'user_id' => $user->id,
-              'recruitment_id' => $id
-            ]);
-
-            return response()->json([
-              'status' => 1,
-              'code' => 200,
-              'message' => 'Successfully saved.',
-              'data' => $new_application
-            ], 200);
-
-          }
-
+          return response()->json([
+            'status' => 1,
+            'code' => 200,
+            'message' => 'Successfully update saved.',
+            'data' => $exist_application
+          ], 200);
+          
         } else {
           $new_application = Application::create([
             'state' => null,
@@ -178,7 +156,7 @@ class StudentApplicationController extends Controller
           return response()->json([
             'status' => 1,
             'code' => 200,
-            'message' => 'Successfully saved.',
+            'message' => 'Successfully saved (created).',
             'data' => $new_application
           ], 200);
         }
