@@ -12,9 +12,9 @@ use Illuminate\Support\Facades\Auth;
 
 class StudentApplicationController extends Controller
 {
-  public function apply(Request $request, $id)
+  public function apply($id)
   {
-    $user = $request->user();
+    $user = Auth::user();
 
     if (isset($user)) {
       $s_profile = StudentProfile::where('user_id', $user->id)->first();
@@ -118,9 +118,9 @@ class StudentApplicationController extends Controller
     }
   }
 
-  public function saveJob(Request $request, $id)
+  public function saveJob($id)
   {
-    $user = $request->user();
+    $user = Auth::user();
 
     if (isset($user)) {
       $s_profile = StudentProfile::where('user_id', $user->id)->first();
