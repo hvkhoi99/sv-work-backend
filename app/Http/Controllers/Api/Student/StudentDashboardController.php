@@ -33,19 +33,19 @@ class StudentDashboardController extends Controller
 
         foreach ($applications as $application) {
           $applied_job = Recruitment::whereId($application->recruitment_id)
-          ->first();
-          // ->only(
-          //   [
-          //     'id', 'title', 'job_category', 'location', 'min_salary', 'max_salary', 
-          //     'is_closed', 'user_id', 'created_at', 'updated_at'
-          //   ]
-          // );
-          $applied_job = collect($applied_job)->only(
+          ->first()
+          ->only(
             [
               'id', 'title', 'job_category', 'location', 'min_salary', 'max_salary', 
               'is_closed', 'user_id', 'created_at', 'updated_at'
             ]
           );
+          // $applied_job = collect($applied_job)->only(
+          //   [
+          //     'id', 'title', 'job_category', 'location', 'min_salary', 'max_salary', 
+          //     'is_closed', 'user_id', 'created_at', 'updated_at'
+          //   ]
+          // );
           $applied_job["status"] = $application->state;
 
           // $company_info = RecruiterProfile::whereId($applied_job->user_id)->first();
