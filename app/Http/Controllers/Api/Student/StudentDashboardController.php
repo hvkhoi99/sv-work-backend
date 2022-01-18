@@ -94,11 +94,17 @@ class StudentDashboardController extends Controller
         $companies = [];
         $recruitments = [];
 
-        $follows = Follow::where('s_profile_id', $s_profile->id)->where('is_followed', true)->orderBy('updated_at', 'desc')->get();
+        $follows = Follow::where([
+          ['is_followed', true],
+          ['s_profile_id', $s_profile->id]
+        ])->orderBy('updated_at', 'desc')->get();
 
         foreach ($follows as $follow) {
           $company = RecruiterProfile::whereId($follow->r_profile_id)->first();
-          $recruitments = Recruitment::where('user_id', $company->user_id)->where('is_closed', false)->orderBy('created_at', 'desc')->get();
+          $recruitments = Recruitment::where([
+            ['is_closed', false],
+            ['user_id', $company->user_id]
+          ])->orderBy('created_at', 'desc')->get();
           $company['jobs_available'] = count($recruitments);
           array_push($companies, $company);
         }
@@ -111,7 +117,7 @@ class StudentDashboardController extends Controller
           count($companies),
           $perPage,
           $current_page,
-          ['path' => url('api/student/dashboard/followed-jobs')]
+          ['path' => url('api/student/dashboard/company-followed')]
         );
 
         return response()->json([
