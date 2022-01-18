@@ -111,7 +111,7 @@ class StudentApplicationController extends Controller
           return response()->json([
             'status' => 1,
             'code' => 200,
-            'message' => 'Successfully saved/unsave job.',
+            'message' => 'Successfully '.($exist_application->is_saved ? 'saved' : 'un-save').' job.',
             'data' => $exist_application
           ], 200);
         } else {
