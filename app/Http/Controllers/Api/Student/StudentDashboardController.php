@@ -36,11 +36,7 @@ class StudentDashboardController extends Controller
           $applied_job["status"] = $application->state;
 
           $company_info = RecruiterProfile::whereId($applied_job->user_id)->first();
-          $applied_job["company_info"] = [
-            "avatar" => $company_info->logo_image_link,
-            "company_name" => $company_info->company_name,
-            "verify" => $company_info->verify,
-          ];
+          $applied_job["company_info"] = $company_info->pluck('logo_image_link', 'company_name', 'verify');
 
           // $recruitment_tags = RecruitmentTag::where('recruitment_id', $application->recruitment_id)->get();
 
