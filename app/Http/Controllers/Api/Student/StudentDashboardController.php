@@ -48,9 +48,9 @@ class StudentDashboardController extends Controller
           // );
           $applied_job["status"] = $application->state;
 
-          // $company_info = RecruiterProfile::whereId($applied_job->user_id)->first();
-          // $applied_job["company_info"] = collect($company_info)
-          //   ->only(['id', 'logo_image_link', 'company_name', 'verify']);
+          $company_info = RecruiterProfile::whereId($applied_job->user_id)->first();
+          $applied_job["company_info"] = collect($company_info)
+            ->only(['id', 'logo_image_link', 'company_name', 'verify']);
 
           array_push($applied_jobs, $applied_job);
         }
