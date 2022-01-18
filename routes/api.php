@@ -82,6 +82,7 @@ Route::group([
         'prefix' => 'student',
         'middleware' => 'role:student'
     ], function () {
+        
         // Student Account
         Route::post('/password/change', [UserController::class, 'changePassword']);
 
@@ -131,6 +132,11 @@ Route::group([
             Route::post('store', [LanguageController::class, 'store']);
             Route::put('{id}', [LanguageController::class, 'update']);
             Route::delete('{id}', [LanguageController::class, 'destroy']);
+        });
+        
+        // Job 
+        Route::prefix('job')->group(function () {
+            Route::get('{id}', [JobController::class, 'showJob']);
         });
 
         // Student -> Recruiter
