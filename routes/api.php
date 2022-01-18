@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\Student\CertificateController;
 use App\Http\Controllers\Api\Student\EducationController;
 use App\Http\Controllers\Api\Student\ExperienceController;
 use App\Http\Controllers\Api\Student\FollowController;
+use App\Http\Controllers\Api\Student\JobController;
 use App\Http\Controllers\Api\Student\LanguageController;
 use App\Http\Controllers\Api\Student\SkillController;
 use App\Http\Controllers\Api\Student\StudentApplicationController;
