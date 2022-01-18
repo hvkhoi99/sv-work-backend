@@ -32,13 +32,21 @@ class StudentDashboardController extends Controller
         ])->orderBy('updated_at', 'desc')->get();
 
         foreach ($applications as $application) {
-          $applied_job = Recruitment::whereId($application->recruitment_id)->first();
+          $applied_job = Recruitment::whereId($application->recruitment_id)
+          ->first()
+          ->only(
+            [
+              'id', 'title', 'job_category', 'location',
+              'min_salary', 'max_salary', 'is_closed', 'user_id',
+              'created_at', 'updated_at'
+            ]
+          );
           $applied_job["status"] = $application->state;
 
           $company_info = RecruiterProfile::whereId($applied_job->user_id)->first();
           $applied_job["company_info"] = collect($company_info)
             ->only(['id', 'logo_image_link', 'company_name', 'verify']);
-            
+
           array_push($applied_jobs, $applied_job);
         }
 
