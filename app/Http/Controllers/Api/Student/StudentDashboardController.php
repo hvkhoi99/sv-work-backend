@@ -221,9 +221,10 @@ class StudentDashboardController extends Controller
         $invited_jobs = [];
 
         $applications = Application::where([
+          ['state', '><', false],
           ['is_invited', true],
           ['user_id', $user->id]
-          ])->where('state', '<>', false)->orderBy('updated_at', 'desc')->get();
+          ])->orderBy('updated_at', 'desc')->get();
 
         foreach ($applications as $application) {
           $invited_job = Recruitment::whereId($application->recruitment_id)->first();
