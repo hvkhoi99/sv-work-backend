@@ -220,19 +220,27 @@ class StudentDashboardController extends Controller
       if (isset($s_profile)) {
         $invited_jobs = [];
 
-        $applications = Application::where('user_id', $user->id)->where('state', null)->where('is_invited', true)->orderBy('created_at', 'desc')->get();
+        $applications = Application::where([
+          ['is_invited', true],
+          ['user_id', $user->id]
+          ])->orderBy('updated_at', 'desc')->get();
 
         foreach ($applications as $application) {
           $invited_job = Recruitment::whereId($application->recruitment_id)->first();
 
-          $recruitment_tags = RecruitmentTag::where('recruitment_id', $application->recruitment_id)->get();
+          $company_info = RecruiterProfile::whereId($invited_job->user_id)->first();
 
-          $hashtags = [];
-          foreach ($recruitment_tags as $recruitment_tag) {
-            $hashtag = Hashtag::whereId($recruitment_tag->hashtag_id)->first()->name;
-            array_push($hashtags, $hashtag);
-          }
-          $invited_job['hashtags'] = $hashtags;
+          $saved_job = collect($invited_job)->only(
+            [
+              'id', 'title', 'job_category', 'location', 'min_salary', 'max_salary',
+              'is_closed', 'user_id', 'created_at', 'updated_at'
+            ]
+          );
+
+          $saved_job["status"] = $application->state;
+          $saved_job["company_info"] = collect($company_info)
+            ->only(['id', 'logo_image_link', 'company_name', 'verify']);
+
           array_push($invited_jobs, $invited_job);
         }
 
