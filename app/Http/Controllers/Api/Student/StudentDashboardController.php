@@ -230,15 +230,15 @@ class StudentDashboardController extends Controller
 
           $company_info = RecruiterProfile::whereId($invited_job->user_id)->first();
 
-          $saved_job = collect($invited_job)->only(
+          $invited_job = collect($invited_job)->only(
             [
               'id', 'title', 'job_category', 'location', 'min_salary', 'max_salary',
               'is_closed', 'user_id', 'created_at', 'updated_at'
             ]
           );
 
-          $saved_job["status"] = $application->state;
-          $saved_job["company_info"] = collect($company_info)
+          $invited_job["status"] = $application->state;
+          $invited_job["company_info"] = collect($company_info)
             ->only(['id', 'logo_image_link', 'company_name', 'verify']);
 
           array_push($invited_jobs, $invited_job);
