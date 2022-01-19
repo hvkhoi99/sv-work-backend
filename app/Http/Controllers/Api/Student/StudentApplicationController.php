@@ -22,7 +22,7 @@ class StudentApplicationController extends Controller
       if (isset($s_profile) && $s_profile->open_for_job) {
         $exist_recruitment = Recruitment::whereId($id)->first();
 
-        if (isset($exist_recruitment) && !($exist_recruitment->is_closed)) {
+        if (isset($exist_recruitment)) {
           $exist_application = Application::where([
             ['user_id', $user->id],
             ['recruitment_id', $id]
@@ -69,7 +69,7 @@ class StudentApplicationController extends Controller
           return response()->json([
             'status' => 1,
             'code' => 404,
-            'message' => 'The recruitment doesn\'t exist or closed.'
+            'message' => 'The recruitment doesn\'t exist.'
           ], 404);
         }
       } else {
