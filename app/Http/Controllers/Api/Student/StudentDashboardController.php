@@ -222,6 +222,9 @@ class StudentDashboardController extends Controller
 
         $applications = Application::where([
           ['state', true],
+          ['is_invited', true],
+          ['user_id', $user->id]
+        ])->orWhere([
           ['state', null],
           ['is_invited', true],
           ['user_id', $user->id]
