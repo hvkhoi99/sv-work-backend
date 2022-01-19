@@ -157,11 +157,11 @@ class StudentDashboardController extends Controller
         $applications = Application::where([
           ['is_saved', true],
           ['user_id', $user->id]
-          ])->orderBy('updated_at', 'desc')->get();
+        ])->orderBy('updated_at', 'desc')->get();
 
         foreach ($applications as $application) {
           $saved_job = Recruitment::whereId($application->recruitment_id)->first();
-          
+
           $company_info = RecruiterProfile::whereId($saved_job->user_id)->first();
 
           $saved_job = collect($saved_job)->only(
@@ -221,10 +221,10 @@ class StudentDashboardController extends Controller
         $invited_jobs = [];
 
         $applications = Application::where([
-          ['state', '><', false],
+          ['state', '<>', false],
           ['is_invited', true],
           ['user_id', $user->id]
-          ])->orderBy('updated_at', 'desc')->get();
+        ])->orderBy('updated_at', 'desc')->get();
 
         foreach ($applications as $application) {
           $invited_job = Recruitment::whereId($application->recruitment_id)->first();
