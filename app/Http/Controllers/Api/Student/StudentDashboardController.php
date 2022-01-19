@@ -220,7 +220,7 @@ class StudentDashboardController extends Controller
       if (isset($s_profile)) {
         $invited_jobs = [];
 
-        $applications = Application::where([
+        $applications = Application::whereIn([
           ['state', true],
           ['is_invited', true],
           ['user_id', $user->id]
@@ -228,8 +228,8 @@ class StudentDashboardController extends Controller
           ['state', null],
           ['is_invited', true],
           ['user_id', $user->id]
-        ])->orderBy('updated_at', 'desc')->get();
-        
+        ])->orderBy('updated_at', 'asc')->get();
+
 
         foreach ($applications as $application) {
           $invited_job = Recruitment::whereId($application->recruitment_id)->first();
