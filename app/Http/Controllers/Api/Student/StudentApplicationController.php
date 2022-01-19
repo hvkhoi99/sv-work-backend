@@ -29,26 +29,17 @@ class StudentApplicationController extends Controller
           ])->first();
 
           if (isset($exist_application)) {
-            if ($exist_application->state !== true) {
-              $exist_application->update([
-                'is_applied' => !($exist_application->is_applied)
-              ]);
+            $exist_application->update([
+              'is_applied' => !($exist_application->is_applied)
+            ]);
 
-              return response()->json([
-                'status' => 1,
-                'code' => 200,
-                'message' => 'Successfully updated.',
-                'data' => $exist_application
-              ], 200);
-            } else {
-              return response()->json([
-                'status' => 0,
-                'code' => 405,
-                'message' => 'You cannot take this action because your application has been approved.'
-              ], 405);
-            }
+            return response()->json([
+              'status' => 1,
+              'code' => 200,
+              'message' => 'Successfully updated.',
+              'data' => $exist_application
+            ], 200);
           } else {
-
             $new_application = Application::create([
               'state' => null,
               'is_invited' => false,
@@ -111,7 +102,7 @@ class StudentApplicationController extends Controller
           return response()->json([
             'status' => 1,
             'code' => 200,
-            'message' => 'Successfully '.($exist_application->is_saved ? 'saved' : 'un-save').' job.',
+            'message' => 'Successfully ' . ($exist_application->is_saved ? 'saved' : 'un-save') . ' job.',
             'data' => $exist_application
           ], 200);
         } else {
