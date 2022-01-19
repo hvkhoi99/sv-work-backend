@@ -32,8 +32,7 @@ class StudentDashboardController extends Controller
         ])->orderBy('updated_at', 'desc')->get();
 
         foreach ($applications as $application) {
-          $applied_job = Recruitment::whereId($application->recruitment_id)
-            ->first();
+          $applied_job = Recruitment::whereId($application->recruitment_id)->first();
 
           $company_info = RecruiterProfile::whereId($applied_job->user_id)->first();
 
@@ -155,20 +154,27 @@ class StudentDashboardController extends Controller
       if (isset($s_profile)) {
         $saved_jobs = [];
 
-
-        $applications = Application::where('user_id', $user->id)->where('is_saved', true)->orderBy('created_at', 'desc')->get();
+        $applications = Application::where([
+          ['is_saved', true],
+          ['user_id', $user->id]
+          ])->orderBy('updated_at', 'desc')->get();
 
         foreach ($applications as $application) {
           $saved_job = Recruitment::whereId($application->recruitment_id)->first();
+          
+          $company_info = RecruiterProfile::whereId($saved_job->user_id)->first();
 
-          $recruitment_tags = RecruitmentTag::where('recruitment_id', $application->recruitment_id)->get();
+          $saved_job = collect($saved_job)->only(
+            [
+              'id', 'title', 'job_category', 'location', 'min_salary', 'max_salary',
+              'is_closed', 'user_id', 'created_at', 'updated_at'
+            ]
+          );
 
-          $hashtags = [];
-          foreach ($recruitment_tags as $recruitment_tag) {
-            $hashtag = Hashtag::whereId($recruitment_tag->hashtag_id)->first()->name;
-            array_push($hashtags, $hashtag);
-          }
-          $saved_job['hashtags'] = $hashtags;
+          $saved_job["status"] = $application->state;
+          $saved_job["company_info"] = collect($company_info)
+            ->only(['id', 'logo_image_link', 'company_name', 'verify']);
+
           array_push($saved_jobs, $saved_job);
         }
 
