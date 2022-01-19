@@ -140,12 +140,34 @@ Route::group([
             Route::get('{id}', [JobController::class, 'showJob']);
         });
 
+        
+        // Student -> Dashboard
+        Route::prefix('dashboard')->group(function () {
+            Route::get('applied-jobs', [StudentDashboardController::class, 'appliedJobs']);
+            Route::get('company-followed', [StudentDashboardController::class, 'companyFollowed']);
+            Route::get('saved-jobs', [StudentDashboardController::class, 'savedJobs']);
+            Route::get('invited-jobs', [StudentDashboardController::class, 'invitedJobs']);
+        });
+        
+        // Student Application (apply, save)
+        Route::prefix('recruitment')->group(function () {
+            Route::put('{id}/apply', [StudentApplicationController::class, 'apply']);
+            Route::put('{id}/save', [StudentApplicationController::class, 'saveJob']);
+            Route::put('{id}/accept-invited', [StudentApplicationController::class, 'acceptInvitedJob']);
+            Route::put('{id}/reject-invited', [StudentApplicationController::class, 'rejectInvitedJob']);
+        });
+        
+        // Event
+        Route::prefix('event')->group(function () {
+            Route::post('{id}', [StudentEventController::class, 'join']);
+        });
+
         // Student -> Recruiter
         Route::group([
             'name' => 'recruiter.',
             'prefix' => 'recruiter'
         ], function () {
-
+    
             // Student -> Recruiter -> Recruitment
             Route::prefix('recruitment')->group(function () {
                 Route::get('{id}', [RecruitmentController::class, 'show']);
@@ -153,19 +175,19 @@ Route::group([
                 Route::put('{id}', [RecruitmentController::class, 'update']);
                 Route::delete('{id}', [RecruitmentController::class, 'destroy']);
                 Route::put('{id}/close', [RecruitmentController::class, 'close']);
-
+    
                 // Application (invite)
                 Route::put('{id}/candidate/{candidateId}/approve', [CandidateController::class, 'approve']);
                 Route::get('{id}/candidates', [RecruitmentController::class, 'candidates']);
             });
-
+    
             // Student -> Recruiter -> Dashboard
             Route::prefix('dashboard')->group(function () {
                 Route::get('index', [RecruiterDashboardController::class, 'index']);
                 Route::get('available-recruitments', [RecruiterDashboardController::class, 'availableRecruitments']);
                 Route::get('closed-recruitments', [RecruiterDashboardController::class, 'closedRecruitments']);
             });
-
+    
             // Student -> Recruiter -> Profile
             Route::prefix('profile')->group(function () {
                 Route::get('index', [RecruiterProfileController::class, 'index']);
@@ -174,10 +196,10 @@ Route::group([
                 Route::put('{id}', [RecruiterProfileController::class, 'update']);
                 Route::put('{id}/updateDescription', [RecruiterProfileController::class, 'updateDescription']);
             });
-
+    
             // Student -> Recruiter -> Follow
             Route::post('{id}/follow', [FollowController::class, 'follow']);
-
+    
             // Event
             Route::prefix('event')->group(function () {
                 Route::get('{id}', [RecruiterEventController::class, 'show']);
@@ -186,37 +208,18 @@ Route::group([
                 Route::delete('{id}', [RecruiterEventController::class, 'destroy']);
                 Route::post('{id}/close', [RecruiterEventController::class, 'close']);
             });
-
+    
             // Manage event
             Route::prefix('manage-event')->group(function () {
                 Route::get('index', [RecruiterEventController::class, 'dashboardIndex']);
                 Route::get('posted', [RecruiterEventController::class, 'posted']);
                 Route::get('closed', [RecruiterEventController::class, 'closed']);
             });
-
+    
             // Candidate
             Route::prefix('candidate')->group(function () {
                 Route::get('{id}', [CandidateController::class, 'candidateInfo']);
             });
-        });
-
-        // Student -> Dashboard
-        Route::prefix('dashboard')->group(function () {
-            Route::get('applied-jobs', [StudentDashboardController::class, 'appliedJobs']);
-            Route::get('company-followed', [StudentDashboardController::class, 'companyFollowed']);
-            Route::get('saved-jobs', [StudentDashboardController::class, 'savedJobs']);
-            Route::get('invited-jobs', [StudentDashboardController::class, 'invitedJobs']);
-        });
-
-        // Student Application (apply, save)
-        Route::prefix('recruitment')->group(function () {
-            Route::put('{id}/apply', [StudentApplicationController::class, 'apply']);
-            Route::put('{id}/save', [StudentApplicationController::class, 'saveJob']);
-        });
-
-        // Event
-        Route::prefix('event')->group(function () {
-            Route::post('{id}', [StudentEventController::class, 'join']);
         });
     });
 

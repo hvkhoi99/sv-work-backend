@@ -230,7 +230,6 @@ class StudentDashboardController extends Controller
           ['user_id', $user->id]
         ])->orderBy('updated_at', 'desc')->get();
 
-
         foreach ($applications as $application) {
           $invited_job = Recruitment::whereId($application->recruitment_id)->first();
 
