@@ -46,7 +46,7 @@ class StudentDashboardController extends Controller
 
           $applied_job["status"] = $application->state;
           $applied_job["company_info"] = collect($company_info)
-            ->only(['id', 'logo_image_link', 'company_name', 'verify']);
+            ->only(['id', 'logo_image_link as avatar', 'company_name', 'verify']);
 
           array_push($applied_jobs, $applied_job);
         }
@@ -105,6 +105,10 @@ class StudentDashboardController extends Controller
             ['is_closed', false],
             ['user_id', $company->user_id]
           ])->orderBy('created_at', 'desc')->get();
+          $company = collect($company)->only([
+            'id', 'contact_email', 'company_name', 'logo_image_link as avatar', 'phone_number',
+            'verify', 'address', 'company_size', 'company_industry', 'user_id',
+          ]);
           $company['jobs_available'] = count($recruitments);
           array_push($companies, $company);
         }
