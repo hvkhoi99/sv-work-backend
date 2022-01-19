@@ -220,7 +220,7 @@ class StudentDashboardController extends Controller
       if (isset($s_profile)) {
         $invited_jobs = [];
 
-        $applications = Application::whereIn([
+        $applications = Application::where([
           ['state', true],
           ['is_invited', true],
           ['user_id', $user->id]
