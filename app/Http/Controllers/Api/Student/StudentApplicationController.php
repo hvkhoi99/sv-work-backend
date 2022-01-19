@@ -137,4 +137,118 @@ class StudentApplicationController extends Controller
       ], 401);
     }
   }
+
+  public function acceptInvitedJob($id)
+  {
+    $user = Auth::user();
+
+    if (isset($user)) {
+      $s_profile = StudentProfile::where('user_id', $user->id)->first();
+
+      if (isset($s_profile)) {
+        $exist_recruitment = Recruitment::whereId($id)->first();
+
+        if (isset($exist_recruitment)) {
+          $exist_application = Application::where([
+            ['user_id', $user->id],
+            ['recruitment_id', $id]
+          ])->first();
+
+          if (isset($exist_application)) {
+            $exist_application->update([
+              'state' => true
+            ]);
+  
+            return response()->json([
+              'status' => 1,
+              'code' => 200,
+              'message' => 'Successfully accepted job offer.',
+              'data' => $exist_application
+            ], 200);
+          } else {
+
+          }
+
+        } else {
+          return response()->json([
+            'status' => 1,
+            'code' => 404,
+            'message' => 'The recruitment doesn\'t exist.'
+          ], 404);
+        }
+
+
+      } else {
+        return response()->json([
+          'status' => 1,
+          'code' => 404,
+          'message' => 'Your student profile doesn\'t exist.'
+        ], 404);
+      }
+
+    } else {
+      return response()->json([
+        'status' => 0,
+        'code' => 401,
+        'message' => 'UNAUTHORIZED'
+      ], 401);
+    }
+  }
+
+  public function rejectInvitedJob($id)
+  {
+    $user = Auth::user();
+
+    if (isset($user)) {
+      $s_profile = StudentProfile::where('user_id', $user->id)->first();
+
+      if (isset($s_profile)) {
+        $exist_recruitment = Recruitment::whereId($id)->first();
+
+        if (isset($exist_recruitment)) {
+          $exist_application = Application::where([
+            ['user_id', $user->id],
+            ['recruitment_id', $id]
+          ])->first();
+
+          if (isset($exist_application)) {
+            $exist_application->update([
+              'state' => false
+            ]);
+  
+            return response()->json([
+              'status' => 1,
+              'code' => 200,
+              'message' => 'Successfully rejected job offer.',
+              'data' => $exist_application
+            ], 200);
+          } else {
+
+          }
+
+        } else {
+          return response()->json([
+            'status' => 1,
+            'code' => 404,
+            'message' => 'The recruitment doesn\'t exist.'
+          ], 404);
+        }
+
+
+      } else {
+        return response()->json([
+          'status' => 1,
+          'code' => 404,
+          'message' => 'Your student profile doesn\'t exist.'
+        ], 404);
+      }
+
+    } else {
+      return response()->json([
+        'status' => 0,
+        'code' => 401,
+        'message' => 'UNAUTHORIZED'
+      ], 401);
+    }
+  }
 }
