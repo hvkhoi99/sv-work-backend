@@ -224,7 +224,7 @@ class StudentDashboardController extends Controller
           ['state', '!=', false],
           ['is_invited', true],
           ['user_id', $user->id]
-        ])->whereNull('state')->orderBy('updated_at', 'desc')->get();
+        ])->orderBy('updated_at', 'desc')->get();
 
 
         foreach ($applications as $application) {
