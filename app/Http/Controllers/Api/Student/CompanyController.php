@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Student;
 
 use App\Http\Controllers\Controller;
+use App\Models\Follow;
 use App\Models\RecruiterProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,6 +25,16 @@ class CompanyController extends Controller
           'contact_email', 'description', 'logo_image_link', 'phone_number',
           'verify'
         ]);
+
+        $follow_status = Follow::where([
+          ['r_profile_id', $id],
+          ['s_profile_id', $user->id]
+        ])->first();
+
+        if (isset($followStatus)) {
+          $is_followed = $follow_status->is_followed;
+          $company_info['is_followed'] = $is_followed;
+        }
 
         return response()->json([
           'status' => 1,
