@@ -25,11 +25,9 @@ class JobController extends Controller
           ['user_id', $user->id]
         ])->first();
         $company_info = RecruiterProfile::whereId($recruitment->user_id)->first();
+        $recruitment["application"] = $application;
 
-        if ( isset($application) && isset($company_info)) {
-
-          $recruitment["application"] = $application;
-          
+        if (isset($company_info)) {
           $recruitment["company_info"] = collect($company_info)
             ->only(['id', 'logo_image_link', 'company_name', 'verify']);
 
