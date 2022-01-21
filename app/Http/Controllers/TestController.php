@@ -28,9 +28,7 @@ class TestController extends Controller
 
     // $my_array = array_map(function($o) { return collect($o)->only(['label']); }, $my_array);
 
-    $company_info = RecruiterProfile::where([
-      ['id', 7]
-    ])->first();
+    $company_info = RecruiterProfile::whereId(7)->first();
 
     if (isset($company_info)) {
       $company_info = collect($company_info)->only([

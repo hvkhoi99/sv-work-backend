@@ -15,9 +15,7 @@ class CompanyController extends Controller
     $user = Auth::user();
 
     if (isset($user)) {
-      $company_info = RecruiterProfile::where([
-        ['id', $id]
-      ])->first();
+      $company_info = RecruiterProfile::whereId($id)->first();
 
       if (isset($company_info)) {
         $company_info = collect($company_info)->only([
