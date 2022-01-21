@@ -31,10 +31,8 @@ class CompanyController extends Controller
           ['s_profile_id', $user->id]
         ])->first();
 
-        if (isset($followStatus)) {
-          $is_followed = $follow_status->is_followed;
-          $company_info['is_followed'] = $is_followed;
-        }
+        $is_followed = isset($follow_status) ? $follow_status->is_followed : false;
+        $company_info['is_followed'] = $is_followed;
 
         return response()->json([
           'status' => 1,
