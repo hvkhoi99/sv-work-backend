@@ -25,12 +25,12 @@ class InstalledVersions
 private static $installed = array (
   'root' => 
   array (
-    'pretty_version' => '1.0.0+no-version-set',
-    'version' => '1.0.0.0',
+    'pretty_version' => 'dev-main',
+    'version' => 'dev-main',
     'aliases' => 
     array (
     ),
-    'reference' => NULL,
+    'reference' => '8aa5d1fc3954030cc0740de9a11eb0fbb9618969',
     'name' => 'laravel/laravel',
   ),
   'versions' => 
@@ -52,6 +52,24 @@ private static $installed = array (
       array (
       ),
       'reference' => 'ca57d18f028f84f777b2168cd1911b0dee2343ae',
+    ),
+    'cloudinary-labs/cloudinary-laravel' => 
+    array (
+      'pretty_version' => '1.0.4',
+      'version' => '1.0.4.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '7543449243848eb936e4c492b82ec64512e67da0',
+    ),
+    'cloudinary/cloudinary_php' => 
+    array (
+      'pretty_version' => '2.6.0',
+      'version' => '2.6.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '9fd5228908b75b3f523c754aa1459f5b4f8b3484',
     ),
     'cordoval/hamcrest-php' => 
     array (
@@ -459,12 +477,12 @@ private static $installed = array (
     ),
     'laravel/laravel' => 
     array (
-      'pretty_version' => '1.0.0+no-version-set',
-      'version' => '1.0.0.0',
+      'pretty_version' => 'dev-main',
+      'version' => 'dev-main',
       'aliases' => 
       array (
       ),
-      'reference' => NULL,
+      'reference' => '8aa5d1fc3954030cc0740de9a11eb0fbb9618969',
     ),
     'laravel/passport' => 
     array (
@@ -1022,6 +1040,15 @@ private static $installed = array (
       ),
       'reference' => '99732be0ddb3361e16ad77b68ba41efc8e979019',
     ),
+    'shrikeh/teapot' => 
+    array (
+      'pretty_version' => 'v2.3.1',
+      'version' => '2.3.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '2fea5720963f22eedb920ee65b9d643bfa3e8daf',
+    ),
     'swiftmailer/swiftmailer' => 
     array (
       'pretty_version' => 'v6.3.0',
@@ -1305,6 +1332,15 @@ private static $installed = array (
       array (
       ),
       'reference' => '875432adb5f5570fff21036fd22aee244636b7d1',
+    ),
+    'teapot/status-code' => 
+    array (
+      'pretty_version' => 'v1.1.2',
+      'version' => '1.1.2.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '7aaba4364645ebb9d3a36267c9b3a32206d3042b',
     ),
     'theseer/tokenizer' => 
     array (

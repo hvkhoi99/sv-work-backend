@@ -94,6 +94,8 @@ Route::group([
       Route::post('store', [StudentProfileController::class, 'store']);
       Route::put('{id}', [StudentProfileController::class, 'update']);
       Route::post('job', [StudentProfileController::class, 'openJob']);
+      Route::post('avatar/change', [StudentProfileController::class, 'changeAvatar']);
+
     });
 
     // Student Experiences
@@ -295,6 +297,7 @@ Route::group([
 
 // Test
 Route::get('test', [TestController::class, 'test']);
+Route::post('upload', [TestController::class, 'upload']);
 
 // Home
 Route::get('getTopRecruiters', [HomeController::class, 'getTopRecruiters']);
