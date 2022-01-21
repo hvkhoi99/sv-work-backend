@@ -94,7 +94,7 @@ Route::group([
       Route::post('store', [StudentProfileController::class, 'store']);
       Route::put('{id}', [StudentProfileController::class, 'update']);
       Route::post('job', [StudentProfileController::class, 'openJob']);
-      Route::post('avatar/change', [StudentProfileController::class, 'changeAvatar']);
+      Route::put('avatar/change', [StudentProfileController::class, 'changeAvatar']);
 
     });
 
