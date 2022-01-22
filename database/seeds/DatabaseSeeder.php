@@ -13,10 +13,10 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(RoleTableSeeder::class);
         $this->call(UserTableSeeder::class);
-        $this->call(HashtagTableSeeder::class);
-        $this->call(RecruitmentTableSeeder::class);
-        $this->call(StudentProfileTableSeeder::class);
-        $this->call(RecruiterProfileTableSeeder::class);
-        $this->call(ApplicationTableSeeder::class);
+        // $this->call(HashtagTableSeeder::class);
+        // $this->call(RecruitmentTableSeeder::class);
+        // $this->call(StudentProfileTableSeeder::class);
+        // $this->call(RecruiterProfileTableSeeder::class);
+        // $this->call(ApplicationTableSeeder::class);
     }
 }
