@@ -162,11 +162,11 @@ class StudentDashboardController extends Controller
         ])->orderBy('updated_at', 'desc')->get();
 
         foreach ($applications as $application) {
-          $saved_job = Recruitment::where([
-            ['user_id', $application->recruitment_id]
-          ])->first();
+          $saved_job = Recruitment::whereId($application->recruitment_id)->first();
 
-          $company_info = RecruiterProfile::whereId($saved_job->user_id)->first();
+          $company_info = RecruiterProfile::where([
+            ['user_id', $saved_job->user_id]
+          ])->first();
 
           $saved_job = collect($saved_job)->only(
             [
