@@ -81,7 +81,7 @@ class RecruiterProfileController extends Controller
                 $new_r_profile = RecruiterProfile::create([
                     'contact_email' => $request['contact_email'],
                     'company_name' => $request['company_name'],
-                    'logo_image_link' => $request['logo_image_link'],
+                    'logo_image_link' => "https://res.cloudinary.com/dakhi21gx/image/upload/v1642846413/user-default-image.png",
                     // 'description_image_link' => $request['description_image_link'],
                     'description' => $request['description'],
                     'phone_number' => $request['phone_number'],
@@ -157,7 +157,6 @@ class RecruiterProfileController extends Controller
      */
     public function edit($id)
     {
-
     }
 
     /**
@@ -177,7 +176,7 @@ class RecruiterProfileController extends Controller
 
             if (isset($r_profile)) {
                 $verify = $request["verify"];
-                
+
                 if ($verify) {
                     return response()->json([
                         'status' => 0,
@@ -195,7 +194,6 @@ class RecruiterProfileController extends Controller
                         'data' => $user
                     ], 200);
                 }
-                
             } else {
                 return response()->json([
                     'status' => 0,
@@ -223,7 +221,8 @@ class RecruiterProfileController extends Controller
         //
     }
 
-    public function updateDescription(Request $request, $id) {
+    public function updateDescription(Request $request, $id)
+    {
         $user = Auth::user();
         if (isset($user)) {
             $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
@@ -257,4 +256,3 @@ class RecruiterProfileController extends Controller
         }
     }
 }
-
