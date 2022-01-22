@@ -34,7 +34,9 @@ class StudentDashboardController extends Controller
         foreach ($applications as $application) {
           $applied_job = Recruitment::whereId($application->recruitment_id)->first();
 
-          $company_info = RecruiterProfile::whereId($applied_job->user_id)->first();
+          $company_info = RecruiterProfile::where([
+            ['user_id', $applied_job->user_id]
+          ])->first();
 
           $applied_job = collect($applied_job)->only(
             [
@@ -160,7 +162,9 @@ class StudentDashboardController extends Controller
         ])->orderBy('updated_at', 'desc')->get();
 
         foreach ($applications as $application) {
-          $saved_job = Recruitment::whereId($application->recruitment_id)->first();
+          $saved_job = Recruitment::where([
+            ['user_id', $application->recruitment_id]
+          ])->first();
 
           $company_info = RecruiterProfile::whereId($saved_job->user_id)->first();
 
@@ -233,7 +237,9 @@ class StudentDashboardController extends Controller
         foreach ($applications as $application) {
           $invited_job = Recruitment::whereId($application->recruitment_id)->first();
 
-          $company_info = RecruiterProfile::whereId($invited_job->user_id)->first();
+          $company_info = RecruiterProfile::where([
+            ['user_id', $invited_job->user_id]
+          ])->first();
 
           $invited_job = collect($invited_job)->only(
             [
