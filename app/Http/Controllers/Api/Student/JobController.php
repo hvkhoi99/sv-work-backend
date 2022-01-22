@@ -24,7 +24,11 @@ class JobController extends Controller
           ['recruitment_id', $recruitment->id],
           ['user_id', $user->id]
         ])->first();
-        $company_info = RecruiterProfile::whereId($recruitment->user_id)->first();
+        
+        $company_info = RecruiterProfile::where([
+          ['user_id', $recruitment->user_id]
+          ])->first();
+
         $recruitment["application"] = $application;
 
         if (isset($company_info)) {
