@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Application;
 use App\Models\Follow;
 use App\Models\Hashtag;
+use App\Models\JobTags;
 use App\Models\RecruiterProfile;
 use App\Models\Recruitment;
 use App\Models\RecruitmentTag;
@@ -48,6 +49,9 @@ class StudentDashboardController extends Controller
           $applied_job["status"] = $application->state;
           $applied_job["company_info"] = collect($company_info)
             ->only(['id', 'logo_image_link', 'company_name', 'verify']);
+
+          $hashtags = JobTags::where('recruitment_id', $application->recruitment_id)->first()->hashtags;
+          $applied_job['hashtags'] = json_decode($hashtags);
 
           array_push($applied_jobs, $applied_job);
         }
@@ -179,6 +183,9 @@ class StudentDashboardController extends Controller
           $saved_job["company_info"] = collect($company_info)
             ->only(['id', 'logo_image_link', 'company_name', 'verify']);
 
+          $hashtags = JobTags::where('recruitment_id', $application->recruitment_id)->first()->hashtags;
+          $saved_job['hashtags'] = json_decode($hashtags);
+
           array_push($saved_jobs, $saved_job);
         }
 
@@ -251,6 +258,9 @@ class StudentDashboardController extends Controller
           $invited_job["status"] = $application->state;
           $invited_job["company_info"] = collect($company_info)
             ->only(['id', 'logo_image_link', 'company_name', 'verify']);
+
+          $hashtags = JobTags::where('recruitment_id', $application->recruitment_id)->first()->hashtags;
+          $invited_job['hashtags'] = json_decode($hashtags);
 
           array_push($invited_jobs, $invited_job);
         }
