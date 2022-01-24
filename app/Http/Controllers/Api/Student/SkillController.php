@@ -22,12 +22,13 @@ class SkillController extends Controller
     if (isset($user)) {
 
       $skills = Skill::where('user_id', $user->id)->first();
+
       if (isset($skills)) {
         // $array_skill = explode(',', $skills->name);
         return response()->json([
           'status' => 1,
           'code' => 200,
-          'data' => $skills
+          'data' => json_decode($skills)
         ], 200);
       } else {
         return response()->json([

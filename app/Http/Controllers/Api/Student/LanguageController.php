@@ -76,7 +76,7 @@ class LanguageController extends Controller
           'status' => 1,
           'code' => 200,
           'message' => 'Your language already exists.',
-          'data' => $languages
+          'data' => json_decode($languages)
         ], 200);
       } else {
 
