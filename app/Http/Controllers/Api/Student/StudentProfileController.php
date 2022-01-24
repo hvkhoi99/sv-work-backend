@@ -84,7 +84,7 @@ class StudentProfileController extends Controller
           'email' => $request['email'],
           'first_name' => $request['first_name'],
           'last_name' => $request['last_name'],
-          'avatar_link' => "https://res.cloudinary.com/dakhi21gx/image/upload/v1643020568/default-avatar.jpg",
+          'avatar_link' => "https://res.cloudinary.com/dakhi21gx/image/upload/v1643021161/default-avatar.png",
           'date_of_birth' => $request['date_of_birth'],
           'phone_number' => $request['phone_number'],
           'nationality' => $request['nationality'],
