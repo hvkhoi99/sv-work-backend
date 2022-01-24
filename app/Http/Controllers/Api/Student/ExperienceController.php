@@ -19,8 +19,8 @@ class ExperienceController extends Controller
         $user = $request->user();
         
         if (isset($user)) {
-
-            $experiences = Experience::where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(5);
+            $_limit = $request['_limit'];
+            $experiences = Experience::where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate($_limit);
 
             if (isset($experiences)) {
                 return response()->json([
