@@ -24,7 +24,7 @@ class ApiLanguageRequest extends FormRequest
     public function rules()
     {
         return [
-            'locale' => 'required|max:255',
+            'locales' => 'required',
             // 'level' => 'required|min:5|max:255',
         ];
     }
