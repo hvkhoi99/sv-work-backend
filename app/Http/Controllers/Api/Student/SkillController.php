@@ -21,7 +21,7 @@ class SkillController extends Controller
 
     if (isset($user)) {
 
-      $skills = Skill::where('user_id', $user->id)->first();
+      $skills = Skill::where('user_id', $user->id)->first()->skills;
 
       if (isset($skills)) {
         // $array_skill = explode(',', $skills->name);

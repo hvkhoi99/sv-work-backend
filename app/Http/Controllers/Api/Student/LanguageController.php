@@ -21,7 +21,7 @@ class LanguageController extends Controller
 
     if (isset($user)) {
 
-      $languages = Language::where('user_id', $user->id)->first();
+      $languages = Language::where('user_id', $user->id)->first()->locales;
 
       if (isset($languages)) {
         // $array_language = explode(',', $languages->locale);
