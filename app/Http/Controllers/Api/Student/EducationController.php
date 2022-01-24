@@ -19,8 +19,10 @@ class EducationController extends Controller
         $user = $request->user();
 
         if (isset($user)) {
-
-            $educations = Education::where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(5);
+            $_limit = $request['_limit'];
+            $educations = Education::where('user_id', $user->id)
+            ->orderBy('updated_at', 'desc')
+            ->paginate($_limit);
 
             if (isset($educations)) {
                 return response()->json([
