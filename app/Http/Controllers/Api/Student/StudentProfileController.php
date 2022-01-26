@@ -274,7 +274,7 @@ class StudentProfileController extends Controller
         return response()->json([
           'status' => 1,
           'code' => 200,
-          'message' => 'Your overview has been created.',
+          'message' => 'Your overview has been updated.',
           'data' => $s_profile
         ], 200);
       } else {
