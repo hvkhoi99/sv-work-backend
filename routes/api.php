@@ -93,6 +93,7 @@ Route::group([
       Route::get('index', [StudentProfileController::class, 'index']);
       Route::post('store', [StudentProfileController::class, 'store']);
       Route::put('{id}', [StudentProfileController::class, 'update']);
+      Route::put('over-view/{id}', [StudentProfileController::class, 'updateStudentOverview']);
       Route::post('job', [StudentProfileController::class, 'openJob']);
       Route::post('avatar/change', [StudentProfileController::class, 'changeAvatar']);
     });

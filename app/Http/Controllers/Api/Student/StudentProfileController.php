@@ -19,7 +19,7 @@ class StudentProfileController extends Controller
    */
   public function index(Request $request)
   {
-    $user = $request->user();
+    $user = Auth::user();
     if (isset($user)) {
       $s_profile = StudentProfile::where('user_id', $user->id)->first();
       if (isset($s_profile)) {
@@ -63,7 +63,7 @@ class StudentProfileController extends Controller
    */
   public function store(ApiStudentProfileRequest $request)
   {
-    $user = $request->user();
+    $user = Auth::user();
     if (isset($user)) {
       $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
       $user["r_profile"] = isset($r_profile) ? $r_profile : null;
@@ -244,6 +244,38 @@ class StudentProfileController extends Controller
           'code' => 200,
           'mesage' => 'Your student profile (avatar) was successfully updated.',
           'data' => $user
+        ], 200);
+      } else {
+        return response()->json([
+          'status' => 0,
+          'code' => 404,
+          'message' => 'Your student profile has not been created.'
+        ], 404);
+      }
+    } else {
+      return response()->json([
+        'status' => 0,
+        'code' => 401,
+        'message' => 'UNAUTHORIZED'
+      ], 401);
+    }
+  }
+
+  public function updateStudentOverview(Request $request, $id) {
+    $user = Auth::user();
+    if (isset($user)) {
+      $s_profile = StudentProfile::where('user_id', $user->id)->first();
+
+      if (isset($s_profile)) {
+        $s_profile->update([
+          'over_view' => $request['over_view'],
+        ]);
+
+        return response()->json([
+          'status' => 1,
+          'code' => 200,
+          'message' => 'Your overview has been created.',
+          'data' => $s_profile
         ], 200);
       } else {
         return response()->json([
