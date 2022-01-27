@@ -171,13 +171,13 @@ class SkillController extends Controller
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
-  public function destroy(Request $request, $id)
+  public function destroy($id)
   {
     $user = Auth::user();
 
     if (isset($user)) {
 
-      $skills = Skill::whereId($id)->where('user_id', $user->id)->first();
+      $skills = Skill::where('user_id', $user->id)->first();
 
       if (isset($skills)) {
         $skills->delete();
