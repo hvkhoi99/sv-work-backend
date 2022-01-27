@@ -152,6 +152,8 @@ class SkillController extends Controller
           'user_id' => $user->id
         ]);
 
+        $skills->skills = $request['skills'];
+
         return response()->json([
           'status' => 1,
           'code' => 200,
