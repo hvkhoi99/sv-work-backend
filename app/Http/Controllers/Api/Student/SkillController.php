@@ -35,10 +35,13 @@ class SkillController extends Controller
 
       } else {
         return response()->json([
-          'status' => 0,
+          'status' => 1,
           'code' => 404,
+          'data' => (object) [
+            'skills' => [],
+          ],
           'message' => 'Skills list does not exist.'
-        ], 404);
+        ], 200);
       }
     } else {
       return response()->json([
