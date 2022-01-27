@@ -129,7 +129,7 @@ class SkillController extends Controller
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
-  public function update(ApiSkillRequest $request)
+  public function update(ApiSkillRequest $request, $id)
   {
     $user = Auth::user();
 
