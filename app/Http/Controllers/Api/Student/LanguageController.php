@@ -21,14 +21,16 @@ class LanguageController extends Controller
 
     if (isset($user)) {
 
-      $languages = Language::where('user_id', $user->id)->first()->locales;
+      $languages = Language::where('user_id', $user->id)->first();
 
       if (isset($languages)) {
         // $array_language = explode(',', $languages->locale);
+        $languages->locales = json_decode($languages->locales);
+
         return response()->json([
           'status' => 1,
           'code' => 200,
-          'data' => json_decode($languages)
+          'data' => $languages
         ], 200);
       } else {
         return response()->json([
@@ -85,6 +87,8 @@ class LanguageController extends Controller
           'user_id' => $user->id
         ]);
 
+        $new_language->locales = $request['locales'];
+
         return response()->json([
           'status' => 1,
           'code' => 200,
@@ -135,7 +139,7 @@ class LanguageController extends Controller
 
     if (isset($user)) {
 
-      $languages = Language::whereId($id)->where('user_id', $user->id)->first();
+      $languages = Language::where('user_id', $user->id)->first();
 
       if (isset($languages)) {
 
@@ -143,6 +147,8 @@ class LanguageController extends Controller
           'locales' => json_encode($request['locales']),
           'user_id' => $user->id
         ]);
+
+        $languages->locales = $request['locales'];
 
         return response()->json([
           'status' => 1,
@@ -172,13 +178,13 @@ class LanguageController extends Controller
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
-  public function destroy(Request $request, $id)
+  public function destroy($id)
   {
-    $user = $request->user();
+    $user = Auth::user();
 
     if (isset($user)) {
 
-      $languages = Language::whereId($id)->where('user_id', $user->id)->first();
+      $languages = Language::where('user_id', $user->id)->first();
 
       if (isset($languages)) {
 

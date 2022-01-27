@@ -191,6 +191,7 @@ class SkillController extends Controller
 
       if (isset($skills)) {
         $skills->delete();
+        
         return response()->json([
           'status' => 1,
           'code' => 200,
