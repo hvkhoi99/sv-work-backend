@@ -36,8 +36,11 @@ class LanguageController extends Controller
         return response()->json([
           'status' => 0,
           'code' => 404,
+          'data' => (object) [
+            'locales' => [],
+          ],
           'message' => 'Languages list does not exist.'
-        ], 404);
+        ], 200);
       }
     } else {
       return response()->json([
