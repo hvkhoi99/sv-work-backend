@@ -25,7 +25,7 @@ class SkillController extends Controller
 
       if (isset($skills)) {
         // $array_skill = explode(',', $skills->name);
-        $skills->skills = json_decode($skills);
+        $skills->skills = json_decode($skills->skills);
 
         return response()->json([
           'status' => 1,
