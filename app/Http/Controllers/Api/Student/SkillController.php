@@ -129,13 +129,13 @@ class SkillController extends Controller
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
-  public function update(ApiSkillRequest $request, $id)
+  public function update(ApiSkillRequest $request)
   {
     $user = Auth::user();
 
     if (isset($user)) {
 
-      $skills = Skill::whereId($id)->where('user_id', $user->id)->first();
+      $skills = Skill::where('user_id', $user->id)->first();
 
       if (isset($skills)) {
 
