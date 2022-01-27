@@ -34,7 +34,7 @@ class LanguageController extends Controller
         ], 200);
       } else {
         return response()->json([
-          'status' => 0,
+          'status' => 1,
           'code' => 404,
           'data' => (object) [
             'locales' => [],
