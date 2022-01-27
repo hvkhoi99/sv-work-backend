@@ -21,20 +21,23 @@ class SkillController extends Controller
 
     if (isset($user)) {
 
-      $skills = Skill::where('user_id', $user->id)->first()->skills;
+      $skills = Skill::where('user_id', $user->id)->first();
 
       if (isset($skills)) {
         // $array_skill = explode(',', $skills->name);
+        $skills->skills = json_decode($skills);
+
         return response()->json([
           'status' => 1,
           'code' => 200,
-          'data' => json_decode($skills)
+          'data' => $skills
         ], 200);
+
       } else {
         return response()->json([
           'status' => 0,
           'code' => 404,
-          'message' => 'Skill list does not exist.'
+          'message' => 'Skills list does not exist.'
         ], 404);
       }
     } else {
