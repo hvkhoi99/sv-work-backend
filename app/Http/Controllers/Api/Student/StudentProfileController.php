@@ -225,14 +225,9 @@ class StudentProfileController extends Controller
     $user = Auth::user();
 
     if (isset($user)) {
-      $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
-      $user["r_profile"] = isset($r_profile) ? $r_profile : null;
-
       $s_profile = StudentProfile::where('user_id', $user->id)->first();
 
       if (isset($s_profile)) {
-        $user["s_profile"] = $s_profile;
-
         $response = cloudinary()->upload($request->file('file')->getRealPath())->getSecurePath();
 
         $s_profile->update([
@@ -243,7 +238,7 @@ class StudentProfileController extends Controller
           'status' => 1,
           'code' => 200,
           'mesage' => 'Your student profile (avatar) was successfully updated.',
-          'data' => $user
+          'data' => $s_profile
         ], 200);
       } else {
         return response()->json([
