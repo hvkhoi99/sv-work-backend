@@ -177,7 +177,7 @@ class CandidateController extends Controller
       $recruitments = Recruitment::where([
         ['is_closed', false],
         ['user_id', $user->id]
-      ])->orderBy('created_at', 'desc')->get(['id', 'title']);
+      ])->selectRaw('id as value, title as label')->orderBy('created_at', 'desc')->get(['value', 'label']);
 
       if (isset($recruitments)) {
 
