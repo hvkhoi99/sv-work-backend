@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Auth;
 
 class CandidateController extends Controller
 {
-  public function candidateInfo(Request $request, $id)
+  public function candidateInfo($id)
   {
     $user = Auth::user();
 
@@ -28,13 +28,13 @@ class CandidateController extends Controller
         $s_profile = StudentProfile::whereId($id)->first();
 
         if (isset($s_profile)) {
-          $skill = Skill::where('user_id', $s_profile->user_id)->first();
-          $language = Language::where('user_id', $s_profile->user_id)->first();
+          $skills = Skill::where('user_id', $s_profile->user_id)->first();
+          $languages = Language::where('user_id', $s_profile->user_id)->first();
           $experiences = Experience::where('user_id', $s_profile->user_id)->orderBy('created_at', 'desc')->get();
           $educations = Education::where('user_id', $s_profile->user_id)->orderBy('created_at', 'desc')->get();
           $certificates = Certificate::where('user_id', $s_profile->user_id)->orderBy('created_at', 'desc')->get();
-          $s_profile["skills"] = isset($skill) ?  $skill->name : null;
-          $s_profile["languages"] = isset($language) ? $language->locale : null;
+          $s_profile["skills"] = isset($skills) ? json_decode($skills->skills) : null;
+          $s_profile["languages"] = isset($languages) ? json_decode($languages->locales) : null;
           $s_profile["experiences"] = $experiences;
           $s_profile["educations"] = $educations;
           $s_profile["certificates"] = $certificates;
