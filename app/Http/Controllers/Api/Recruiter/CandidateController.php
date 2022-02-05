@@ -179,14 +179,14 @@ class CandidateController extends Controller
       ])->orderBy('created_at', 'desc')->get();
 
       if (isset($recruitments)) {
-        // $result = $recruitments->filter(function ($recruitment) {
-        //   return $recruitment->only(['id', 'title']);
-        // });
+        $result = $recruitments->filter(function ($recruitment) {
+          return $recruitment->only(['id', 'title']);
+        });
 
         return response()->json([
           'status' => 1,
           'code' => 200,
-          'data' => $recruitments
+          'data' => $result
         ], 200);
       } else {
         return response()->json([
