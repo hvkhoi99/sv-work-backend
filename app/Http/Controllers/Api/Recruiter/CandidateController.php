@@ -41,8 +41,10 @@ class CandidateController extends Controller
           foreach ($applications as $application) {
             $recruitment = Recruitment::where([
               ['id', $application->recruitment_id],
-              ['is_closed', false]
             ])->first();
+
+            $recruitment = collect($recruitment)
+            ->only(['id', 'title', 'is_closed']);
 
             array_push($current_jobs, $recruitment);
           }
