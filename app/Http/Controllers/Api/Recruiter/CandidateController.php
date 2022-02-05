@@ -41,7 +41,7 @@ class CandidateController extends Controller
             ])->first();
 
             $recruitment = collect($recruitment)
-            ->only(['id', 'title', 'is_closed']);
+              ->only(['id', 'title', 'is_closed']);
 
             array_push($applied_jobs, $recruitment);
           }
@@ -60,7 +60,7 @@ class CandidateController extends Controller
             ])->first();
 
             $recruitment = collect($recruitment)
-            ->only(['id', 'title', 'is_closed']);
+              ->only(['id', 'title', 'is_closed']);
 
             array_push($invited_jobs, $recruitment);
           }
@@ -167,7 +167,8 @@ class CandidateController extends Controller
     }
   }
 
-  public function jobsInvite() {
+  public function jobsInvite()
+  {
     $user = Auth::user();
 
     $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
@@ -176,17 +177,14 @@ class CandidateController extends Controller
       $recruitments = Recruitment::where([
         ['is_closed', false],
         ['user_id', $user->id]
-      ])->orderBy('created_at', 'desc')->get();
+      ])->orderBy('created_at', 'desc')->get(['id', 'title']);
 
       if (isset($recruitments)) {
-        $result = $recruitments->filter(function ($recruitment) {
-          return $recruitment->only(['id', 'title']);
-        });
 
         return response()->json([
           'status' => 1,
           'code' => 200,
-          'data' => $result
+          'data' => $recruitments
         ], 200);
       } else {
         return response()->json([
@@ -195,7 +193,6 @@ class CandidateController extends Controller
           'message' => 'Your recruitments doesn\'t exist.'
         ], 404);
       }
-
     } else {
       return response()->json([
         'status' => 0,
