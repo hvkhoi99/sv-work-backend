@@ -227,7 +227,7 @@ Route::group([
       // Candidate
       Route::prefix('candidate')->group(function () {
         Route::get('{id}', [CandidateController::class, 'candidateInfo']);
-        Route::get('jobsInvite', [CandidateController::class, 'jobsInvite']);
+        Route::get('jobsInvite/list', [CandidateController::class, 'jobsInvite']);
       });
     });
   });
@@ -291,7 +291,7 @@ Route::group([
     // Student -> Recruiter -> Candidate
     Route::prefix('candidate')->group(function () {
       Route::get('{id}', [CandidateController::class, 'candidateInfo']);
-      Route::get('jobsInvite', [CandidateController::class, 'jobsInvite']);
+      Route::get('jobsInvite/list', [CandidateController::class, 'jobsInvite']);
     });
   });
 
