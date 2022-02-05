@@ -166,4 +166,42 @@ class CandidateController extends Controller
       ], 401);
     }
   }
+
+  public function jobsInvite() {
+    $user = Auth::user();
+
+    $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
+
+    if (isset($r_profile)) {
+      $recruitments = Recruitment::where([
+        ['is_closed', false],
+        ['user_id', $user->id]
+      ])->orderBy('created_at', 'desc')->get();
+
+      if (isset($recruitments)) {
+        $result = $recruitments->filter(function ($recruitment) {
+          return $recruitment->only(['id', 'title']);
+        });
+
+        return response()->json([
+          'status' => 1,
+          'code' => 200,
+          'data' => $result
+        ], 200);
+      } else {
+        return response()->json([
+          'status' => 0,
+          'code' => 404,
+          'message' => 'Your recruitments doesn\'t exist.'
+        ], 404);
+      }
+
+    } else {
+      return response()->json([
+        'status' => 0,
+        'code' => 404,
+        'message' => 'Your recruiter profile has not been created.'
+      ], 404);
+    }
+  }
 }
