@@ -248,6 +248,7 @@ Route::group([
       Route::post('{id}', [RecruiterProfileController::class, 'edit']);
       Route::put('{id}', [RecruiterProfileController::class, 'update']);
       Route::put('{id}/updateDescription', [RecruiterProfileController::class, 'updateDescription']);
+      Route::post('avatar/change', [RecruiterProfileController::class, 'changeRecruiterAvatar']);
     });
 
     // Recruiter -> Recruitment

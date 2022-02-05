@@ -25,9 +25,30 @@ class CandidateController extends Controller
       $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
 
       if (isset($r_profile)) {
+        // $recruitments = Recruitment::where('user_id', $user->id)->get();
+
         $s_profile = StudentProfile::whereId($id)->first();
 
         if (isset($s_profile)) {
+          $applications = Application::where([
+            ['state', null],
+            ['is_applied', true],
+            ['user_id', $s_profile->user_id]
+          ])->get();
+
+          $current_jobs = [];
+
+          foreach ($applications as $application) {
+            $recruitment = Recruitment::where([
+              ['recruitment_id', $application->recruitment_id],
+              ['is_closed', false]
+            ])->first();
+
+            array_push($current_jobs, $recruitment);
+          }
+
+          $s_profile["current_jobs"] = $current_jobs;
+
           $skills = Skill::where('user_id', $s_profile->user_id)->first();
           $languages = Language::where('user_id', $s_profile->user_id)->first();
           $experiences = Experience::where('user_id', $s_profile->user_id)->orderBy('created_at', 'desc')->get();
