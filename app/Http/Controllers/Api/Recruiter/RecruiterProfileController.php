@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Recruiter;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ApiRecruiterProfileRequest;
+use App\Http\Requests\ApiStudentAvatarRequest;
 use App\Models\Follow;
 use App\Models\RecruiterProfile;
 use App\Models\StudentProfile;
@@ -245,6 +246,42 @@ class RecruiterProfileController extends Controller
           'status' => 0,
           'code' => 404,
           'message' => 'Your recruiter profile was not found or has not been created.'
+        ], 404);
+      }
+    } else {
+      return response()->json([
+        'status' => 0,
+        'code' => 401,
+        'message' => 'UNAUTHORIZED'
+      ], 401);
+    }
+  }
+
+  public function changeRecruiterAvatar(ApiStudentAvatarRequest $request)
+  {
+    $user = Auth::user();
+
+    if (isset($user)) {
+      $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
+
+      if (isset($r_profile)) {
+        $response = cloudinary()->upload($request->file('file')->getRealPath())->getSecurePath();
+
+        $r_profile->update([
+          'logo_image_link' => $response
+        ]);
+
+        return response()->json([
+          'status' => 1,
+          'code' => 200,
+          'mesage' => 'Your recruiter profile (avatar) was successfully updated.',
+          'data' => $r_profile
+        ], 200);
+      } else {
+        return response()->json([
+          'status' => 0,
+          'code' => 404,
+          'message' => 'Your recruiter profile has not been created.'
         ], 404);
       }
     } else {
