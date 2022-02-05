@@ -40,7 +40,7 @@ class CandidateController extends Controller
 
           foreach ($applications as $application) {
             $recruitment = Recruitment::where([
-              ['recruitment_id', $application->recruitment_id],
+              ['id', $application->recruitment_id],
               ['is_closed', false]
             ])->first();
 
