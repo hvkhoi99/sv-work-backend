@@ -259,9 +259,10 @@ class StudentApplicationController extends Controller
     $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
 
     if (isset($r_profile)) {
+      $recruitment = RecruiterProfile::where('user_id', $user->id)->where('is_closed', false)->first();
       $candidate_profile = StudentProfile::whereId($candidate_id)->first();
 
-      if (isset($candidate_profile)) {
+      if (isset($recruitment) && isset($candidate_profile)) {
         $application = Application::where([
           ['recruitment_id', $recruitment_id],
           ['user_id', $candidate_profile->user_id]
@@ -276,7 +277,7 @@ class StudentApplicationController extends Controller
           return response()->json([
             'status' => 1,
             'code' => 200,
-            'message' => 'Successfully '.($application->is_invited ? 'invited' : 'uninvited').' this candidate',
+            'message' => 'Successfully ' . ($application->is_invited ? 'invited' : 'uninvited') . ' this candidate',
             'data' => $data
           ], 200);
         } else {
@@ -301,7 +302,7 @@ class StudentApplicationController extends Controller
         return response()->json([
           'status' => 0,
           'code' => 404,
-          'message' => 'Candidate profile doesn\'t exist.'
+          'message' => 'Your recruitment (or closed) or Candidate profile doesn\'t exist.'
         ], 404);
       }
     } else {
