@@ -228,7 +228,7 @@ Route::group([
       Route::prefix('candidate')->group(function () {
         Route::get('{id}', [CandidateController::class, 'candidateInfo']);
         Route::get('jobsInvite/list', [CandidateController::class, 'jobsInvite']);
-        Route::post('inviteCandidate', [StudentApplicationController::class, 'inviteCandidate']);
+        Route::post('{id}/recruitment/{recruitmentId}', [StudentApplicationController::class, 'inviteCandidate']);
       });
     });
   });
@@ -293,7 +293,7 @@ Route::group([
     Route::prefix('candidate')->group(function () {
       Route::get('{id}', [CandidateController::class, 'candidateInfo']);
       Route::get('jobsInvite/list', [CandidateController::class, 'jobsInvite']);
-      Route::post('inviteCandidate', [StudentApplicationController::class, 'inviteCandidate']);
+      Route::post('{id}/recruitment/{recruitmentId}', [StudentApplicationController::class, 'inviteCandidate']);
     });
   });
 
