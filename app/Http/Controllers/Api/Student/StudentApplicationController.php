@@ -273,7 +273,7 @@ class StudentApplicationController extends Controller
 
           if ($application->state === null) {
             $data = $application->update([
-              $application->is_invited = !($application->is_invited)
+              $application->is_invited => !($application->is_invited)
             ]);
   
             return response()->json([
