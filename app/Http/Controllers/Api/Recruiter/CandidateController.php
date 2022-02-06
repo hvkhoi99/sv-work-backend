@@ -48,7 +48,7 @@ class CandidateController extends Controller
           $s_profile["applied_jobs"] = $applied_jobs;
 
           $invited_applications = Application::where([
-            ['state', null],
+            // ['state', null],
             ['is_invited', true],
             ['user_id', $s_profile->user_id]
           ])->get();
@@ -61,6 +61,7 @@ class CandidateController extends Controller
 
             $recruitment = collect($recruitment)
               ->only(['id', 'title', 'is_closed']);
+            $recruitment["application"] = $application;
 
             array_push($invited_jobs, $recruitment);
           }
