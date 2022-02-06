@@ -252,7 +252,7 @@ class StudentApplicationController extends Controller
     }
   }
 
-  public function inviteCandidate($recruitment_id, $candidate_id)
+  public function inviteCandidate($candidate_id, $recruitment_id)
   {
     $user = Auth::user();
 
