@@ -228,6 +228,7 @@ Route::group([
       Route::prefix('candidate')->group(function () {
         Route::get('{id}', [CandidateController::class, 'candidateInfo']);
         Route::get('jobsInvite/list', [CandidateController::class, 'jobsInvite']);
+        Route::post('inviteCandidate', [StudentApplicationController::class, 'inviteCandidate']);
       });
     });
   });
@@ -288,10 +289,11 @@ Route::group([
       Route::get('closed', [RecruiterEventController::class, 'closed']);
     });
 
-    // Student -> Recruiter -> Candidate
+    // Candidate
     Route::prefix('candidate')->group(function () {
       Route::get('{id}', [CandidateController::class, 'candidateInfo']);
       Route::get('jobsInvite/list', [CandidateController::class, 'jobsInvite']);
+      Route::post('inviteCandidate', [StudentApplicationController::class, 'inviteCandidate']);
     });
   });
 
