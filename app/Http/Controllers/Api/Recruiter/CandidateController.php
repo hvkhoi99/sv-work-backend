@@ -29,7 +29,7 @@ class CandidateController extends Controller
 
         if (isset($s_profile)) {
           $applied_applications = Application::where([
-            ['state', null],
+            // ['state', null],
             ['is_applied', true],
             ['user_id', $s_profile->user_id]
           ])->get();
