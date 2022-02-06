@@ -42,6 +42,7 @@ class CandidateController extends Controller
 
             $recruitment = collect($recruitment)
               ->only(['id', 'title', 'is_closed']);
+              $recruitment["application"] = $application;
 
             array_push($applied_jobs, $recruitment);
           }
