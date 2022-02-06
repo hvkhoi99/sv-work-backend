@@ -270,16 +270,26 @@ class StudentApplicationController extends Controller
 
         if (isset($application)) {
           // cap nhat application -> !invite
-          $data = $application->update([
-            $application->is_invited = !($application->is_invited)
-          ]);
 
-          return response()->json([
-            'status' => 1,
-            'code' => 200,
-            'message' => 'Successfully ' . ($application->is_invited ? 'invited' : 'uninvited') . ' this candidate',
-            'data' => $data
-          ], 200);
+          if ($application->state === null) {
+            $data = $application->update([
+              $application->is_invited = !($application->is_invited)
+            ]);
+  
+            return response()->json([
+              'status' => 1,
+              'code' => 200,
+              'message' => 'Successfully ' . ($application->is_invited ? 'invited' : 'uninvited') . ' this candidate',
+              'data' => $data
+            ], 200);
+          } else {
+            return response()->json([
+              'status' => 0,
+              'code' => 400,
+              'message' => 'This candidate did or is doing this job.'
+            ], 200);
+          }
+
         } else {
           // tao moi application -> invite = true
           $new_application = Application::create([
