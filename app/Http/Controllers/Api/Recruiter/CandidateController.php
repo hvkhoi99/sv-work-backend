@@ -32,7 +32,7 @@ class CandidateController extends Controller
             // ['state', null],
             ['is_applied', true],
             ['user_id', $s_profile->user_id]
-          ])->get();
+          ])->orderBy('created_at', 'desc')->get();
 
           $applied_jobs = [];
           foreach ($applied_applications as $application) {
@@ -52,7 +52,7 @@ class CandidateController extends Controller
             // ['state', null],
             ['is_invited', true],
             ['user_id', $s_profile->user_id]
-          ])->get();
+          ])->orderBy('created_at', 'desc')->get();
 
           $invited_jobs = [];
           foreach ($invited_applications as $application) {
