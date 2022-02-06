@@ -275,12 +275,14 @@ class StudentApplicationController extends Controller
             $application->update([
               'is_invited' => !($application->is_invited)
             ]);
-  
+            $recruitment = collect($recruitment)->only(['id', 'title', 'is_closed']);
+            $recruitment["application"] = $application;
+
             return response()->json([
               'status' => 1,
               'code' => 200,
               'message' => 'Successfully ' . ($application->is_invited ? 'invited' : 'uninvited') . ' this candidate',
-              'data' => $application
+              'data' => $recruitment
             ], 200);
           } else {
             return response()->json([
@@ -289,7 +291,6 @@ class StudentApplicationController extends Controller
               'message' => 'This candidate did or is doing this job.'
             ], 200);
           }
-
         } else {
           // tao moi application -> invite = true
           $new_application = Application::create([
@@ -300,12 +301,14 @@ class StudentApplicationController extends Controller
             'user_id' => $candidate_profile->user_id,
             'recruitment_id' => $recruitment_id
           ]);
+          $recruitment = collect($recruitment)->only(['id', 'title', 'is_closed']);
+          $recruitment["application"] = $new_application;
 
           return response()->json([
             'status' => 1,
             'code' => 200,
             'message' => 'Successfully invited this candidate',
-            'data' => $new_application
+            'data' => $recruitment
           ], 200);
         }
       } else {
