@@ -58,7 +58,7 @@ class StudentApplicationController extends Controller
           }
         } else {
           return response()->json([
-            'status' => 1,
+            'status' => 0,
             'code' => 404,
             'message' => 'The recruitment doesn\'t exist.'
           ], 404);
@@ -124,7 +124,7 @@ class StudentApplicationController extends Controller
         }
       } else {
         return response()->json([
-          'status' => 1,
+          'status' => 0,
           'code' => 404,
           'message' => 'The recruitment or your student profile doesn\'t exist.'
         ], 404);
@@ -158,7 +158,7 @@ class StudentApplicationController extends Controller
             $exist_application->update([
               'state' => true
             ]);
-  
+
             return response()->json([
               'status' => 1,
               'code' => 200,
@@ -166,26 +166,26 @@ class StudentApplicationController extends Controller
               'data' => $exist_application
             ], 200);
           } else {
-
+            return response()->json([
+              'status' => 0,
+              'code' => 404,
+              'message' => 'The application doesn\'t exist.'
+            ], 404);
           }
-
         } else {
           return response()->json([
-            'status' => 1,
+            'status' => 0,
             'code' => 404,
             'message' => 'The recruitment doesn\'t exist.'
           ], 404);
         }
-
-
       } else {
         return response()->json([
-          'status' => 1,
+          'status' => 0,
           'code' => 404,
           'message' => 'Your student profile doesn\'t exist.'
         ], 404);
       }
-
     } else {
       return response()->json([
         'status' => 0,
@@ -215,7 +215,7 @@ class StudentApplicationController extends Controller
             $exist_application->update([
               'state' => false
             ]);
-  
+
             return response()->json([
               'status' => 1,
               'code' => 200,
@@ -223,32 +223,93 @@ class StudentApplicationController extends Controller
               'data' => $exist_application
             ], 200);
           } else {
-
+            return response()->json([
+              'status' => 0,
+              'code' => 404,
+              'message' => 'The application doesn\'t exist.'
+            ], 404);
           }
-
         } else {
           return response()->json([
-            'status' => 1,
+            'status' => 0,
             'code' => 404,
             'message' => 'The recruitment doesn\'t exist.'
           ], 404);
         }
-
-
       } else {
         return response()->json([
-          'status' => 1,
+          'status' => 0,
           'code' => 404,
           'message' => 'Your student profile doesn\'t exist.'
         ], 404);
       }
-
     } else {
       return response()->json([
         'status' => 0,
         'code' => 401,
         'message' => 'UNAUTHORIZED'
       ], 401);
+    }
+  }
+
+  public function inviteCandidate($recruitment_id, $candidate_id)
+  {
+    $user = Auth::user();
+
+    $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
+
+    if (isset($r_profile)) {
+      $candidate_profile = StudentProfile::whereId($candidate_id)->first();
+
+      if (isset($candidate_profile)) {
+        $application = Application::where([
+          ['recruitment_id', $recruitment_id],
+          ['user_id', $candidate_profile->user_id]
+        ])->first();
+
+        if (isset($application)) {
+          // cap nhat application -> !invite
+          $data = $application->update([
+            $application->is_invited = !($application->is_invited)
+          ]);
+
+          return response()->json([
+            'status' => 1,
+            'code' => 200,
+            'message' => 'Successfully '.($application->is_invited ? 'invited' : 'uninvited').' this candidate',
+            'data' => $data
+          ], 200);
+        } else {
+          // tao moi application -> invite = true
+          $new_application = Application::create([
+            'state' => null,
+            'is_invited' => true,
+            'is_applied' => false,
+            'is_saved' => false,
+            'user_id' => $candidate_profile->user_id,
+            'recruitment_id' => $recruitment_id
+          ]);
+
+          return response()->json([
+            'status' => 1,
+            'code' => 200,
+            'message' => 'Successfully invited this candidate',
+            'data' => $new_application
+          ], 200);
+        }
+      } else {
+        return response()->json([
+          'status' => 0,
+          'code' => 404,
+          'message' => 'Candidate profile doesn\'t exist.'
+        ], 404);
+      }
+    } else {
+      return response()->json([
+        'status' => 0,
+        'code' => 404,
+        'message' => 'Your recruiter profile doesn\'t exist.'
+      ], 404);
     }
   }
 }
