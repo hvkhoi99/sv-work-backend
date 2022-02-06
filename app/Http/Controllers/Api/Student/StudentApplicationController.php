@@ -259,7 +259,7 @@ class StudentApplicationController extends Controller
     $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
 
     if (isset($r_profile)) {
-      $recruitment = RecruiterProfile::where('user_id', $user->id)->where('is_closed', false)->first();
+      $recruitment = Recruitment::where('user_id', $user->id)->where('is_closed', false)->first();
       $candidate_profile = StudentProfile::whereId($candidate_id)->first();
 
       if (isset($recruitment) && isset($candidate_profile)) {
