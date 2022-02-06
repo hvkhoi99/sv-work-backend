@@ -272,7 +272,7 @@ class StudentApplicationController extends Controller
           // cap nhat application -> !invite
 
           if ($application->state === null) {
-            $data = $application->update([
+            $application->update([
               'is_invited' => !($application->is_invited)
             ]);
   
@@ -280,7 +280,7 @@ class StudentApplicationController extends Controller
               'status' => 1,
               'code' => 200,
               'message' => 'Successfully ' . ($application->is_invited ? 'invited' : 'uninvited') . ' this candidate',
-              'data' => $data
+              'data' => $application
             ], 200);
           } else {
             return response()->json([
