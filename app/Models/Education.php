@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Education extends Model
 {
@@ -16,5 +17,14 @@ class Education extends Model
   public function user()
   {
     return $this->belongsTo('App\User');
+  }
+
+  public function scopeEducation($query, $request)
+  {
+    if ($request->has('school')) {
+      $query->where(DB::raw('lower(school)'), 'like', '%' . strtolower($request->school) . '%');
+    }
+
+    return $query;
   }
 }
