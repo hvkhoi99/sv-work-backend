@@ -89,7 +89,7 @@ class StudentProfile extends Model
   public function filterName($query, $value)
   {
     return $query
-      ->where('last_name', 'LIKE', '%' . $value . '%');
+      ->where('first_name', 'LIKE', '%' . $value . '%');
   }
 
   public function filterCareer($query, $value)
@@ -105,5 +105,15 @@ class StudentProfile extends Model
   public function filterGender($query, $value)
   {
     return $query->where('gender', $value);
+  }
+
+  public function filterLanguage($query, $value)
+  {
+    return $query->where('locales', 'LIKE', '%' . $value . '%');
+  }
+
+  public function filterEducation($query, $value)
+  {
+    return $query->where('school', 'LIKE', '%' . $value . '%');
   }
 }

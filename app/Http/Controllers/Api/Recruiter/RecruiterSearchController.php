@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\Api\Recruiter;
 
 use App\Http\Controllers\Controller;
-use App\Models\Education;
-use App\Models\Language;
 use App\Models\StudentProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -30,11 +28,10 @@ class RecruiterSearchController extends Controller
     //   return $candidate[""]
     // })
 
-    $candidates = StudentProfile::filter($request);
-    // $languages = Language::filter($request)->get();
-    // $educations = Education::filter($request)->get();
-    $candidates->join('languages', $candidates->user_id, '=', 'languages.user_id')
-      ->join('education', $candidates->user_id, '=', 'education.user_id')
+    $results =
+      // DB::table('student_profiles')
+      StudentProfile::join('languages', 'student_profiles.user_id', '=', 'languages.user_id')
+      ->join('education', 'student_profiles.user_id', '=', 'education.user_id')
       ->select(
         'student_profiles.id',
         'student_profiles.avatar_link',
@@ -47,12 +44,12 @@ class RecruiterSearchController extends Controller
         // ['languages.locales' => json_decode('languages.locales')],
         'languages.locales',
         'education.school',
-      )->get();
+      )->filter($request)->get();
 
     return response()->json([
       'status' => 1,
       'code' => 200,
-      'data' => $candidates
+      'data' => $results
     ], 200);
   }
 }
