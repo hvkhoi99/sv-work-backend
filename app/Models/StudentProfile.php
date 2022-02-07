@@ -56,7 +56,7 @@ class StudentProfile extends Model
   }
 
   // Search
-  public function filterName($query, $request)
+  public function scopeName($query, $request)
   {
     if ($request->has('name')) {
       $query->where('first_name', 'LIKE', '%' . $request->name . '%')
@@ -66,7 +66,7 @@ class StudentProfile extends Model
     return $query;
   }
 
-  public function filterCareer($query, $request)
+  public function scopeCareer($query, $request)
   {
     if ($request->has('career')) {
       $query->where('job_title', 'LIKE', '%' . $request->career . '%');
@@ -75,7 +75,7 @@ class StudentProfile extends Model
     return $query;
   }
 
-  public function filterLocation($query, $request)
+  public function scopeLocation($query, $request)
   {
     if ($request->has('location')) {
       $query->where('address', 'LIKE', '%' . $request->location . '%');
@@ -84,7 +84,7 @@ class StudentProfile extends Model
     return $query;
   }
 
-  public function filterGender($query, $request)
+  public function scopeGender($query, $request)
   {
     if ($request->has('gender')) {
       $query->where('gender', $request->gender);
@@ -93,12 +93,12 @@ class StudentProfile extends Model
     return $query;
   }
 
-  // public function filterLanguage($query, $value)
+  // public function scopeLanguage($query, $value)
   // {
   //   return $query->where('locales', 'LIKE', '%' . $value . '%');
   // }
 
-  // public function filterEducation($query, $value)
+  // public function scopeEducation($query, $value)
   // {
   //   return $query->where('school', 'LIKE', '%' . $value . '%');
   // }
