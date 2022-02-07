@@ -25,11 +25,13 @@ class RecruiterSearchController extends Controller
     }, $languages);
 
     if (count($candidates) > 0 && count($languages) > 0) {
-      $candidates = array_filter($candidates, function ($candidate) {
-        if (in_array($candidate['user_id'], $languages)) {
-          return $candidate;
-        }
-      });
+      $candidates = array_filter(
+        $candidates,
+        function ($candidate) use ($languages) {
+          return in_array($candidate['user_id'], $languages);
+        },
+        ARRAY_FILTER_USE_KEY
+      );
     }
 
     // $results =
