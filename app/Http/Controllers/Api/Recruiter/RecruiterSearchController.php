@@ -55,7 +55,7 @@ class RecruiterSearchController extends Controller
     return response()->json([
       'status' => 1,
       'code' => 200,
-      'data' => $languages,
+      'data' => $candidates,
       // 'type' => gettype($languages)
     ], 200);
   }
