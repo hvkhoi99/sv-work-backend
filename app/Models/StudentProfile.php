@@ -64,9 +64,9 @@ trait Filterable
 class StudentProfile extends Model
 {
   use Filterable;
-  // protected $filterable = [
-  //   'last_name',
-  // ];
+  protected $filterable = [
+    'last_name',
+  ];
   protected $guarded = [];
 
   protected $casts = [
