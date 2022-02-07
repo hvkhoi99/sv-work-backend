@@ -65,8 +65,8 @@ class StudentProfile extends Model
   // Search
   public function scopeName($query, $request)
   {
-    if ($request->has('name')) {
-      $query->where('last_name', 'LIKE', '%' . $request->name . '%');
+    if ($request->has('last_name')) {
+      $query->where('last_name', 'LIKE', '%' . $request->last_name . '%');
         // ->orWhere('last_name', 'LIKE', '%' . $request->name . '%');
     }
 
