@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api\Recruiter;
 
 use App\Http\Controllers\Controller;
 use App\Models\StudentProfile;
-// use App\Models\StudentProfile\Filterable;
 use Illuminate\Http\Request;
+use App\Traits\Filterable;
 
 class RecruiterSearchController extends Controller
 {
