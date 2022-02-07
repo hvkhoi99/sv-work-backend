@@ -30,11 +30,11 @@ class RecruiterSearchController extends Controller
     //   return $candidate[""]
     // })
 
-    $candidates = StudentProfile::filter($request)->get();
-    $languages = Language::filter($request)->get();
-    $educations = Education::filter($request)->get();
-    $candidates->join($languages, $candidates->user_id, '=', $languages->user_id)
-      ->join($educations, $candidates->user_id, '=', $educations->user_id)
+    $candidates = StudentProfile::filter($request);
+    // $languages = Language::filter($request)->get();
+    // $educations = Education::filter($request)->get();
+    $candidates->join('languages', $candidates->user_id, '=', 'languages.user_id')
+      ->join('education', $candidates->user_id, '=', 'education.user_id')
       ->select(
         'student_profiles.id',
         'student_profiles.avatar_link',
