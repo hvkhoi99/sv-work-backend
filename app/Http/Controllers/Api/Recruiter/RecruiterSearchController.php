@@ -42,8 +42,7 @@ class RecruiterSearchController extends Controller
         'student_profiles.created_at',
         'languages.locales',
         'education.school',
-      )
-      ->name($request)->get();
+      )->get();
 
     return response()->json([
       'status' => 1,
