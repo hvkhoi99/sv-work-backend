@@ -40,9 +40,30 @@ use Illuminate\Support\Str;
 //   }
 // }
 
+trait Filterable
+{
+  public function scopeFilter($query, $request)
+    {
+        $params = $request->all();
+        foreach ($params as $field => $value) {
+            if ($field !==  '_token') {
+                $method = 'filter' . Str::studly($field);
+
+                if (!empty($value)) {
+                    if (method_exists($this, $method)) {
+                        $this->{$method}($query, $value);
+                    }
+                }
+            }
+        }
+
+        return $query;
+    }
+}
+
 class StudentProfile extends Model
 {
-  // use Filterable;
+  use Filterable;
   // protected $filterable = [
   //   'last_name',
   // ];
@@ -63,15 +84,15 @@ class StudentProfile extends Model
   }
 
   // Search
-  public function scopeName($query, $request)
-  {
-    if ($request->has('last_name')) {
-      $query->where('last_name', 'LIKE', '%' . $request->last_name . '%');
-        // ->orWhere('last_name', 'LIKE', '%' . $request->name . '%');
-    }
+  // public function scopeName($query, $request)
+  // {
+  //   if ($request->has('last_name')) {
+  //     $query->where('last_name', 'LIKE', '%' . $request->last_name . '%');
+  //       // ->orWhere('last_name', 'LIKE', '%' . $request->name . '%');
+  //   }
 
-    return $query;
-  }
+  //   return $query;
+  // }
 
   // public function scopeCareer($query, $request)
   // {
@@ -99,10 +120,10 @@ class StudentProfile extends Model
 
   //   return $query;
   // }
-  // public function filterName($query, $value)
-  // {
-  //   return $query->where('last_name', 'LIKE', '%' . $value . '%');
-  // }
+  public function filterName($query, $value)
+  {
+    return $query->where('last_name', 'LIKE', '%' . $value . '%');
+  }
 
   // public function filterCareer($query, $value)
   // {

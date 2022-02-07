@@ -20,8 +20,8 @@ class RecruiterSearchController extends Controller
     //   ['gender', $request['gender']],
     // ])->get();
 
-    $candidates = StudentProfile::query();
-    $candidates = $candidates->name($request)->get();
+    // $candidates = StudentProfile::query();
+    // $candidates = $candidates->name($request)->get();
 
     // $candidates = array_filter($candidates, function ($candidate) {
     //   return $candidate[""]
@@ -44,6 +44,7 @@ class RecruiterSearchController extends Controller
     //     'languages.locales',
     //     'education.school',
     //   )->filter($request)->get();
+    $candidates = StudentProfile::filter($request)->get();
 
     return response()->json([
       'status' => 1,
