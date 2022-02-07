@@ -18,17 +18,17 @@ class RecruiterSearchController extends Controller
     )->toArray();
 
     $languages = Language::query();
-    $languages = $languages->language($request)->get(['user_id'])->toArray();
-    $languages = array_values(array_unique($languages, SORT_REGULAR));
-    $languages = array_map(function ($language) {
+    $languages = $languages->language($request)->get(['locales', 'user_id'])->toArray();
+    $new_languages = array_map(function ($language) {
       return $language['user_id'];
     }, $languages);
+    $new_languages = array_values(array_unique($new_languages, SORT_REGULAR));
 
-    if (count($candidates) > 0 && count($languages) > 0) {
+    if (count($candidates) > 0 && count($new_languages) > 0) {
       $candidates = array_filter(
         $candidates,
-        function ($candidate) use ($languages) {
-          return in_array($candidate['user_id'], $languages);
+        function ($candidate) use ($new_languages) {
+          return in_array($candidate['user_id'], $new_languages);
         },
         // ARRAY_FILTER_USE_KEY
       );
