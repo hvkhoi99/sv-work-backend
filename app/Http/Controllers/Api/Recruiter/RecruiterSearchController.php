@@ -31,6 +31,7 @@ class RecruiterSearchController extends Controller
           return in_array($candidate['user_id'], $new_languages);
         },
         // ARRAY_FILTER_USE_KEY
+        
       );
     }
 
