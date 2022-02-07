@@ -59,8 +59,8 @@ class StudentProfile extends Model
   public function filterName($query, $value)
   {
     return $query
-      ->where('first_name', 'LIKE', '%' . $value . '%')
-      ->orWhere('last_name', 'LIKE', '%' . $value . '%');
+      ->where('last_name', 'LIKE', '%' . $value . '%');
+      // ->orWhere('last_name', 'LIKE', '%' . $value . '%');
   }
 
   public function filterCareer($query, $value)
