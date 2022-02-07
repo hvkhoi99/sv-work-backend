@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Language extends Model
 {
+  use Filterable;
   protected $guarded = [];
 
   public function user()
@@ -22,4 +23,9 @@ class Language extends Model
 
   //   return $query;
   // }
+
+  public function filterLanguage($query, $value)
+  {
+    return $query->where('locales', 'LIKE', '%' . $value . '%');
+  }
 }

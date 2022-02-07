@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Education extends Model
 {
+  use Filterable;
   protected $guarded = [];
 
   protected $casts = [
@@ -30,4 +31,9 @@ class Education extends Model
 
   //   return $query;
   // }
+
+  public function filterEducation($query, $value)
+  {
+    return $query->where('school', 'LIKE', '%' . $value . '%');
+  }
 }
