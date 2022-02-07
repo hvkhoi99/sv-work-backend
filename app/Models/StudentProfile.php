@@ -104,28 +104,28 @@ class StudentProfile extends Model
     return $query->where('last_name', 'LIKE', '%' . $value . '%');
   }
 
-  public function filterCareer($query, $value)
-  {
-    return $query->where('job_title', 'LIKE', '%' . $value . '%');
-  }
+  // public function filterCareer($query, $value)
+  // {
+  //   return $query->where('job_title', 'LIKE', '%' . $value . '%');
+  // }
 
-  public function filterLocation($query, $value)
-  {
-    return $query->where('address', 'LIKE', '%' . $value . '%');
-  }
+  // public function filterLocation($query, $value)
+  // {
+  //   return $query->where('address', 'LIKE', '%' . $value . '%');
+  // }
 
-  public function filterGender($query, $value)
-  {
-    return $query->where('gender', $value);
-  }
+  // public function filterGender($query, $value)
+  // {
+  //   return $query->where('gender', $value);
+  // }
 
-  public function filterLanguage($query, $value)
-  {
-    return $query->where('locales', 'LIKE', '%' . $value . '%');
-  }
+  // public function filterLanguage($query, $value)
+  // {
+  //   return $query->where('locales', 'LIKE', '%' . $value . '%');
+  // }
 
-  public function filterEducation($query, $value)
-  {
-    return $query->where('school', 'LIKE', '%' . $value . '%');
-  }
+  // public function filterEducation($query, $value)
+  // {
+  //   return $query->where('school', 'LIKE', '%' . $value . '%');
+  // }
 }
