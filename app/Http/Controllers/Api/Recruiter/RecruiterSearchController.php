@@ -17,24 +17,24 @@ class RecruiterSearchController extends Controller
       ['id', 'avatar_link', 'first_name', 'last_name', 'job_title', 'address', 'user_id', 'created_at',]
     )->toArray();
 
-    // $languages = Language::query();
-    // $languages = $languages->language($request)->get()->toArray();
-    // $languages = array_values(array_unique($languages, SORT_REGULAR));
-    // $languages = array_map(function ($language) {
-    //   return $language['user_id'];
-    // }, $languages);
+    $languages = Language::query();
+    $languages = $languages->language($request)->get(['user_id'])->toArray();
+    $languages = array_values(array_unique($languages, SORT_REGULAR));
+    $languages = array_map(function ($language) {
+      return $language['user_id'];
+    }, $languages);
 
-    // if (count($candidates) > 0 && count($languages) > 0) {
-    //   $candidates = array_filter(
-    //     $candidates,
-    //     function ($candidate) use ($languages) {
-    //       if (in_array($candidate['user_id'], $languages)) {
-    //         return $candidate;
-    //       }
-    //     },
-    //     ARRAY_FILTER_USE_KEY
-    //   );
-    // }
+    if (count($candidates) > 0 && count($languages) > 0) {
+      $candidates = array_filter(
+        $candidates,
+        function ($candidate) use ($languages) {
+          if (in_array($candidate['user_id'], $languages)) {
+            return $candidate;
+          }
+        },
+        ARRAY_FILTER_USE_KEY
+      );
+    }
 
     // $results =
     //   // DB::table('student_profiles')
