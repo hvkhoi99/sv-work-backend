@@ -28,18 +28,21 @@ class RecruiterSearchController extends Controller
     //   return $candidate[""]
     // })
 
-    $results = DB::table('student_profiles')
-      ->join('languages', 'student_profiles.user_id', '=', 'languages.user_id')
+    $results =
+      // DB::table('student_profiles')
+      StudentProfile::join('languages', 'student_profiles.user_id', '=', 'languages.user_id')
       ->join('education', 'student_profiles.user_id', '=', 'education.user_id')
       ->select(
-        'student_profiles.id',
-        'student_profiles.avatar_link',
-        'student_profiles.first_name',
-        'student_profiles.last_name',
-        'student_profiles.address',
-        'student_profiles.job_title',
-        'student_profiles.gender',
-        'student_profiles.created_at',
+        DB::raw(
+          'student_profiles.id',
+          'student_profiles.avatar_link',
+          'student_profiles.first_name',
+          'student_profiles.last_name',
+          'student_profiles.address',
+          'student_profiles.job_title',
+          'student_profiles.gender',
+          'student_profiles.created_at'
+        ),
         'languages.locales',
         'education.school',
       )->filter($request)->get();

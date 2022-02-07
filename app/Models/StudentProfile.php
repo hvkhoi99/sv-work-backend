@@ -3,10 +3,32 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+
+trait Filterable
+{
+  public function scopeFilter($query, $request)
+  {
+    $params = $request->all();
+    foreach ($params as $field => $value) {
+      if ($field !==  '_token') {
+        $method = 'filter' . Str::studly($field);
+
+        if (!empty($value)) {
+          if (method_exists($this, $method)) {
+            $this->{$method}($query, $value);
+          }
+        }
+      }
+    }
+
+    return $query;
+  }
+}
 
 class StudentProfile extends Model
 {
-  
+  use Filterable;
   // protected $filterable = [
   //   'first_name',
   //   'last_name',
@@ -64,5 +86,34 @@ class StudentProfile extends Model
 
   //   return $query;
   // }
-  
+  public function filterName($query, $value)
+  {
+    return $query
+      ->where('first_name', 'LIKE', '%' . $value . '%');
+  }
+
+  public function filterCareer($query, $value)
+  {
+    return $query->where('job_title', 'LIKE', '%' . $value . '%');
+  }
+
+  public function filterLocation($query, $value)
+  {
+    return $query->where('address', 'LIKE', '%' . $value . '%');
+  }
+
+  public function filterLanguage($query, $value)
+  {
+    return $query->where('locales', 'LIKE', '%' . $value . '%');
+  }
+
+  public function filterGender($query, $value)
+  {
+    return $query->where('gender', $value);
+  }
+
+  public function filterEducation($query, $value)
+  {
+    return $query->where('school', 'LIKE', '%' . $value . '%');
+  }
 }
