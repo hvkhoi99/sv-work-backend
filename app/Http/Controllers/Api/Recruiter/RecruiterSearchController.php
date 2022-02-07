@@ -21,7 +21,7 @@ class RecruiterSearchController extends Controller
     // ])->get();
 
     $candidates = StudentProfile::query();
-    $candidates->name($request)->get();
+    $candidates = $candidates->name($request)->get();
 
     // $candidates = array_filter($candidates, function ($candidate) {
     //   return $candidate[""]
