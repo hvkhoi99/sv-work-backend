@@ -3,6 +3,28 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+
+trait Filterable
+{
+  public function scopeFilter($query, $request)
+  {
+    $params = $request->all();
+    foreach ($params as $field => $value) {
+      if ($field !==  '_token') {
+        $method = 'filter' . Str::studly($field);
+
+        if (!empty($value)) {
+          if (method_exists($this, $method)) {
+            $this->{$method}($query, $value);
+          }
+        }
+      }
+    }
+
+    return $query;
+  }
+}
 
 class StudentProfile extends Model
 {
@@ -29,19 +51,4 @@ class StudentProfile extends Model
       ->where('first_name', 'LIKE', '%' . $value . '%')
       ->orWhere('last_name', 'LIKE', '%' . $value . '%');
   }
-
-  // public function filterStatus($query, $value)
-  // {
-  //     return $query->where('status', $value);
-  // }
-
-  // public function filterType($query, $value)
-  // {
-  //     return $query->where('type', $value);
-  // }
-
-  // public function filterPrice($query, $value)
-  // {
-  //     return $query->where('price', $value);
-  // }
 }
