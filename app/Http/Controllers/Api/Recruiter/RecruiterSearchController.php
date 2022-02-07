@@ -20,9 +20,8 @@ class RecruiterSearchController extends Controller
     //   ['gender', $request['gender']],
     // ])->get();
 
-    // $candidates = StudentProfile::query();
-    // $candidates->name($request);
-    // $candidates = $candidates->get();
+    $candidates = StudentProfile::query();
+    $candidates->name($request)->get();
 
     // $candidates = array_filter($candidates, function ($candidate) {
     //   return $candidate[""]
@@ -45,13 +44,11 @@ class RecruiterSearchController extends Controller
     //     'languages.locales',
     //     'education.school',
     //   )->filter($request)->get();
-    $param = $request->all();
-    $results = StudentProfile::filter($param)->get();
 
     return response()->json([
       'status' => 1,
       'code' => 200,
-      'data' => $results
+      'data' => $candidates
     ], 200);
   }
 }
