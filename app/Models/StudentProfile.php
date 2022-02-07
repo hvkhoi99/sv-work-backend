@@ -94,32 +94,32 @@ class StudentProfile extends Model
     return $query;
   }
 
-  // public function scopeCareer($query, $request)
-  // {
-  //   if ($request->has('career')) {
-  //     $query->where('job_title', 'LIKE', '%' . $request->career . '%');
-  //   }
+  public function scopeCareer($query, $request)
+  {
+    if ($request->has('career')) {
+      $query->where('job_title', 'LIKE', '%' . $request->career . '%');
+    }
 
-  //   return $query;
-  // }
+    return $query;
+  }
 
-  // public function scopeLocation($query, $request)
-  // {
-  //   if ($request->has('location')) {
-  //     $query->where('address', 'LIKE', '%' . $request->location . '%');
-  //   }
+  public function scopeLocation($query, $request)
+  {
+    if ($request->has('location')) {
+      $query->where('address', 'LIKE', '%' . $request->location . '%');
+    }
 
-  //   return $query;
-  // }
+    return $query;
+  }
 
-  // public function scopeGender($query, $request)
-  // {
-  //   if ($request->has('gender')) {
-  //     $query->where('gender', $request->gender);
-  //   }
+  public function scopeGender($query, $request)
+  {
+    if ($request->has('gender')) {
+      $query->where('gender', $request->gender);
+    }
 
-  //   return $query;
-  // }
+    return $query;
+  }
   
   // public function filterName($query, $value)
   // {
