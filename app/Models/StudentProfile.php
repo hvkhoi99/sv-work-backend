@@ -92,14 +92,4 @@ class StudentProfile extends Model
 
     return $query;
   }
-
-  // public function scopeLanguage($query, $value)
-  // {
-  //   return $query->where('locales', 'LIKE', '%' . $value . '%');
-  // }
-
-  // public function scopeEducation($query, $value)
-  // {
-  //   return $query->where('school', 'LIKE', '%' . $value . '%');
-  // }
 }
