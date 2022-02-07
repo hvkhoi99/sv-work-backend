@@ -54,4 +54,52 @@ class StudentProfile extends Model
   {
     return $this->hasMany(Follow::class);
   }
+
+  // Search
+  public function filterName($query, $request)
+  {
+    if ($request->has('name')) {
+      $query->where('first_name', 'LIKE', '%' . $request->name . '%')
+        ->orWhere('last_name', 'LIKE', '%' . $request->name . '%');;
+    }
+
+    return $query;
+  }
+
+  public function filterCareer($query, $request)
+  {
+    if ($request->has('career')) {
+      $query->where('job_title', 'LIKE', '%' . $request->career . '%');
+    }
+
+    return $query;
+  }
+
+  public function filterLocation($query, $request)
+  {
+    if ($request->has('location')) {
+      $query->where('address', 'LIKE', '%' . $request->location . '%');
+    }
+
+    return $query;
+  }
+
+  public function filterGender($query, $request)
+  {
+    if ($request->has('gender')) {
+      $query->where('gender', $request->gender);
+    }
+
+    return $query;
+  }
+
+  // public function filterLanguage($query, $value)
+  // {
+  //   return $query->where('locales', 'LIKE', '%' . $value . '%');
+  // }
+
+  // public function filterEducation($query, $value)
+  // {
+  //   return $query->where('school', 'LIKE', '%' . $value . '%');
+  // }
 }

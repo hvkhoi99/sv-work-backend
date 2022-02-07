@@ -10,13 +10,16 @@ class RecruiterSearchController extends Controller
 {
   public function getCandidateSearch(Request $request) {
     // $candidates = StudentProfile::filter($request)->get();
-    $candidates = StudentProfile::where([
-      ['first_name', 'LIKE', '%'.$request['name'].'%'],
-      ['last_name', 'LIKE', '%'.$request['name'].'%'],
-      ['job_title', 'LIKE', '%'.$request['career'].'%'],
-      ['address', 'LIKE', '%'.$request['location'].'%'],
-      ['gender', $request['gender']],
-    ])->get();
+    // $candidates = StudentProfile::where([
+    //   ['first_name', 'LIKE', '%'.$request['name'].'%'],
+    //   ['last_name', 'LIKE', '%'.$request['name'].'%'],
+    //   ['job_title', 'LIKE', '%'.$request['career'].'%'],
+    //   ['address', 'LIKE', '%'.$request['location'].'%'],
+    //   ['gender', $request['gender']],
+    // ])->get();
+    $candidates = StudentProfile::query();
+    $candidates->name($request);
+    $candidates = $candidates->get();
 
     return response()->json([
       'status' => 1,
