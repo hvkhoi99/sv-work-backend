@@ -18,7 +18,7 @@ class RecruiterSearchController extends Controller
     //   ['gender', $request['gender']],
     // ])->get();
     $candidates = StudentProfile::query();
-    $candidates->filterName($request);
+    $candidates->name($request);
     $candidates = $candidates->get();
 
     return response()->json([
