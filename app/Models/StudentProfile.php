@@ -9,14 +9,18 @@ trait Filterable
 {
   public function scopeFilter($query, $request)
   {
-    $params = $request->all();
-    foreach ($params as $field => $value) {
-      if ($field !==  '_token') {
-        $method = 'filter' . Str::studly($field);
+    $param = $request->all();
+    foreach ($param as $field => $value) {
+      $method = 'filter' . Str::studly($field);
 
-        if (!empty($value)) {
-          if (method_exists($this, $method)) {
-            $this->{$method}($query, $value);
+      if ($value != '') {
+        if (method_exists($this, $method)) {
+          $this->{$method}($query, $value);
+        } else {
+          if (!empty($this->filterable) && is_array($this->filterable)) {
+            if (in_array($field, $this->filterable)) {
+              $query->where($this->table . '.' . $field, $value);
+            }
           }
         }
       }
