@@ -28,8 +28,34 @@ namespace Illuminate\Support\Facades;
  * @see \Illuminate\Database\DatabaseManager
  * @see \Illuminate\Database\Connection
  */
+
+use Illuminate\Support\Str;
+
+trait Filterable
+{
+    public function scopeFilter($query, $request)
+    {
+        $params = $request->all();
+        foreach ($params as $field => $value) {
+            if ($field !==  '_token') {
+                $method = 'filter' . Str::studly($field);
+
+                if (!empty($value)) {
+                    if (method_exists($this, $method)) {
+                        $this->{$method}($query, $value);
+                    }
+                }
+            }
+        }
+
+        return $query;
+    }
+}
+
 class DB extends Facade
 {
+    use Filterable;
+
     /**
      * Get the registered name of the component.
      *
@@ -38,5 +64,37 @@ class DB extends Facade
     protected static function getFacadeAccessor()
     {
         return 'db';
+    }
+
+    // Search
+    public function filterName($query, $value)
+    {
+        return $query
+            ->where('first_name', 'LIKE', '%' . $value . '%');
+    }
+
+    public function filterCareer($query, $value)
+    {
+        return $query->where('job_title', 'LIKE', '%' . $value . '%');
+    }
+
+    public function filterLocation($query, $value)
+    {
+        return $query->where('address', 'LIKE', '%' . $value . '%');
+    }
+
+    public function filterLanguage($query, $value)
+    {
+        return $query->where('locales', 'LIKE', '%' . $value . '%');
+    }
+
+    public function filterGender($query, $value)
+    {
+        return $query->where('gender', $value);
+    }
+
+    public function filterEducation($query, $value)
+    {
+        return $query->where('school', 'LIKE', '%' . $value . '%');
     }
 }
