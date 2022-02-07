@@ -3,38 +3,31 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-// use Illuminate\Support\Str;
+use Illuminate\Support\Str;
 
-// trait Filterable
-// {
-//   public function scopeFilter($query, $request)
-//   {
-//     $param = $request->all();
-//     foreach ($param as $field => $value) {
-//       $method = 'filter' . Str::studly($field);
+trait Filterable
+{
+  public function scopeFilter($query, $request)
+  {
+    $params = $request->all();
+    foreach ($params as $field => $value) {
+      if ($field !==  '_token') {
+        $method = 'filter' . Str::studly($field);
 
-//       if ($value != '') {
-//         if (method_exists($this, $method)) {
-//           $this->{$method}($query, $value);
-//         } else {
-//           if (!empty($this->filterable) && is_array($this->filterable)) {
-//             if (in_array($field, $this->filterable)) {
-//               $query->where($this->table . '.' . $field, $value);
-//             } elseif (key_exists($field, $this->filterable)) {
-//               $query->where($this->table . '.'
-//                 . $this->filterable[$field], $value);
-//             }
-//           }
-//         }
-//       }
-//     }
+        if (!empty($value)) {
+          if (method_exists($this, $method)) {
+            $this->{$method}($query, $value);
+          }
+        }
+      }
+    }
 
-//     return $query;
-//   }
-// }
+    return $query;
+  }
+}
 class StudentProfile extends Model
 {
-  // use Filterable;
+  use Filterable;
   // protected $filterable = [
   //   'first_name',
   //   'last_name',
@@ -56,40 +49,70 @@ class StudentProfile extends Model
   }
 
   // Search
-  public function scopeName($query, $request)
-  {
-    if ($request->has('name')) {
-      $query->where('last_name', 'LIKE', '%' . $request->name . '%');
-        // ->orWhere('last_name', 'LIKE', '%' . $request->name . '%');
-    }
+  // public function scopeName($query, $request)
+  // {
+  //   if ($request->has('name')) {
+  //     $query->where('last_name', 'LIKE', '%' . $request->name . '%');
+  //       // ->orWhere('last_name', 'LIKE', '%' . $request->name . '%');
+  //   }
 
-    return $query;
+  //   return $query;
+  // }
+
+  // public function scopeCareer($query, $request)
+  // {
+  //   if ($request->has('career')) {
+  //     $query->where('job_title', 'LIKE', '%' . $request->career . '%');
+  //   }
+
+  //   return $query;
+  // }
+
+  // public function scopeLocation($query, $request)
+  // {
+  //   if ($request->has('location')) {
+  //     $query->where('address', 'LIKE', '%' . $request->location . '%');
+  //   }
+
+  //   return $query;
+  // }
+
+  // public function scopeGender($query, $request)
+  // {
+  //   if ($request->has('gender')) {
+  //     $query->where('gender', $request->gender);
+  //   }
+
+  //   return $query;
+  // }
+  public function filterName($query, $value)
+  {
+    return $query
+      ->where('first_name', 'LIKE', '%' . $value . '%');
   }
 
-  public function scopeCareer($query, $request)
+  public function filterCareer($query, $value)
   {
-    if ($request->has('career')) {
-      $query->where('job_title', 'LIKE', '%' . $request->career . '%');
-    }
-
-    return $query;
+    return $query->where('job_title', 'LIKE', '%' . $value . '%');
   }
 
-  public function scopeLocation($query, $request)
+  public function filterLocation($query, $value)
   {
-    if ($request->has('location')) {
-      $query->where('address', 'LIKE', '%' . $request->location . '%');
-    }
-
-    return $query;
+    return $query->where('address', 'LIKE', '%' . $value . '%');
   }
 
-  public function scopeGender($query, $request)
+  public function filterLanguage($query, $value)
   {
-    if ($request->has('gender')) {
-      $query->where('gender', $request->gender);
-    }
+    return $query->where('locales', 'LIKE', '%' . $value . '%');
+  }
 
-    return $query;
+  public function filterGender($query, $value)
+  {
+    return $query->where('gender', $value);
+  }
+
+  public function filterEducation($query, $value)
+  {
+    return $query->where('school', 'LIKE', '%' . $value . '%');
   }
 }

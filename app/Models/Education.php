@@ -19,15 +19,15 @@ class Education extends Model
   }
 
   // Search
-  public function scopeEducation($query, $request, $user_id)
-  {
-    if ($request->has('school')) {
-      $query->where([
-        ['school', 'LIKE', '%' . $request->school . '%'],
-        ['user_id', $user_id]
-      ]);
-    }
+  // public function scopeEducation($query, $request, $user_id)
+  // {
+  //   if ($request->has('school')) {
+  //     $query->where([
+  //       ['school', 'LIKE', '%' . $request->school . '%'],
+  //       ['user_id', $user_id]
+  //     ]);
+  //   }
 
-    return $query;
-  }
+  //   return $query;
+  // }
 }

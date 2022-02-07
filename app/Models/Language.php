@@ -14,12 +14,12 @@ class Language extends Model
   }
 
   // Search
-  public function scopeLanguage($query, $request)
-  {
-    if ($request->has('locales')) {
-      $query->where('locales', 'LIKE', '%' . $request->locales . '%');
-    }
+  // public function scopeLanguage($query, $request)
+  // {
+  //   if ($request->has('locales')) {
+  //     $query->where('locales', 'LIKE', '%' . $request->locales . '%');
+  //   }
 
-    return $query;
-  }
+  //   return $query;
+  // }
 }
