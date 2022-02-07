@@ -46,7 +46,7 @@ class RecruiterSearchController extends Controller
         ),
         'languages.locales',
         'education.school',
-      )->get();
+      )->filter($request)->get();
 
     return response()->json([
       'status' => 1,
