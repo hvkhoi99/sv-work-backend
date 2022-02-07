@@ -5,12 +5,9 @@ namespace App\Http\Controllers\Api\Recruiter;
 use App\Http\Controllers\Controller;
 use App\Models\StudentProfile;
 use Illuminate\Http\Request;
-use App\Traits\Filterable;
 
 class RecruiterSearchController extends Controller
 {
-  use Filterable;
-
   public function getCandidateSearch(Request $request) {
     $candidates = StudentProfile::filter($request)->get();
 

@@ -3,30 +3,31 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-// use Illuminate\Support\Str;
+use Illuminate\Support\Str;
 
-// trait Filterable
-// {
-//   public function scopeFilter($query, $request)
-//   {
-//     $params = $request->all();
-//     foreach ($params as $field => $value) {
-//       if ($field !==  '_token') {
-//         $method = 'filter' . Str::studly($field);
+trait Filterable
+{
+  public function scopeFilter($query, $request)
+  {
+    $params = $request->all();
+    foreach ($params as $field => $value) {
+      if ($field !==  '_token') {
+        $method = 'filter' . Str::studly($field);
 
-//         if (!empty($value)) {
-//           if (method_exists($this, $method)) {
-//             $this->{$method}($query, $value);
-//           }
-//         }
-//       }
-//     }
+        if (!empty($value)) {
+          if (method_exists($this, $method)) {
+            $this->{$method}($query, $value);
+          }
+        }
+      }
+    }
 
-//     return $query;
-//   }
-// }
+    return $query;
+  }
+}
 class StudentProfile extends Model
 {
+  use Filterable;
   protected $guarded = [];
 
   protected $casts = [
