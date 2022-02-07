@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\User\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Recruiter\RecruiterProfileController;
+use App\Http\Controllers\Api\Recruiter\RecruiterSearchController;
 use App\Http\Controllers\Api\Recruiter\RecruitmentController;
 use App\Http\Controllers\Api\Student\CertificateController;
 use App\Http\Controllers\Api\Student\CompanyController;
@@ -230,6 +231,11 @@ Route::group([
         Route::get('jobsInvite/list', [CandidateController::class, 'jobsInvite']);
         Route::post('{id}/recruitment/{recruitmentId}', [StudentApplicationController::class, 'inviteCandidate']);
       });
+
+      // Search Candidate
+      Route::prefix('find')->group(function () {
+        Route::get('/candidate', [RecruiterSearchController::class, 'getCandidateSearch']);
+      });
     });
   });
 
@@ -295,6 +301,11 @@ Route::group([
       Route::get('jobsInvite/list', [CandidateController::class, 'jobsInvite']);
       Route::post('{id}/recruitment/{recruitmentId}', [StudentApplicationController::class, 'inviteCandidate']);
     });
+
+    // Search Candidate
+    Route::prefix('find')->group(function () {
+      Route::get('/candidate', [RecruiterSearchController::class, 'getCandidateSearch']);
+    });
   });
 
   // User
@@ -304,6 +315,7 @@ Route::group([
 // Test
 Route::get('test', [TestController::class, 'test']);
 Route::post('upload', [TestController::class, 'upload']);
+Route::get('candidate', [RecruiterSearchController::class, 'getCandidateSearch']);
 
 // Home
 Route::get('getTopRecruiters', [HomeController::class, 'getTopRecruiters']);
