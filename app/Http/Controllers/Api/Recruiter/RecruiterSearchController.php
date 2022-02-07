@@ -20,6 +20,11 @@ class RecruiterSearchController extends Controller
     $languages = Language::query();
     $languages = $languages->language($request)->get(['user_id'])->toArray();
     $languages = array_values(array_unique($languages, SORT_REGULAR));
+
+    $new_languages = [];
+    foreach ($languages as $language) {
+      array_push($new_languages, $language->user_id);
+    }
     // array_values(array_unique($array));
     //array_unique($array, SORT_REGULAR);
 
@@ -54,7 +59,7 @@ class RecruiterSearchController extends Controller
     return response()->json([
       'status' => 1,
       'code' => 200,
-      'data' => $languages,
+      'data' => $new_languages,
       // 'type' => gettype($languages)
     ], 200);
   }
