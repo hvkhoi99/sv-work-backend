@@ -20,7 +20,7 @@ class RecruiterSearchController extends Controller
     $languages = Language::query();
     $languages = $languages->language($request)->get(['user_id']);
     // $languages = array_map(function ($object) { return $object->user_id; }, $languages);
-    $languages = array_values(array_unique((array)$languages, SORT_REGULAR));
+    // $languages = array_values(array_unique($languages, SORT_REGULAR));
     // array_values(array_unique($array));
     //array_unique($array, SORT_REGULAR);
 
@@ -56,7 +56,7 @@ class RecruiterSearchController extends Controller
       'status' => 1,
       'code' => 200,
       'data' => $candidates,
-      'data1' => $languages
+      'data1' => gettype($languages)
     ], 200);
   }
 }
