@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\Recruiter;
 
 use App\Http\Controllers\Controller;
-use App\Models\Filterable;
 use App\Models\StudentProfile;
+use Filterable;
 use Illuminate\Http\Request;
 
 class RecruiterSearchController extends Controller
