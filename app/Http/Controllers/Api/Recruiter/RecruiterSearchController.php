@@ -12,17 +12,17 @@ class RecruiterSearchController extends Controller
 {
   public function getCandidateSearch(Request $request)
   {
-    $candidates = StudentProfile::query();
+    // $candidates = StudentProfile::query();
     // $candidates = $candidates->name($request)->career($request)->location($request)->gender($request)->get(
     //   ['id', 'avatar_link', 'first_name', 'last_name', 'job_title', 'address', 'user_id', 'created_at',]
     // )->toArray();
-    $candidates = $candidates->name($request)->career($request)->location($request)->gender($request)->all();
 
-    // $languages = Language::query();
-    // $languages = $languages->language($request)->get(['user_id'])->toArray();
+    $languages = Language::query();
+    $languages = $languages->language($request)->get()->toArray();
+    $languages = array_map(function ($language) {
+      return $language->user_id;
+    }, $languages);
     // $languages = array_values(array_unique($languages, SORT_REGULAR));
-    // // array_values(array_unique($array));
-    // //array_unique($array, SORT_REGULAR);
 
     // if (count($candidates) > 0 && count($languages) > 0) {
     //   $candidates = array_filter($candidates, function ($candidate) {
@@ -55,7 +55,7 @@ class RecruiterSearchController extends Controller
     return response()->json([
       'status' => 1,
       'code' => 200,
-      'data' => $candidates,
+      'data' => $languages,
       // 'type' => gettype($languages)
     ], 200);
   }
