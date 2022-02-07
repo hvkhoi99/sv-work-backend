@@ -12,14 +12,4 @@ class Language extends Model
   {
     return $this->belongsTo('App\User');
   }
-
-  // Search
-  // public function scopeLanguage($query, $request)
-  // {
-  //   if ($request->has('locales')) {
-  //     $query->where('locales', 'LIKE', '%' . $request->locales . '%');
-  //   }
-
-  //   return $query;
-  // }
 }

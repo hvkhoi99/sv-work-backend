@@ -64,6 +64,24 @@ class StudentProfile extends Model
     return $query;
   }
 
+  public function scopeEducation($query, $request)
+  {
+    if ($request->has('school')) {
+      $query->where(DB::raw('lower(school)'), 'like', '%' . strtolower($request->school) . '%');
+    }
+
+    return $query;
+  }
+
+  public function scopeLanguage($query, $request)
+  {
+    if ($request->has('locales')) {
+      $query->where(DB::raw('lower(locales)'), 'like', '%' . strtolower($request->locales) . '%');
+    }
+
+    return $query;
+  }
+
   // public function filterName($query, $value)
   // {
   //   return $query->where('last_name', 'LIKE', '%' . $value . '%');

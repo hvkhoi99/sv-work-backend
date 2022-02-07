@@ -20,36 +20,37 @@ class RecruiterSearchController extends Controller
     //   ['gender', $request['gender']],
     // ])->get();
 
-    $candidates = StudentProfile::query();
-    $candidates = $candidates->name($request)->career($request)->location($request)->gender($request)->get();
+    // $candidates = StudentProfile::query();
+    // $candidates = $candidates->name($request)->career($request)->location($request)->gender($request)->get();
 
     // $candidates = array_filter($candidates, function ($candidate) {
     //   return $candidate[""]
     // })
 
-    // $results =
-    //   // DB::table('student_profiles')
-    //   StudentProfile::join('languages', 'student_profiles.user_id', '=', 'languages.user_id')
-    //   ->join('education', 'student_profiles.user_id', '=', 'education.user_id')
-    //   ->select(
-    //     'student_profiles.id',
-    //     'student_profiles.avatar_link',
-    //     'student_profiles.first_name',
-    //     'student_profiles.last_name',
-    //     'student_profiles.address',
-    //     'student_profiles.job_title',
-    //     'student_profiles.gender',
-    //     'student_profiles.created_at',
-    //     // ['languages.locales' => json_decode('languages.locales')],
-    //     'languages.locales',
-    //     'education.school',
-    //   )->filter($request)->get();
-    // $candidates = StudentProfile::filter($request)->get();
+    $results =
+      // DB::table('student_profiles')
+      StudentProfile::join('languages', 'student_profiles.user_id', '=', 'languages.user_id')
+      ->join('education', 'student_profiles.user_id', '=', 'education.user_id')
+      ->select(
+        'student_profiles.id',
+        'student_profiles.avatar_link',
+        'student_profiles.first_name',
+        'student_profiles.last_name',
+        'student_profiles.address',
+        'student_profiles.job_title',
+        'student_profiles.gender',
+        'student_profiles.created_at',
+        // ['languages.locales' => json_decode('languages.locales')],
+        'languages.locales',
+        'education.school',
+      )->query();
+
+    $results = $results->name($request)->get();
 
     return response()->json([
       'status' => 1,
       'code' => 200,
-      'data' => $candidates
+      'data' => $results
     ], 200);
   }
 }
