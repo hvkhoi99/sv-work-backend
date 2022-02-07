@@ -9,7 +9,8 @@ use Illuminate\Http\Request;
 class RecruiterSearchController extends Controller
 {
   public function getCandidateSearch(Request $request) {
-    $candidates = StudentProfile::filter($request)->get();
+    $param = $request->all();
+    $candidates = StudentProfile::filter($param);
 
     return response()->json([
       'status' => 1,
