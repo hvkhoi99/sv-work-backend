@@ -64,9 +64,9 @@ trait Filterable
 class StudentProfile extends Model
 {
   use Filterable;
-  protected $filterable = [
-    'last_name',
-  ];
+  // protected $filterable = [
+  //   'last_name',
+  // ];
   protected $guarded = [];
 
   protected $casts = [
@@ -84,46 +84,47 @@ class StudentProfile extends Model
   }
 
   // Search
-  // public function scopeName($query, $request)
-  // {
-  //   if ($request->has('last_name')) {
-  //     $query->where('last_name', 'LIKE', '%' . $request->last_name . '%');
-  //       // ->orWhere('last_name', 'LIKE', '%' . $request->name . '%');
-  //   }
-
-  //   return $query;
-  // }
-
-  // public function scopeCareer($query, $request)
-  // {
-  //   if ($request->has('career')) {
-  //     $query->where('job_title', 'LIKE', '%' . $request->career . '%');
-  //   }
-
-  //   return $query;
-  // }
-
-  // public function scopeLocation($query, $request)
-  // {
-  //   if ($request->has('location')) {
-  //     $query->where('address', 'LIKE', '%' . $request->location . '%');
-  //   }
-
-  //   return $query;
-  // }
-
-  // public function scopeGender($query, $request)
-  // {
-  //   if ($request->has('gender')) {
-  //     $query->where('gender', $request->gender);
-  //   }
-
-  //   return $query;
-  // }
-  public function filterName($query, $value)
+  public function scopeName($query, $request)
   {
-    return $query->where('last_name', 'LIKE', '%' . $value . '%');
+    if ($request->has('name')) {
+      $query->where('last_name', 'LIKE', '%' . $request->name . '%');
+        // ->orWhere('last_name', 'LIKE', '%' . $request->name . '%');
+    }
+
+    return $query;
   }
+
+  public function scopeCareer($query, $request)
+  {
+    if ($request->has('career')) {
+      $query->where('job_title', 'LIKE', '%' . $request->career . '%');
+    }
+
+    return $query;
+  }
+
+  public function scopeLocation($query, $request)
+  {
+    if ($request->has('location')) {
+      $query->where('address', 'LIKE', '%' . $request->location . '%');
+    }
+
+    return $query;
+  }
+
+  public function scopeGender($query, $request)
+  {
+    if ($request->has('gender')) {
+      $query->where('gender', $request->gender);
+    }
+
+    return $query;
+  }
+  
+  // public function filterName($query, $value)
+  // {
+  //   return $query->where('last_name', 'LIKE', '%' . $value . '%');
+  // }
 
   // public function filterCareer($query, $value)
   // {
