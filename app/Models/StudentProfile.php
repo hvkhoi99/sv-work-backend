@@ -64,9 +64,9 @@ trait Filterable
 class StudentProfile extends Model
 {
   use Filterable;
-  // protected $filterable = [
-  //   'last_name',
-  // ];
+  protected $filterable = [
+    'last_name' => 'name',
+  ];
   protected $guarded = [];
 
   protected $casts = [
@@ -120,7 +120,7 @@ class StudentProfile extends Model
 
     return $query;
   }
-  
+
   // public function filterName($query, $value)
   // {
   //   return $query->where('last_name', 'LIKE', '%' . $value . '%');
