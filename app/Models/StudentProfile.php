@@ -46,7 +46,7 @@ class StudentProfile extends Model
   protected $filterable = [
     'last_name',
   ];
-  protected $guarded = [];
+  // protected $guarded = [];
 
   protected $casts = [
     'date_of_birth' => 'datetime:m/d/Y', // Change your format
