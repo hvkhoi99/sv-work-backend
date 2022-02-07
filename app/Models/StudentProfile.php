@@ -3,67 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
-
-// trait Filterable
-// {
-//   public function scopeFilter($query, $param)
-//   {
-//     foreach ($param as $field => $value) {
-//       $method = 'filter' . Str::studly($field);
-
-//       if ($value === '') {
-//         continue;
-//       }
-
-//       if (method_exists($this, $method)) {
-//         $this->{$method}($query, $value);
-//         continue;
-//       }
-
-//       if (empty($this->filterable) || !is_array($this->filterable)) {
-//         continue;
-//       }
-
-//       if (in_array($field, $this->filterable)) {
-//         $query->where($this->table . '.' . $field, $value);
-//         continue;
-//       }
-
-//       if (key_exists($field, $this->filterable)) {
-//         $query->where($this->table . '.' . $this->filterable[$field], $value);
-//         continue;
-//       }
-//     }
-
-//     return $query;
-//   }
-// }
-
-trait Filterable
-{
-  public function scopeFilter($query, $request)
-    {
-        $params = $request->all();
-        foreach ($params as $field => $value) {
-            if ($field !==  '_token') {
-                $method = 'filter' . Str::studly($field);
-
-                if (!empty($value)) {
-                    if (method_exists($this, $method)) {
-                        $this->{$method}($query, $value);
-                    }
-                }
-            }
-        }
-
-        return $query;
-    }
-}
+use Illuminate\Support\Facades\DB;
 
 class StudentProfile extends Model
 {
-  use Filterable;
+  // use Filterable;
   // protected $filterable = [
   //   'last_name',
   // ];
@@ -87,8 +31,8 @@ class StudentProfile extends Model
   public function scopeName($query, $request)
   {
     if ($request->has('name')) {
-      $query->where('last_name', 'LIKE', '%' . $request->name . '%');
-        // ->orWhere('last_name', 'LIKE', '%' . $request->name . '%');
+      // $query->where('last_name', 'LIKE', '%' . $request->name . '%');
+      $query->where(DB::raw('lower(last_name)'), 'like', '%' . strtolower($request->name) . '%');
     }
 
     return $query;
@@ -97,7 +41,8 @@ class StudentProfile extends Model
   public function scopeCareer($query, $request)
   {
     if ($request->has('career')) {
-      $query->where('job_title', 'LIKE', '%' . $request->career . '%');
+      // $query->where('job_title', 'LIKE', '%' . $request->career . '%');
+      $query->where(DB::raw('lower(job_title)'), 'like', '%' . strtolower($request->career) . '%');
     }
 
     return $query;
@@ -120,7 +65,7 @@ class StudentProfile extends Model
 
     return $query;
   }
-  
+
   // public function filterName($query, $value)
   // {
   //   return $query->where('last_name', 'LIKE', '%' . $value . '%');
