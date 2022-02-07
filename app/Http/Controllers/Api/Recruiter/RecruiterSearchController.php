@@ -18,7 +18,7 @@ class RecruiterSearchController extends Controller
     // );
 
     $languages = Language::query();
-    $languages = $languages->language($request)->get()->toArray();
+    $languages = $languages->language($request)->get(['user_id']);
 
     $languages = array_filter($languages, function ($language) {
       return $language->user_id;
