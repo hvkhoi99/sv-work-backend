@@ -13,23 +13,24 @@ class RecruiterSearchController extends Controller
   public function getCandidateSearch(Request $request)
   {
     $candidates = StudentProfile::query();
-    $candidates = $candidates->name($request)->career($request)->location($request)->gender($request)->get(
-      ['id', 'avatar_link', 'first_name', 'last_name', 'job_title', 'address', 'user_id', 'created_at',]
-    )->toArray();
+    // $candidates = $candidates->name($request)->career($request)->location($request)->gender($request)->get(
+    //   ['id', 'avatar_link', 'first_name', 'last_name', 'job_title', 'address', 'user_id', 'created_at',]
+    // )->toArray();
+    $candidates = $candidates->name($request)->career($request)->location($request)->gender($request)->all();
 
-    $languages = Language::query();
-    $languages = $languages->language($request)->get(['user_id'])->toArray();
-    $languages = array_values(array_unique($languages, SORT_REGULAR));
-    // array_values(array_unique($array));
-    //array_unique($array, SORT_REGULAR);
+    // $languages = Language::query();
+    // $languages = $languages->language($request)->get(['user_id'])->toArray();
+    // $languages = array_values(array_unique($languages, SORT_REGULAR));
+    // // array_values(array_unique($array));
+    // //array_unique($array, SORT_REGULAR);
 
-    if (count($candidates) > 0 && count($languages) > 0) {
-      $candidates = array_filter($candidates, function ($candidate) {
-        if (in_array($candidate->user_id, $languages)) {
-          return $candidate;
-        }
-      });
-    }
+    // if (count($candidates) > 0 && count($languages) > 0) {
+    //   $candidates = array_filter($candidates, function ($candidate) {
+    //     if (in_array($candidate->user_id, $languages)) {
+    //       return $candidate;
+    //     }
+    //   });
+    // }
 
     // $results =
     //   // DB::table('student_profiles')
