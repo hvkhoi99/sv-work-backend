@@ -43,10 +43,10 @@ trait Filterable
 class StudentProfile extends Model
 {
   use Filterable;
-  protected $guarded = [];
   protected $filterable = [
     'last_name',
   ];
+  protected $guarded = [];
 
   protected $casts = [
     'date_of_birth' => 'datetime:m/d/Y', // Change your format
