@@ -12,13 +12,13 @@ class RecruiterSearchController extends Controller
 {
   public function getCandidateSearch(Request $request)
   {
-    $candidates = StudentProfile::query();
-    $candidates = $candidates->name($request)->career($request)->location($request)->gender($request)->get(
-      ['id', 'avatar_link', 'first_name', 'last_name', 'job_title', 'address', 'created_at']
-    );
+    // $candidates = StudentProfile::query();
+    // $candidates = $candidates->name($request)->career($request)->location($request)->gender($request)->get(
+    //   ['id', 'avatar_link', 'first_name', 'last_name', 'job_title', 'address', 'created_at']
+    // );
 
     $languages = Language::query();
-    $languages = $languages->language($request)->get(['user_id']);
+    $languages = $languages->language($request)->get(['user_id'])->toArray();
     // $languages = array_map(function ($object) { return $object->user_id; }, $languages);
     // $languages = array_values(array_unique($languages, SORT_REGULAR));
     // array_values(array_unique($array));
@@ -55,8 +55,8 @@ class RecruiterSearchController extends Controller
     return response()->json([
       'status' => 1,
       'code' => 200,
-      'data' => gettype($candidates),
-      'data1' => gettype($languages)
+      'data' => $languages,
+      'type' => gettype($languages)
     ], 200);
   }
 }
