@@ -45,8 +45,7 @@ class RecruiterSearchController extends Controller
     //     'languages.locales',
     //     'education.school',
     //   )->filter($request)->get();
-    $param = $request->all();
-    $results = StudentProfile::filter($param)->get();
+    $results = StudentProfile::filter($request)->get();
 
     return response()->json([
       'status' => 1,
