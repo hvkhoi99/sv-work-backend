@@ -28,10 +28,11 @@ class RecruiterSearchController extends Controller
       $candidates = array_filter(
         $candidates,
         function ($candidate) use ($new_languages) {
+          // $candidate['locales'] = $languages[]
           return in_array($candidate['user_id'], $new_languages);
         },
         // ARRAY_FILTER_USE_KEY
-        
+
       );
     }
 
