@@ -55,7 +55,7 @@ class RecruiterSearchController extends Controller
       'status' => 1,
       'code' => 200,
       'data' => $candidates,
-      'data1' => print_r($languages)
+      'data1' => $languages
     ], 200);
   }
 }
