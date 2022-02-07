@@ -315,7 +315,7 @@ Route::group([
 // Test
 Route::get('test', [TestController::class, 'test']);
 Route::post('upload', [TestController::class, 'upload']);
-Route::get('candidate', [RecruiterSearchController::class, 'getCandidateSearch']);
+Route::get('find/candidate', [RecruiterSearchController::class, 'getCandidateSearch']);
 
 // Home
 Route::get('getTopRecruiters', [HomeController::class, 'getTopRecruiters']);
