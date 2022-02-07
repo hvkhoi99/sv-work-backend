@@ -24,15 +24,15 @@ class RecruiterSearchController extends Controller
       return $language['user_id'];
     }, $languages);
 
-    // if (count($candidates) > 0 && count($languages) > 0) {
-    //   $candidates = array_filter(
-    //     $candidates,
-    //     function ($candidate) use ($languages) {
-    //       return in_array($candidate['user_id'], $languages);
-    //     },
-    //     ARRAY_FILTER_USE_KEY
-    //   );
-    // }
+    if (count($candidates) > 0 && count($languages) > 0) {
+      $candidates = array_filter(
+        $candidates,
+        function ($candidate) use ($languages) {
+          return in_array($candidate['user_id'], $languages);
+        },
+        // ARRAY_FILTER_USE_KEY
+      );
+    }
 
     // $results =
     //   // DB::table('student_profiles')
@@ -58,7 +58,7 @@ class RecruiterSearchController extends Controller
       'status' => 1,
       'code' => 200,
       'data' => $candidates,
-      'data1' => $languages
+      // 'data1' => $languages
       // 'type' => gettype($languages)
     ], 200);
   }
