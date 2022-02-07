@@ -19,7 +19,7 @@ class RecruiterSearchController extends Controller
 
     $languages = Language::query();
     $languages = $languages->language($request)->get(['user_id']);
-    $languages = array_unique($languages, SORT_REGULAR);
+    // $languages = array_unique($languages, SORT_REGULAR);
     // array_values(array_unique($array));
     //array_unique($array, SORT_REGULAR);
 
