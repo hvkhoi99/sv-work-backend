@@ -215,6 +215,7 @@ class CandidateController extends Controller
       $candidates = array_map(function ($candidate) {
         $languages = Language::where('user_id', $candidate['user_id'])->first();
         $candidate['locales'] = isset($languages) ? json_decode($languages->locales) : [];
+        return $candidate;
       }, $candidates);
 
       return response()->json([
