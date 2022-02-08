@@ -29,7 +29,7 @@ class RecruiterSearchController extends Controller
         $candidates,
         function ($candidate) use ($languages, $new_languages) {
           $index = array_search($candidate['user_id'], $new_languages);
-          $candidate['locales'] = $index > -1 ? $languages[$index]->locales : [];
+          $candidate['locales'] = $index > -1 ? $languages[$index]['locales'] : [];
           return in_array($candidate['user_id'], $new_languages);
         },
         // ARRAY_FILTER_USE_KEY
