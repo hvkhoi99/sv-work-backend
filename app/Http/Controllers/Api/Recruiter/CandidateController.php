@@ -221,8 +221,7 @@ class CandidateController extends Controller
       $candidates = array_map(function ($candidate) {
         $skills = Skill::where('user_id', $candidate['user_id'])->first();
         if (isset($skills)) {
-          $skills['skills'] = json_decode($skills['skills']);
-          $candidate['skills'] = collect($skills)->only(['skills', 'user_id']);
+          $candidate['skills'] = json_decode($skills['skills']);
         } else {
           $candidate['skills'] = [];
         }

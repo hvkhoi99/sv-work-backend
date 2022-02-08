@@ -45,12 +45,10 @@ class RecruiterSearchController extends Controller
         if ($is_exist_language && $is_exist_education && ($index > -1)) {
           $skills = Skill::where('user_id', $candidate['user_id'])->first();
           if (isset($skills)) {
-            $skills['skills'] = json_decode($skills['skills']);
-            $candidate['skills'] = collect($skills)->only(['skills', 'user_id']);
+            $candidate['skills'] = json_decode($skills['skills']);
           } else {
             $candidate['skills'] = [];
           }
-          $candidate['skills'] =  $skills;
           array_push($new_candidates, $candidate);
         }
       }
