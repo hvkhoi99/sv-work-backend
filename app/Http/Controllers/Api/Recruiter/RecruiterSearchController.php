@@ -22,13 +22,14 @@ class RecruiterSearchController extends Controller
     $new_languages = array_map(function ($language) {
       return $language['user_id'];
     }, $languages);
-    $new_languages = array_values(array_unique($new_languages, SORT_REGULAR));
+    // $new_languages = array_values(array_unique($new_languages, SORT_REGULAR));
 
     if (count($candidates) > 0 && count($new_languages) > 0) {
       $candidates = array_filter(
         $candidates,
-        function ($candidate) use ($new_languages) {
-          // $candidate['locales'] = $languages[]
+        function ($candidate) use ($languages, $new_languages) {
+          $index = array_search($candidate['user_id'], $new_languages);
+          $candidate['locales'] = $index > -1 ? $languages[$index]->locales : [];
           return in_array($candidate['user_id'], $new_languages);
         },
         // ARRAY_FILTER_USE_KEY
