@@ -30,7 +30,9 @@ class RecruiterSearchController extends Controller
         $is_exist = in_array($candidate['user_id'], array_column($languages, 'user_id'));
         $index = array_search($candidate['user_id'], array_column($languages, 'user_id'));
         if ($is_exist && $index > -1) {
-          $candidate['locales'] = json_decode($languages[$index]['locales']);
+          $language['locales'] = json_decode($languages[$index]['locales']);
+          $language['user_id'] = $languages[$index]['user_id'];
+          $candidate['language'] =  $language;
           array_push($new_candidates, $candidate);
         }
       }
