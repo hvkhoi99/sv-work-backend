@@ -211,10 +211,19 @@ class CandidateController extends Controller
 
     if (isset($r_profile)) {
       // $_limit = $request['_limit'];
-      $candidates = StudentProfile::orderBy('created_at', 'desc')->get()->toArray();
+      $candidates = StudentProfile::orderBy('created_at', 'desc')->get(
+        [
+          'id', 'avatar_link', 'first_name', 'last_name', 'job_title',
+          'address', 'gender', 'user_id', 'created_at',
+        ]
+      )->toArray();
       $candidates = array_map(function ($candidate) {
         $languages = Language::where('user_id', $candidate['user_id'])->first();
-        $candidate['locales'] = isset($languages) ? json_decode($languages->locales) : [];
+        if (isset($languages)) {
+          $candidate['languages'] = collect($languages)->only(['locales', 'user_id']);
+        } else {
+          $candidate['languages'] = [];
+        }
         return $candidate;
       }, $candidates);
 
