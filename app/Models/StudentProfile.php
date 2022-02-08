@@ -39,7 +39,7 @@ class StudentProfile extends Model
 
   public function scopeCareer($query, $request)
   {
-    if ($request->has('career') && isset($request->career)) {
+    if ($request->has('career') && $request->career !== null) {
       $query->where(DB::raw('lower(job_title)'), 'like', '%' . strtolower($request->career) . '%');
     }
 
