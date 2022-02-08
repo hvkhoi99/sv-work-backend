@@ -213,7 +213,7 @@ class CandidateController extends Controller
       // $_limit = $request['_limit'];
       $candidates = StudentProfile::orderBy('created_at', 'desc')->get()->toArray();
       $candidates = array_map(function ($candidate) {
-        $languages = Language::where('user_id', $candidate->user_id)->first();
+        $languages = Language::where('user_id', $candidate['user_id'])->first();
         $candidate['locales'] = isset($languages) ? json_decode($languages->locales) : [];
       }, $candidates);
 
