@@ -25,22 +25,23 @@ class RecruiterSearchController extends Controller
     // $new_languages = array_values(array_unique($new_languages, SORT_REGULAR));
 
     if (count($candidates) > 0 && count($languages) > 0) {
-      $candidates = array_map(
+      $candidates = array_filter(
+        $candidates,
         function ($candidate) use ($languages) {
-          if (in_array($candidate['user_id'], array_column($languages, 'user_id'))) {
-            $index = array_search($candidate['user_id'], array_column($languages, 'user_id'));
-            if ($index > -1) {
-              $candidate['locales'] = $languages[$index];
-            } else {
-              $candidate['locales'] = [];
-            }
-            // $candidate['index'] = $index;
-            return $candidate;
+          $existId = in_array($candidate['user_id'], array_column($languages, 'user_id'));
+          $index = array_search($candidate['user_id'], array_column($languages, 'user_id'));
+          if ($existId && $index > -1) {
+            $candidate['locales'] = json_decode($languages[$index]['locales']);
+          } else {
+            $candidate['locales'] = [];
           }
+          return $candidate;
         },
-        $candidates
+        
       );
     }
+
+    
 
     // $results =
     //   // DB::table('student_profiles')
