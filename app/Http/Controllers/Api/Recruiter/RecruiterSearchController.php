@@ -34,7 +34,7 @@ class RecruiterSearchController extends Controller
           } else {
             $candidate['locales'] = [];
           }
-          return in_array($candidate['user_id'], $languages);
+          return in_array($candidate['user_id'], array_column($languages, 'user_id'));
           // return $candidate;
         },
         // ARRAY_FILTER_USE_KEY
