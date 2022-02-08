@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Recruiter;
 
 use App\Http\Controllers\Controller;
+use App\Models\Education;
 use App\Models\Language;
 use App\Models\StudentProfile;
 use Illuminate\Http\Request;
@@ -27,17 +28,20 @@ class RecruiterSearchController extends Controller
 
     $languages = Language::query();
     $languages = $languages->language($request)->get()->toArray();
+    $educations = Education::query();
+    $educations = $educations->education($request)->get()->toArray();
     // $new_languages = array_map(function ($language) {
     //   return $language['user_id'];
     // }, $languages);
     // $new_languages = array_values(array_unique($new_languages, SORT_REGULAR));
 
     $new_candidates = [];
-    if (count($candidates) > 0 && count($languages) > 0) {
+    if (count($candidates) > 0 && count($languages) > 0 && count($educations) > 0) {
       foreach ($candidates as $candidate) {
-        $is_exist = in_array($candidate['user_id'], array_column($languages, 'user_id'));
+        $is_exist_language = in_array($candidate['user_id'], array_column($languages, 'user_id'));
+        $is_exist_education = in_array($candidate['user_id'], array_column($educations, 'user_id'));
         $index = array_search($candidate['user_id'], array_column($languages, 'user_id'));
-        if ($is_exist && $index > -1) {
+        if ($is_exist_language && $is_exist_education && ($index > -1)) {
           $language['locales'] = json_decode($languages[$index]['locales']);
           $language['user_id'] = $languages[$index]['user_id'];
           $candidate['language'] =  $language;
