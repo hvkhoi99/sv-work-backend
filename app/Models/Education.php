@@ -21,7 +21,7 @@ class Education extends Model
 
   public function scopeEducation($query, $request)
   {
-    if ($request->has('school') && isset($request->school)) {
+    if ($request->has('school')) {
       $query->where(DB::raw('lower(school)'), 'like', '%' . strtolower($request->school) . '%');
     }
 
