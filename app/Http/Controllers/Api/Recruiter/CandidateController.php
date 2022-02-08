@@ -203,4 +203,26 @@ class CandidateController extends Controller
       ], 404);
     }
   }
+
+  public function getListCandidates(Request $request) {
+    $user = Auth::user();
+    $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
+
+    if (isset($r_profile)) {
+      $_limit = $request['_limit'];
+      $candidates = StudentProfile::orderBy('created_at', 'desc')->paginate($_limit);
+
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $candidates
+      ], 200);
+    } else {
+      return response()->json([
+        'status' => 0,
+        'code' => 404,
+        'message' => 'Your recruitments doesn\'t exist.'
+      ], 200);
+    }
+  }
 }
