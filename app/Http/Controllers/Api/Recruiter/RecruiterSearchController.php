@@ -14,7 +14,7 @@ class RecruiterSearchController extends Controller
   {
     $candidates = StudentProfile::query();
     $candidates = $candidates->name($request)->career($request)->location($request)->gender($request)->get(
-      ['id', 'avatar_link', 'first_name', 'last_name', 'job_title', 'address', 'user_id', 'created_at',]
+      ['id', 'avatar_link', 'first_name', 'last_name', 'job_title', 'address', 'gender', 'user_id', 'created_at',]
     )->toArray();
 
     $languages = Language::query();
