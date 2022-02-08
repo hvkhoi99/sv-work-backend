@@ -42,7 +42,7 @@ class CandidateController extends Controller
 
             $recruitment = collect($recruitment)
               ->only(['id', 'title', 'is_closed']);
-              $recruitment["application"] = $application;
+            $recruitment["application"] = $application;
 
             array_push($applied_jobs, $recruitment);
           }
@@ -204,13 +204,18 @@ class CandidateController extends Controller
     }
   }
 
-  public function getListCandidates(Request $request) {
+  public function getListCandidates(Request $request)
+  {
     $user = Auth::user();
     $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
 
     if (isset($r_profile)) {
-      $_limit = $request['_limit'];
-      $candidates = StudentProfile::orderBy('created_at', 'desc')->paginate($_limit);
+      // $_limit = $request['_limit'];
+      $candidates = StudentProfile::orderBy('created_at', 'desc')->get()->toArray();
+      $candidates = array_map(function ($candidate) {
+        $languages = Language::where('user_id', $candidate->user_id)->first();
+        $candidate['locales'] = isset($languages) ? json_decode($languages->locales) : [];
+      }, $candidates);
 
       return response()->json([
         'status' => 1,
