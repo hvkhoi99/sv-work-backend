@@ -20,6 +20,7 @@ class RecruiterSearchController extends Controller
     $user = Auth::user();
     $candidates = StudentProfile::query();
     $candidates = $candidates->name($request)->career($request)->location($request)->gender($request)
+      ->orderBy('created_at', 'desc')
       ->get(
         [
           'id', 'avatar_link', 'first_name', 'last_name', 'job_title',
