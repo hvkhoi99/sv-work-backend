@@ -29,7 +29,7 @@ class RecruiterSearchController extends Controller
         $candidates,
         function ($candidate) use ($languages, $new_languages) {
           $index = array_search($candidate['user_id'], $languages);
-          $candidate['locales'] = $index > -1 ? $languages[$index]['locales'] : [];
+          $candidate['locales'] = $index > -1 ? json_decode($languages[$index]['locales']) : [];
           return in_array($candidate['user_id'], $new_languages);
         },
         // ARRAY_FILTER_USE_KEY
@@ -61,7 +61,7 @@ class RecruiterSearchController extends Controller
       'status' => 1,
       'code' => 200,
       'data' => $candidates,
-      'data1' => $languages
+      // 'data1' => $languages
       // 'type' => gettype($languages)
     ], 200);
   }
