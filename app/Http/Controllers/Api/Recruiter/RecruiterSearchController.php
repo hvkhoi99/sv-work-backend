@@ -32,12 +32,10 @@ class RecruiterSearchController extends Controller
           $index = array_search($candidate['user_id'], array_column($languages, 'user_id'));
           if ($existId && $index > -1) {
             $candidate['locales'] = json_decode($languages[$index]['locales']);
-          } else {
-            $candidate['locales'] = [];
+            return $candidate;
           }
-          return $candidate;
         },
-        
+        ARRAY_FILTER_USE_KEY
       );
     }
 
