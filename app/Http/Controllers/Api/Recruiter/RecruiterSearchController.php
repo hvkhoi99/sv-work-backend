@@ -25,21 +25,16 @@ class RecruiterSearchController extends Controller
     // $new_languages = array_values(array_unique($new_languages, SORT_REGULAR));
 
     if (count($candidates) > 0 && count($languages) > 0) {
-      $candidates = array_map(
-        function ($candidate) use ($languages) {
-          $existId = in_array($candidate['user_id'], array_column($languages, 'user_id'));
-          $index = array_search($candidate['user_id'], array_column($languages, 'user_id'));
-          if ($existId && $index > -1) {
-            $candidate['locales'] = json_decode($languages[$index]['locales']);
-            return $candidate != null;
-          }
-        },
-        $candidates
-        // ARRAY_FILTER_USE_KEY
-      );
+      $new_candidates = [];
+      foreach ($candidates as $candidate) {
+        $is_exist = in_array($candidate['user_id'], array_column($languages, 'user_id'));
+        $index = array_search($candidate['user_id'], array_column($languages, 'user_id'));
+        if ($is_exist && $index > -1) {
+          $candidate['locales'] = json_decode($languages[$index]['locales']);
+          array_push($new_candidates, $candidate);
+        }
+      }
     }
-
-    
 
     // $results =
     //   // DB::table('student_profiles')
@@ -59,12 +54,10 @@ class RecruiterSearchController extends Controller
     //     'education.school',
     //   )->get();
 
-    // $results = $results->name($request)->get();
-
     return response()->json([
       'status' => 1,
       'code' => 200,
-      'data' => $candidates,
+      'data' => $new_candidates,
       // 'data1' => $languages
       // 'type' => gettype($languages)
     ], 200);
