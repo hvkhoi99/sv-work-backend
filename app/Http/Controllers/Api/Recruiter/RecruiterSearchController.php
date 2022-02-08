@@ -24,8 +24,8 @@ class RecruiterSearchController extends Controller
     // }, $languages);
     // $new_languages = array_values(array_unique($new_languages, SORT_REGULAR));
 
+    $new_candidates = [];
     if (count($candidates) > 0 && count($languages) > 0) {
-      $new_candidates = [];
       foreach ($candidates as $candidate) {
         $is_exist = in_array($candidate['user_id'], array_column($languages, 'user_id'));
         $index = array_search($candidate['user_id'], array_column($languages, 'user_id'));
