@@ -35,8 +35,8 @@ class RecruiterSearchController extends Controller
             // } else {
             //   $candidate['locales'] = [];
             // }
-            $candidate['index'] = $index;
-            return $candidate;
+            // $candidate['index'] = $index;
+            return $candidate['index'] = $index;
           }
         }
       );
