@@ -18,22 +18,27 @@ class RecruiterSearchController extends Controller
     )->toArray();
 
     $languages = Language::query();
-    $languages = $languages->language($request)->get(['locales', 'user_id'])->toArray();
-    $new_languages = array_map(function ($language) {
-      return $language['user_id'];
-    }, $languages);
+    $languages = $languages->language($request)->get()->toArray();
+    // $new_languages = array_map(function ($language) {
+    //   return $language['user_id'];
+    // }, $languages);
     // $new_languages = array_values(array_unique($new_languages, SORT_REGULAR));
 
-    if (count($candidates) > 0 && count($new_languages) > 0) {
+    if (count($candidates) > 0 && count($languages) > 0) {
       $candidates = array_filter(
         $candidates,
-        function ($candidate) use ($languages, $new_languages) {
-          $index = array_search($candidate['user_id'], $languages);
-          $candidate['locales'] = $index > -1 ? json_decode($languages[$index]['locales']) : [];
-          return in_array($candidate['user_id'], $new_languages);
+        function ($candidate) use ($languages) {
+          $index = array_search($candidate['user_id'], array_column($languages, 'user_id'));
+          if ($index > -1) {
+            $candidate['locales'] = json_decode($languages[$index]['locales']);
+            
+          } else {
+            $candidate['locales'] = [];
+          }
+          // return in_array($candidate['user_id'], $languages);
+          return $candidate;
         },
         // ARRAY_FILTER_USE_KEY
-
       );
     }
 
