@@ -35,7 +35,7 @@ class RecruiterSearchController extends Controller
             return $candidate;
           }
         },
-        ARRAY_FILTER_USE_KEY
+        // ARRAY_FILTER_USE_KEY
       );
     }
 
