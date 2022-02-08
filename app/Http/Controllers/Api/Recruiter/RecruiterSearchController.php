@@ -28,7 +28,7 @@ class RecruiterSearchController extends Controller
       $candidates = array_filter(
         $candidates,
         function ($candidate) use ($languages, $new_languages) {
-          $index = array_search($candidate['user_id'], $new_languages);
+          $index = array_search($candidate['user_id'], $languages);
           $candidate['locales'] = $index > -1 ? $languages[$index]['locales'] : [];
           return in_array($candidate['user_id'], $new_languages);
         },
