@@ -219,12 +219,12 @@ class CandidateController extends Controller
       )->toArray();
 
       $candidates = array_map(function ($candidate) {
-        $languages = Language::where('user_id', $candidate['user_id'])->first();
-        if (isset($languages)) {
-          $languages['locales'] = json_decode($languages['locales']);
-          $candidate['languages'] = collect($languages)->only(['locales', 'user_id']);
+        $skills = Skill::where('user_id', $candidate['user_id'])->first();
+        if (isset($skills)) {
+          $skills['skills'] = json_decode($skills['skills']);
+          $candidate['skills'] = collect($skills)->only(['skills', 'user_id']);
         } else {
-          $candidate['languages'] = [];
+          $candidate['skills'] = [];
         }
         return $candidate;
       }, $candidates);

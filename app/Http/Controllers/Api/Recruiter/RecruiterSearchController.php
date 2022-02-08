@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Recruiter;
 use App\Http\Controllers\Controller;
 use App\Models\Education;
 use App\Models\Language;
+use App\Models\Skill;
 use App\Models\StudentProfile;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -42,9 +43,14 @@ class RecruiterSearchController extends Controller
         $is_exist_education = in_array($candidate['user_id'], array_column($educations, 'user_id'));
         $index = array_search($candidate['user_id'], array_column($languages, 'user_id'));
         if ($is_exist_language && $is_exist_education && ($index > -1)) {
-          $language['locales'] = json_decode($languages[$index]['locales']);
-          $language['user_id'] = $languages[$index]['user_id'];
-          $candidate['language'] =  $language;
+          $skills = Skill::where('user_id', $candidate['user_id'])->first();
+          if (isset($skills)) {
+            $skills['skills'] = json_decode($skills['skills']);
+            $candidate['skills'] = collect($skills)->only(['skills', 'user_id']);
+          } else {
+            $candidate['skills'] = [];
+          }
+          $candidate['skills'] =  $skills;
           array_push($new_candidates, $candidate);
         }
       }
