@@ -8,7 +8,7 @@ use App\Models\Hashtag;
 use App\Models\JobTags;
 use App\Models\RecruiterProfile;
 use App\Models\Recruitment;
-use App\Models\RecruitmentTag;
+// use App\Models\RecruitmentTag;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;

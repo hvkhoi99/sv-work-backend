@@ -6,16 +6,24 @@ use App\Http\Controllers\Controller;
 use App\Models\Language;
 use App\Models\StudentProfile;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
+
+// use Illuminate\Support\Facades\DB;
 
 class RecruiterSearchController extends Controller
 {
   public function getCandidateSearch(Request $request)
   {
+    $user = Auth::user();
     $candidates = StudentProfile::query();
-    $candidates = $candidates->name($request)->career($request)->location($request)->gender($request)->get(
-      ['id', 'avatar_link', 'first_name', 'last_name', 'job_title', 'address', 'gender', 'user_id', 'created_at',]
-    )->toArray();
+    $candidates = $candidates->name($request)->career($request)->location($request)->gender($request)
+      ->get(
+        [
+          'id', 'avatar_link', 'first_name', 'last_name', 'job_title',
+          'address', 'gender', 'user_id', 'created_at',
+        ]
+      )->toArray();
 
     $languages = Language::query();
     $languages = $languages->language($request)->get()->toArray();
@@ -38,6 +46,21 @@ class RecruiterSearchController extends Controller
       }
     }
 
+    $perPage = $request["_limit"];
+    $current_page = LengthAwarePaginator::resolveCurrentPage();
+
+    $new_pagination_candidates = new LengthAwarePaginator(
+      collect($new_candidates)->forPage($current_page, $perPage)->values(),
+      count($new_candidates),
+      $perPage,
+      $current_page,
+      ['path' => url(
+        $user->role_id === 2
+          ? 'api/recruiter/find/candidate'
+          : 'api/student/recruiter/find/candidate'
+      )]
+    );
+
     // $results =
     //   // DB::table('student_profiles')
     //   StudentProfile::join('languages', 'student_profiles.user_id', '=', 'languages.user_id')
@@ -59,7 +82,7 @@ class RecruiterSearchController extends Controller
     return response()->json([
       'status' => 1,
       'code' => 200,
-      'data' => $new_candidates,
+      'data' => $new_pagination_candidates,
       // 'data1' => $languages
       // 'type' => gettype($languages)
     ], 200);
