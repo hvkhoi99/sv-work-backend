@@ -229,7 +229,6 @@ Route::group([
       Route::prefix('candidate')->group(function () {
         Route::get('{id}', [CandidateController::class, 'candidateInfo']);
         Route::get('jobsInvite/list', [CandidateController::class, 'jobsInvite']);
-      Route::get('candidates/list', [CandidateController::class, 'getListCandidates']);
         Route::post('{id}/recruitment/{recruitmentId}', [StudentApplicationController::class, 'inviteCandidate']);
       });
 
@@ -237,6 +236,9 @@ Route::group([
       Route::prefix('find')->group(function () {
         Route::get('/candidate', [RecruiterSearchController::class, 'getCandidateSearch']);
       });
+
+      // Candidates list
+      Route::get('candidates/list', [CandidateController::class, 'getListCandidates']);
     });
   });
 
@@ -300,7 +302,6 @@ Route::group([
     Route::prefix('candidate')->group(function () {
       Route::get('{id}', [CandidateController::class, 'candidateInfo']);
       Route::get('jobsInvite/list', [CandidateController::class, 'jobsInvite']);
-      Route::get('candidates/list', [CandidateController::class, 'getListCandidates']);
       Route::post('{id}/recruitment/{recruitmentId}', [StudentApplicationController::class, 'inviteCandidate']);
     });
 
@@ -308,6 +309,9 @@ Route::group([
     Route::prefix('find')->group(function () {
       Route::get('/candidate', [RecruiterSearchController::class, 'getCandidateSearch']);
     });
+
+    // Candidates list
+    Route::get('candidates/list', [CandidateController::class, 'getListCandidates']);
   });
 
   // User
