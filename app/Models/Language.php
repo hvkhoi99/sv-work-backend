@@ -16,7 +16,7 @@ class Language extends Model
 
   public function scopeLanguage($query, $request)
   {
-    if ($request->has('locales') && isset($request->locales)) {
+    if ($request->has('locales')) {
       $query->where(DB::raw('lower(locales)'), 'like', '%' . strtolower($request->locales) . '%');
     }
 
