@@ -39,7 +39,7 @@ class StudentProfile extends Model
 
   public function scopeCareer($query, $request)
   {
-    if ($request->has('career')) {
+    if ($request->has('career') && isset($request->career)) {
       $query->where(DB::raw('lower(job_title)'), 'like', '%' . strtolower($request->career) . '%');
     }
 
@@ -48,7 +48,7 @@ class StudentProfile extends Model
 
   public function scopeLocation($query, $request)
   {
-    if ($request->has('location')) {
+    if ($request->has('location') && isset($request->location)) {
       $query->where(DB::raw('lower(address)'), 'like', '%' . strtolower($request->location) . '%');
     }
 
@@ -57,7 +57,7 @@ class StudentProfile extends Model
 
   public function scopeGender($query, $request)
   {
-    if ($request->has('gender')) {
+    if ($request->has('gender') && isset($request->gender)) {
       $query->where('gender', $request->gender);
     }
 
