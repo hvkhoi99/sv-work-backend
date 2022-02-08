@@ -25,16 +25,16 @@ class RecruiterSearchController extends Controller
     // $new_languages = array_values(array_unique($new_languages, SORT_REGULAR));
 
     if (count($candidates) > 0 && count($languages) > 0) {
-      $candidates = array_filter(
-        $candidates,
+      $candidates = array_map(
         function ($candidate) use ($languages) {
           $existId = in_array($candidate['user_id'], array_column($languages, 'user_id'));
           $index = array_search($candidate['user_id'], array_column($languages, 'user_id'));
           if ($existId && $index > -1) {
             $candidate['locales'] = json_decode($languages[$index]['locales']);
-            return $candidate;
+            return $candidate != null;
           }
         },
+        $candidates
         // ARRAY_FILTER_USE_KEY
       );
     }
