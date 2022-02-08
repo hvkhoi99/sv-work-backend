@@ -13,6 +13,7 @@ use App\Models\Recruitment;
 use App\Models\Skill;
 use App\Models\StudentProfile;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 
 class CandidateController extends Controller
@@ -210,13 +211,13 @@ class CandidateController extends Controller
     $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
 
     if (isset($r_profile)) {
-      // $_limit = $request['_limit'];
       $candidates = StudentProfile::orderBy('created_at', 'desc')->get(
         [
           'id', 'avatar_link', 'first_name', 'last_name', 'job_title',
           'address', 'gender', 'user_id', 'created_at',
         ]
       )->toArray();
+
       $candidates = array_map(function ($candidate) {
         $languages = Language::where('user_id', $candidate['user_id'])->first();
         if (isset($languages)) {
@@ -227,6 +228,21 @@ class CandidateController extends Controller
         }
         return $candidate;
       }, $candidates);
+
+      $perPage = $request["_limit"];
+      $current_page = LengthAwarePaginator::resolveCurrentPage();
+
+      $candidates = new LengthAwarePaginator(
+        collect($candidates)->forPage($current_page, $perPage)->values(),
+        count($candidates),
+        $perPage,
+        $current_page,
+        ['path' => url(
+          $user->role_id === 2
+            ? 'api/recruiter/candidates/list'
+            : 'api/student/recruiter/candidates/list'
+        )]
+      );
 
       return response()->json([
         'status' => 1,

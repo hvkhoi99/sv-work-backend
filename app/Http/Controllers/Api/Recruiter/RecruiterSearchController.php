@@ -53,7 +53,7 @@ class RecruiterSearchController extends Controller
     $perPage = $request["_limit"];
     $current_page = LengthAwarePaginator::resolveCurrentPage();
 
-    $new_pagination_candidates = new LengthAwarePaginator(
+    $new_candidates = new LengthAwarePaginator(
       collect($new_candidates)->forPage($current_page, $perPage)->values(),
       count($new_candidates),
       $perPage,
@@ -86,7 +86,7 @@ class RecruiterSearchController extends Controller
     return response()->json([
       'status' => 1,
       'code' => 200,
-      'data' => $new_pagination_candidates,
+      'data' => $new_candidates,
       // 'type' => gettype($languages)
     ], 200);
   }
