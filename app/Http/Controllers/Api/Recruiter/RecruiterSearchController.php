@@ -13,7 +13,9 @@ class RecruiterSearchController extends Controller
   public function getCandidateSearch(Request $request)
   {
     $candidates = StudentProfile::query();
-    $candidates = $candidates->name($request)->career($request)->location($request)->gender($request)->get()->toArray();
+    $candidates = $candidates->name($request)->career($request)->location($request)->gender($request)->get(
+      ['id', 'avatar_link', 'first_name', 'last_name', 'job_title', 'address', 'user_id', 'created_at',]
+    )->toArray();
 
     $languages = Language::query();
     $languages = $languages->language($request)->get()->toArray();
@@ -28,7 +30,7 @@ class RecruiterSearchController extends Controller
         function ($candidate) use ($languages) {
           $index = array_search($candidate['user_id'], array_column($languages, 'user_id'));
           if ($index > -1) {
-            $candidate['locales'] = json_decode($languages[$index]['locales']);
+            $candidate['locales'] = $languages[$index];
           } else {
             $candidate['locales'] = [];
           }
