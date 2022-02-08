@@ -29,11 +29,12 @@ class RecruiterSearchController extends Controller
         $candidates,
         function ($candidate) use ($languages) {
           $index = array_search($candidate['user_id'], array_column($languages, 'user_id'));
-          if ($index > -1) {
-            $candidate['locales'] = $languages[$index];
-          } else {
-            $candidate['locales'] = [];
-          }
+          // if ($index > -1) {
+          //   $candidate['locales'] = $languages[$index];
+          // } else {
+          //   $candidate['locales'] = [];
+          // }
+          $candidate['index'] = $index;
           return in_array($candidate['user_id'], array_column($languages, 'user_id'));
           // return $candidate;
         },
