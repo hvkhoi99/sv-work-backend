@@ -38,22 +38,22 @@ class StudentSearchController extends Controller
       foreach ($jobs as $job) {
         // company info
         $company_info = RecruiterProfile::where([
-          ['user_id', $job->user_id]
+          ['user_id', $job['user_id']]
         ])->first();
 
         // count application
         $count_applications = Application::where([
           ['is_applied', true],
-          ['recruitment_id', $job->id]
+          ['recruitment_id', $job['id']]
         ])->get()->count();
 
         // status between student and job
         $application = Application::where([
           ['user_id', 2],
-          ['recruitment_id', $job->id]
+          ['recruitment_id', $job['id']]
         ])->first();
 
-        $hashtags = JobTags::where('recruitment_id', $job->id)->first()->hashtags;
+        $hashtags = JobTags::where('recruitment_id', $job['id'])->first()->hashtags;
         $job['hashtags'] = json_decode($hashtags);
 
         if (isset($company_info)) {
