@@ -29,7 +29,7 @@ class StudentSearchController extends Controller
       ->orderBy('created_at', 'desc')
       ->get(
         [
-          'id', 'title', 'location', 'position', 'min_salary', 'max_salary',
+          'id', 'title', 'location', 'job_category', 'min_salary', 'max_salary',
           'expiry_date', 'is_closed', 'user_id', 'created_at',
         ]
       );
@@ -119,7 +119,7 @@ class StudentSearchController extends Controller
       ->location($request)
       ->orderBy('created_at', 'desc')
       ->get([
-        'id', 'logo_image_link', 'company_name', 'address', 'verify'
+        'id', 'logo_image_link', 'company_name', 'address', 'verify', 'user_id'
       ]);
 
     if ($employers->count() > 0) {
