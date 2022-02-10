@@ -31,7 +31,7 @@ class StudentSearchController extends Controller
           'id', 'title', 'location', 'min_salary', 'max_salary',
           'expiry_date', 'is_closed', 'user_id', 'created_at',
         ]
-      )->toArray();
+      );
 
     if (count($jobs) > 0) {
       $new_jobs = [];
@@ -49,7 +49,7 @@ class StudentSearchController extends Controller
 
         // status between student and job
         $application = Application::where([
-          ['user_id', $user['id']],
+          ['user_id', $user->id],
           ['recruitment_id', $job['id']]
         ])->first();
 
