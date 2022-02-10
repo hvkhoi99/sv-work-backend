@@ -174,6 +174,7 @@ Route::group([
     // Search Jobs
     Route::prefix('find')->group(function () {
       Route::get('jobs', [StudentSearchController::class, 'getJobs']);
+      Route::get('employers', [StudentSearchController::class, 'getEmployers']);
     });
 
     // Student -> Recruiter
@@ -328,8 +329,8 @@ Route::group([
 Route::get('test', [TestController::class, 'test']);
 Route::post('upload', [TestController::class, 'upload']);
 // Route::get('find/candidate', [RecruiterSearchController::class, 'getCandidateSearch']);
-Route::get('find/jobs', [StudentSearchController::class, 'getJobs']);
-Route::get('find/employers', [StudentSearchController::class, 'getEmployers']);
+// Route::get('find/jobs', [StudentSearchController::class, 'getJobs']);
+// Route::get('find/employers', [StudentSearchController::class, 'getEmployers']);
 
 // Home
 Route::get('getTopRecruiters', [HomeController::class, 'getTopRecruiters']);
