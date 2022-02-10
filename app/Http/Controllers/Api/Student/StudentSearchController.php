@@ -49,7 +49,7 @@ class StudentSearchController extends Controller
 
         // status between student and job
         $application = Application::where([
-          ['user_id', $user->id],
+          ['user_id', $user['id']],
           ['recruitment_id', $job['id']]
         ])->first();
 
