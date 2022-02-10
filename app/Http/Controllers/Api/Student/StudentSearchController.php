@@ -49,7 +49,7 @@ class StudentSearchController extends Controller
 
         // status between student and job
         $application = Application::where([
-          ['user_id', 2],
+          ['user_id', $user->id],
           ['recruitment_id', $job['id']]
         ])->first();
 
@@ -83,6 +83,41 @@ class StudentSearchController extends Controller
       'status' => 1,
       'code' => 200,
       'data' => $jobs
+    ]);
+  }
+
+  public function getEmployers(Request $request) {
+    $employers = RecruiterProfile::query();
+    $employers = $employers
+    ->keyword($request)
+    ->location($request)
+    ->orderBy('created_at', 'desc')
+    ->get([
+      'id', 'logo_image_link', 'company_name', 'address', 'verify'
+    ]);
+
+    if ($employers->count() > 0) {
+      $new_employers = [];
+      foreach ($employers as $employer) {
+        $count_available_jobs = Recruitment::where([
+          ['is_closed', false],
+          ['user_id', $employer->user_id]
+        ])->get()->count();
+        $employer['count_available_jobs'] = $count_available_jobs;
+        array_push($new_employers, $employer);
+      }
+
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $new_employers
+      ]);
+    }
+
+    return response()->json([
+      'status' => 1,
+      'code' => 200,
+      'data' => $employers
     ]);
   }
 }

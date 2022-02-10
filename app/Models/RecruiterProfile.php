@@ -29,4 +29,13 @@ class RecruiterProfile extends Model
 
     return $query;
   }
+
+  public function scopeLocation($query, $request)
+  {
+    if ($request->has('location')) {
+      $query->where(DB::raw('lower(address)'), 'like', '%' . strtolower($request->location) . '%');
+    }
+
+    return $query;
+  }
 }
