@@ -34,7 +34,7 @@ class StudentSearchController extends Controller
         ]
       );
 
-    if (count($jobs) > 0) {
+    if (isset($jobs) && count($jobs) > 0) {
       $new_jobs = [];
       foreach ($jobs as $job) {
         // company info
@@ -122,7 +122,7 @@ class StudentSearchController extends Controller
         'id', 'logo_image_link', 'company_name', 'address', 'verify', 'user_id'
       ]);
 
-    if ($employers->count() > 0) {
+    if (isset($employers) && $employers->count() > 0) {
       $new_employers = [];
       foreach ($employers as $employer) {
         $count_available_jobs = Recruitment::where([
@@ -133,12 +133,34 @@ class StudentSearchController extends Controller
         array_push($new_employers, $employer);
       }
 
+      $perPage = $request["_limit"];
+      $current_page = LengthAwarePaginator::resolveCurrentPage();
+
+      $new_employers = new LengthAwarePaginator(
+        collect($new_employers)->forPage($current_page, $perPage)->values(),
+        count($new_employers),
+        $perPage,
+        $current_page,
+        ['path' => url('api/student/find/employers')]
+      );
+
       return response()->json([
         'status' => 1,
         'code' => 200,
         'data' => $new_employers
       ]);
     }
+
+    $perPage = $request["_limit"];
+    $current_page = LengthAwarePaginator::resolveCurrentPage();
+
+    $employers = new LengthAwarePaginator(
+      collect($employers)->forPage($current_page, $perPage)->values(),
+      count($employers),
+      $perPage,
+      $current_page,
+      ['path' => url('api/student/find/employers')]
+    );
 
     return response()->json([
       'status' => 1,
