@@ -4,16 +4,29 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\User;
+use Illuminate\Support\Facades\DB;
 
 class RecruiterProfile extends Model
 {
-    protected $guarded = [];
+  protected $guarded = [];
 
-    public function user() {
-        return $this->belongsTo(User::class);
+  public function user()
+  {
+    return $this->belongsTo(User::class);
+  }
+
+  public function subscriptions()
+  {
+    return $this->hasMany(Follow::class);
+  }
+
+  // Search Name
+  public function scopeKeyword($query, $request)
+  {
+    if ($request->has('keyword')) {
+      $query->where(DB::raw('lower(company_name)'), 'like', '%' . strtolower($request->keyword) . '%');
     }
 
-    public function subscriptions() {
-        return $this->hasMany(Follow::class);
-    }
+    return $query;
+  }
 }

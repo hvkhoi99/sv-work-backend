@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\Student\StudentApplicationController;
 use App\Http\Controllers\Api\Student\StudentDashboardController;
 use App\Http\Controllers\Api\Student\StudentEventController;
 use App\Http\Controllers\Api\Student\StudentProfileController;
+use App\Http\Controllers\Api\Student\StudentSearchController;
 use App\Http\Controllers\TestController;
 
 /*
@@ -168,6 +169,11 @@ Route::group([
     // Event
     Route::prefix('event')->group(function () {
       Route::post('{id}', [StudentEventController::class, 'join']);
+    });
+    
+    // Search Jobs
+    Route::prefix('find')->group(function () {
+      Route::get('jobs', [StudentSearchController::class, 'getJobs']);
     });
 
     // Student -> Recruiter
@@ -322,6 +328,7 @@ Route::group([
 Route::get('test', [TestController::class, 'test']);
 Route::post('upload', [TestController::class, 'upload']);
 // Route::get('find/candidate', [RecruiterSearchController::class, 'getCandidateSearch']);
+Route::get('find/jobs', [StudentSearchController::class, 'getJobs']);
 
 // Home
 Route::get('getTopRecruiters', [HomeController::class, 'getTopRecruiters']);
