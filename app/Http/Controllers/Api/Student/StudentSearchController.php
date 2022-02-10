@@ -8,6 +8,7 @@ use App\Models\JobTags;
 use App\Models\RecruiterProfile;
 use App\Models\Recruitment;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 
 class StudentSearchController extends Controller
@@ -28,7 +29,7 @@ class StudentSearchController extends Controller
       ->orderBy('created_at', 'desc')
       ->get(
         [
-          'id', 'title', 'location', 'min_salary', 'max_salary',
+          'id', 'title', 'location', 'position', 'min_salary', 'max_salary',
           'expiry_date', 'is_closed', 'user_id', 'created_at',
         ]
       );
@@ -38,22 +39,22 @@ class StudentSearchController extends Controller
       foreach ($jobs as $job) {
         // company info
         $company_info = RecruiterProfile::where([
-          ['user_id', $job['user_id']]
+          ['user_id', $job->user_id]
         ])->first();
 
         // count application
         $count_applications = Application::where([
           ['is_applied', true],
-          ['recruitment_id', $job['id']]
+          ['recruitment_id', $job->id]
         ])->get()->count();
 
         // status between student and job
         $application = Application::where([
           ['user_id', $user->id],
-          ['recruitment_id', $job['id']]
+          ['recruitment_id', $job->id]
         ])->first();
 
-        $hashtags = JobTags::where('recruitment_id', $job['id'])->first()->hashtags;
+        $hashtags = JobTags::where('recruitment_id', $job->id)->first()->hashtags;
         $job['hashtags'] = json_decode($hashtags);
 
         if (isset($company_info)) {
@@ -73,12 +74,36 @@ class StudentSearchController extends Controller
           ];
         array_push($new_jobs, $job);
       }
+
+      $perPage = $request["_limit"];
+      $current_page = LengthAwarePaginator::resolveCurrentPage();
+
+      $new_jobs = new LengthAwarePaginator(
+        collect($new_jobs)->forPage($current_page, $perPage)->values(),
+        count($new_jobs),
+        $perPage,
+        $current_page,
+        ['path' => url('api/student/find/jobs')]
+      );
+
       return response()->json([
         'status' => 1,
         'code' => 200,
         'data' => $new_jobs
       ]);
     }
+
+    $perPage = $request["_limit"];
+    $current_page = LengthAwarePaginator::resolveCurrentPage();
+
+    $jobs = new LengthAwarePaginator(
+      collect($jobs)->forPage($current_page, $perPage)->values(),
+      count($jobs),
+      $perPage,
+      $current_page,
+      ['path' => url('api/student/find/jobs')]
+    );
+
     return response()->json([
       'status' => 1,
       'code' => 200,
@@ -86,15 +111,16 @@ class StudentSearchController extends Controller
     ]);
   }
 
-  public function getEmployers(Request $request) {
+  public function getEmployers(Request $request)
+  {
     $employers = RecruiterProfile::query();
     $employers = $employers
-    ->keyword($request)
-    ->location($request)
-    ->orderBy('created_at', 'desc')
-    ->get([
-      'id', 'logo_image_link', 'company_name', 'address', 'verify'
-    ]);
+      ->keyword($request)
+      ->location($request)
+      ->orderBy('created_at', 'desc')
+      ->get([
+        'id', 'logo_image_link', 'company_name', 'address', 'verify'
+      ]);
 
     if ($employers->count() > 0) {
       $new_employers = [];
