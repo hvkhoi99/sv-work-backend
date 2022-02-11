@@ -145,6 +145,11 @@ Route::group([
       Route::get('{id}', [JobController::class, 'showJob']);
     });
 
+    // Company
+    Route::prefix('company')->group(function () {
+      Route::get('{id}', [CompanyController::class, 'companyInfo']);
+    });
+
     // Student -> Dashboard
     Route::prefix('dashboard')->group(function () {
       Route::get('applied-jobs', [StudentDashboardController::class, 'appliedJobs']);
@@ -323,12 +328,6 @@ Route::group([
 // Test
 Route::get('test', [TestController::class, 'test']);
 Route::post('upload', [TestController::class, 'upload']);
-
-// Company
-Route::prefix('company')->group(function () {
-  Route::get('{id}', [CompanyController::class, 'companyInfo']);
-});
-
 // Route::get('find/candidate', [RecruiterSearchController::class, 'getCandidateSearch']);
 // Route::get('find/jobs', [StudentSearchController::class, 'getJobs']);
 // Route::get('find/employers', [StudentSearchController::class, 'getEmployers']);
