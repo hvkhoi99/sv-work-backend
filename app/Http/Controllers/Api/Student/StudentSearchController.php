@@ -119,7 +119,7 @@ class StudentSearchController extends Controller
       ->location($request)
       ->orderBy('created_at', 'desc')
       ->get([
-        'id', 'logo_image_link', 'company_name', 'address', 'verify', 'user_id'
+        'id', 'logo_image_link', 'company_name', 'address', 'verify', 'user_id', 'created_at'
       ]);
 
     if (isset($employers) && $employers->count() > 0) {
