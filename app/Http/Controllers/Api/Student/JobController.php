@@ -15,51 +15,52 @@ class JobController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
+    $recruitment = Recruitment::whereId($id)->first();
 
-      $recruitment = Recruitment::whereId($id)->first();
-
-      if (isset($recruitment)) {
+    if (isset($recruitment)) {
+      if (isset($user)) {
         $application = Application::where([
           ['recruitment_id', $recruitment->id],
           ['user_id', $user->id]
         ])->first();
-        
-        $company_info = RecruiterProfile::where([
-          ['user_id', $recruitment->user_id]
-          ])->first();
+      } else {
+        $application = (object) [
+          'id' => 0,
+          'state' => null,
+          'is_invited' => false,
+          'is_applied' => false,
+          'is_saved' => false
+        ];
+      }
 
-        $recruitment["application"] = $application;
+      $company_info = RecruiterProfile::where([
+        ['user_id', $recruitment->user_id]
+      ])->first();
 
-        if (isset($company_info)) {
-          $recruitment["company_info"] = collect($company_info)
-            ->only(['id', 'logo_image_link', 'company_name', 'verify']);
+      $recruitment["application"] = $application;
 
-          return response()->json([
-            'status' => 1,
-            'code' => 200,
-            'data' => $recruitment
-          ], 200);
-        } else {
-          return response()->json([
-            'status' => 0,
-            'code' => 404,
-            'message' => 'Current data (application or company info) not available.'
-          ], 404);
-        }
+      if (isset($company_info)) {
+        $recruitment["company_info"] = collect($company_info)
+          ->only(['id', 'logo_image_link', 'company_name', 'verify']);
+
+        return response()->json([
+          'status' => 1,
+          'code' => 200,
+          'data' => $recruitment
+        ], 200);
       } else {
         return response()->json([
           'status' => 0,
           'code' => 404,
-          'message' => 'Current data not available.'
+          'message' => 'Current data (application or company info) not available.'
         ], 404);
       }
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 404,
+        'message' => 'Current data not available.'
+      ], 404);
     }
   }
 }

@@ -136,35 +136,27 @@ class RecruitmentController extends Controller
    */
   public function show(Request $request, $id)
   {
-    $user = $request->user();
-    if (isset($user)) {
+    $user = Auth::user();
 
-      $recruitment = Recruitment::whereId($id)->where('user_id', $user->id)->first();
+    $recruitment = Recruitment::whereId($id)->where('user_id', $user->id)->first();
 
-      if (isset($recruitment)) {
+    if (isset($recruitment)) {
 
-        $job_tags = JobTags::where('recruitment_id', $id)->first()->hashtags;
+      $job_tags = JobTags::where('recruitment_id', $id)->first()->hashtags;
 
-        $recruitment['hashtags'] = json_decode($job_tags);
+      $recruitment['hashtags'] = json_decode($job_tags);
 
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'data' => $recruitment
-        ], 200);
-      } else {
-        return response()->json([
-          'status' => 0,
-          'code' => 404,
-          'message' => 'Current data not available.'
-        ], 404);
-      }
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $recruitment
+      ], 200);
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 404,
+        'message' => 'Current data not available.'
+      ], 404);
     }
   }
 

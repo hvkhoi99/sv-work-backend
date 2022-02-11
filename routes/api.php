@@ -140,16 +140,6 @@ Route::group([
       Route::delete('{id}', [LanguageController::class, 'destroy']);
     });
 
-    // Job 
-    Route::prefix('job')->group(function () {
-      Route::get('{id}', [JobController::class, 'showJob']);
-    });
-
-    // Company
-    Route::prefix('company')->group(function () {
-      Route::get('{id}', [CompanyController::class, 'companyInfo']);
-    });
-
     // Student -> Dashboard
     Route::prefix('dashboard')->group(function () {
       Route::get('applied-jobs', [StudentDashboardController::class, 'appliedJobs']);
@@ -169,12 +159,6 @@ Route::group([
     // Event
     Route::prefix('event')->group(function () {
       Route::post('{id}', [StudentEventController::class, 'join']);
-    });
-    
-    // Search Jobs
-    Route::prefix('find')->group(function () {
-      Route::get('jobs', [StudentSearchController::class, 'getJobs']);
-      Route::get('employers', [StudentSearchController::class, 'getEmployers']);
     });
 
     // Student -> Recruiter
@@ -328,6 +312,23 @@ Route::group([
 // Test
 Route::get('test', [TestController::class, 'test']);
 Route::post('upload', [TestController::class, 'upload']);
+
+// Job 
+Route::prefix('job')->group(function () {
+  Route::get('{id}', [JobController::class, 'showJob']);
+});
+
+// Company
+Route::prefix('company')->group(function () {
+  Route::get('{id}', [CompanyController::class, 'companyInfo']);
+});
+
+// Search Jobs
+Route::prefix('find')->group(function () {
+  Route::get('jobs', [StudentSearchController::class, 'getJobs']);
+  Route::get('employers', [StudentSearchController::class, 'getEmployers']);
+});
+
 // Route::get('find/candidate', [RecruiterSearchController::class, 'getCandidateSearch']);
 // Route::get('find/jobs', [StudentSearchController::class, 'getJobs']);
 // Route::get('find/employers', [StudentSearchController::class, 'getEmployers']);

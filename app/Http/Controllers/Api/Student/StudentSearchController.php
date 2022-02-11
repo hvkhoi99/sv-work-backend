@@ -49,10 +49,20 @@ class StudentSearchController extends Controller
         ])->get()->count();
 
         // status between student and job
-        $application = Application::where([
-          ['user_id', $user->id],
-          ['recruitment_id', $job->id]
-        ])->first();
+        if (isset($user)) {
+          $application = Application::where([
+            ['user_id', $user->id],
+            ['recruitment_id', $job->id]
+          ])->first();
+        } else {
+          $application = (object) [
+            'id' => 0,
+            'state' => null,
+            'is_invited' => false,
+            'is_applied' => false,
+            'is_saved' => false
+          ];
+        }
 
         $hashtags = JobTags::where('recruitment_id', $job->id)->first()->hashtags;
         $job['hashtags'] = json_decode($hashtags);
