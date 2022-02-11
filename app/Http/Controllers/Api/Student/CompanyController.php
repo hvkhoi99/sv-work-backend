@@ -15,7 +15,7 @@ class CompanyController extends Controller
   {
     $user = Auth::user();
 
-    $s_profile = StudentProfile::where('user_id', $user->id)->first();
+    $s_profile = StudentProfile::where('user_id', $user['id'])->first();
 
     if (isset($s_profile)) {
       $company_info = RecruiterProfile::whereId($id)->first();
