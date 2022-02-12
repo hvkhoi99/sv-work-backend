@@ -20,11 +20,11 @@ class CreateRecruitmentsTable extends Migration
             $table->boolean('is_full_time');
             $table->string('job_category');
             $table->string('location');
-            $table->string('description');
-            $table->string('requirement');
+            $table->longText('description');
+            $table->longText('requirement');
             $table->unsignedInteger('min_salary');
             $table->unsignedInteger('max_salary');
-            $table->string('benefits');
+            $table->longText('benefits');
             $table->date('expiry_date');
             $table->boolean('is_closed')->nullable();
             $table->unsignedBigInteger('user_id');

@@ -20,7 +20,7 @@ class CreateExperiencesTable extends Migration
             $table->dateTime('from_date');
             $table->dateTime('to_date');
             $table->boolean('current_job')->nullable();
-            $table->string('description');
+            $table->longText('description');
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();

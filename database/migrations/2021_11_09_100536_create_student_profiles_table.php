@@ -27,7 +27,7 @@ class CreateStudentProfilesTable extends Migration
             // $table->string('district');
             $table->string('address');
             $table->boolean('gender');
-            $table->string('over_view')->nullable();
+            $table->longText('over_view')->nullable();
             $table->boolean('open_for_job')->nullable();
             $table->string('job_title');
             $table->unsignedBigInteger('user_id')->unique();
