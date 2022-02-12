@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\Auth;
 
 class JobController extends Controller
 {
-  public function showJob( Request $request, $id)
+  public function showJob($id)
   {
-    $user = $request->user();
+    $user = Auth::user();
 
     $recruitment = Recruitment::whereId($id)->first();
 
