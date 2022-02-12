@@ -18,7 +18,7 @@ class JobController extends Controller
     $recruitment = Recruitment::whereId($id)->first();
 
     if (isset($recruitment)) {
-      if ($user !== null) {
+      if (isset($user)) {
         $application = Application::where([
           ['recruitment_id', $recruitment->id],
           ['user_id', $user->id]
@@ -46,7 +46,8 @@ class JobController extends Controller
         return response()->json([
           'status' => 1,
           'code' => 200,
-          'data' => $recruitment
+          'data' => $recruitment,
+          'user' => $user
         ], 200);
       } else {
         return response()->json([
