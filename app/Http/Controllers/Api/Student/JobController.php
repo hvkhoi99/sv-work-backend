@@ -11,14 +11,14 @@ use Illuminate\Support\Facades\Auth;
 
 class JobController extends Controller
 {
-  public function showJob($id)
+  public function showJob( Request $request, $id)
   {
-    $user = Auth::user();
+    $user = $request->user();
 
     $recruitment = Recruitment::whereId($id)->first();
 
     if (isset($recruitment)) {
-      if ($user) {
+      if (isset($user)) {
         $application = Application::where([
           ['recruitment_id', $recruitment->id],
           ['user_id', $user->id]
