@@ -18,7 +18,7 @@ class JobController extends Controller
     $recruitment = Recruitment::whereId($id)->first();
 
     if (isset($recruitment)) {
-      if (isset($user)) {
+      if ($user !== null) {
         $application = Application::where([
           ['recruitment_id', $recruitment->id],
           ['user_id', $user->id]
