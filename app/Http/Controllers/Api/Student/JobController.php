@@ -6,14 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\Application;
 use App\Models\RecruiterProfile;
 use App\Models\Recruitment;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class JobController extends Controller
 {
-  public function showJob($id)
+  public function showJob(Request $request, $id)
   {
-    $user = Auth::user();
+    $user = User::where('email', $request['email'])->first();
 
     $recruitment = Recruitment::whereId($id)->first();
 
