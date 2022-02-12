@@ -16,79 +16,12 @@ class StudentApplicationController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
-      $s_profile = StudentProfile::where('user_id', $user->id)->first();
+    $s_profile = StudentProfile::where('user_id', $user->id)->first();
 
-      if (isset($s_profile) && $s_profile->open_for_job) {
-        $exist_recruitment = Recruitment::whereId($id)->first();
-
-        if (isset($exist_recruitment)) {
-          $exist_application = Application::where([
-            ['user_id', $user->id],
-            ['recruitment_id', $id]
-          ])->first();
-
-          if (isset($exist_application)) {
-            $exist_application->update([
-              'is_applied' => !($exist_application->is_applied)
-            ]);
-
-            return response()->json([
-              'status' => 1,
-              'code' => 200,
-              'message' => 'Successfully updated.',
-              'data' => $exist_application
-            ], 200);
-          } else {
-            $new_application = Application::create([
-              'state' => null,
-              'is_invited' => false,
-              'is_applied' => true,
-              'is_saved' => false,
-              'user_id' => $user->id,
-              'recruitment_id' => $id
-            ]);
-
-            return response()->json([
-              'status' => 1,
-              'code' => 200,
-              'message' => 'Successfully applied.',
-              'data' => $new_application
-            ], 200);
-          }
-        } else {
-          return response()->json([
-            'status' => 0,
-            'code' => 404,
-            'message' => 'The recruitment doesn\'t exist.'
-          ], 404);
-        }
-      } else {
-        return response()->json([
-          'status' => 0,
-          'code' => 404,
-          'message' => 'Your student profile has not been created or your open job option is on.',
-          'data' => $user
-        ], 404);
-      }
-    } else {
-      return response()->json([
-        'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
-    }
-  }
-
-  public function saveJob($id)
-  {
-    $user = Auth::user();
-
-    if (isset($user)) {
-      $s_profile = StudentProfile::where('user_id', $user->id)->first();
+    if (isset($s_profile) && $s_profile->open_for_job) {
       $exist_recruitment = Recruitment::whereId($id)->first();
 
-      if (isset($s_profile) && isset($exist_recruitment)) {
+      if (isset($exist_recruitment)) {
         $exist_application = Application::where([
           ['user_id', $user->id],
           ['recruitment_id', $id]
@@ -96,21 +29,21 @@ class StudentApplicationController extends Controller
 
         if (isset($exist_application)) {
           $exist_application->update([
-            'is_saved' => !($exist_application->is_saved)
+            'is_applied' => !($exist_application->is_applied)
           ]);
 
           return response()->json([
             'status' => 1,
             'code' => 200,
-            'message' => 'Successfully ' . ($exist_application->is_saved ? 'saved' : 'un-save') . ' job.',
+            'message' => 'Successfully updated.',
             'data' => $exist_application
           ], 200);
         } else {
           $new_application = Application::create([
             'state' => null,
             'is_invited' => false,
-            'is_applied' => false,
-            'is_saved' => true,
+            'is_applied' => true,
+            'is_saved' => false,
             'user_id' => $user->id,
             'recruitment_id' => $id
           ]);
@@ -118,7 +51,7 @@ class StudentApplicationController extends Controller
           return response()->json([
             'status' => 1,
             'code' => 200,
-            'message' => 'Successfully saved (created).',
+            'message' => 'Successfully applied.',
             'data' => $new_application
           ], 200);
         }
@@ -126,15 +59,66 @@ class StudentApplicationController extends Controller
         return response()->json([
           'status' => 0,
           'code' => 404,
-          'message' => 'The recruitment or your student profile doesn\'t exist.'
+          'message' => 'The recruitment doesn\'t exist.'
         ], 404);
       }
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 404,
+        'message' => 'Your student profile has not been created or your open job option is on.',
+        'data' => $user
+      ], 404);
+    }
+  }
+
+  public function saveJob($id)
+  {
+    $user = Auth::user();
+
+    $s_profile = StudentProfile::where('user_id', $user->id)->first();
+    $exist_recruitment = Recruitment::whereId($id)->first();
+
+    if (isset($s_profile) && isset($exist_recruitment)) {
+      $exist_application = Application::where([
+        ['user_id', $user->id],
+        ['recruitment_id', $id]
+      ])->first();
+
+      if (isset($exist_application)) {
+        $exist_application->update([
+          'is_saved' => !($exist_application->is_saved)
+        ]);
+
+        return response()->json([
+          'status' => 1,
+          'code' => 200,
+          'message' => 'Successfully ' . ($exist_application->is_saved ? 'saved' : 'un-save') . ' job.',
+          'data' => $exist_application
+        ], 200);
+      } else {
+        $new_application = Application::create([
+          'state' => null,
+          'is_invited' => false,
+          'is_applied' => false,
+          'is_saved' => true,
+          'user_id' => $user->id,
+          'recruitment_id' => $id
+        ]);
+
+        return response()->json([
+          'status' => 1,
+          'code' => 200,
+          'message' => 'Successfully saved (created).',
+          'data' => $new_application
+        ], 200);
+      }
+    } else {
+      return response()->json([
+        'status' => 0,
+        'code' => 404,
+        'message' => 'The recruitment or your student profile doesn\'t exist.'
+      ], 404);
     }
   }
 
@@ -142,56 +126,48 @@ class StudentApplicationController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
-      $s_profile = StudentProfile::where('user_id', $user->id)->first();
+    $s_profile = StudentProfile::where('user_id', $user->id)->first();
 
-      if (isset($s_profile)) {
-        $exist_recruitment = Recruitment::whereId($id)->first();
+    if (isset($s_profile)) {
+      $exist_recruitment = Recruitment::whereId($id)->first();
 
-        if (isset($exist_recruitment)) {
-          $exist_application = Application::where([
-            ['user_id', $user->id],
-            ['recruitment_id', $id]
-          ])->first();
+      if (isset($exist_recruitment)) {
+        $exist_application = Application::where([
+          ['user_id', $user->id],
+          ['recruitment_id', $id]
+        ])->first();
 
-          if (isset($exist_application)) {
-            $exist_application->update([
-              'state' => true
-            ]);
+        if (isset($exist_application)) {
+          $exist_application->update([
+            'state' => true
+          ]);
 
-            return response()->json([
-              'status' => 1,
-              'code' => 200,
-              'message' => 'Successfully accepted job offer.',
-              'data' => $exist_application
-            ], 200);
-          } else {
-            return response()->json([
-              'status' => 0,
-              'code' => 404,
-              'message' => 'The application doesn\'t exist.'
-            ], 404);
-          }
+          return response()->json([
+            'status' => 1,
+            'code' => 200,
+            'message' => 'Successfully accepted job offer.',
+            'data' => $exist_application
+          ], 200);
         } else {
           return response()->json([
             'status' => 0,
             'code' => 404,
-            'message' => 'The recruitment doesn\'t exist.'
+            'message' => 'The application doesn\'t exist.'
           ], 404);
         }
       } else {
         return response()->json([
           'status' => 0,
           'code' => 404,
-          'message' => 'Your student profile doesn\'t exist.'
+          'message' => 'The recruitment doesn\'t exist.'
         ], 404);
       }
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 404,
+        'message' => 'Your student profile doesn\'t exist.'
+      ], 404);
     }
   }
 
@@ -199,56 +175,48 @@ class StudentApplicationController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
-      $s_profile = StudentProfile::where('user_id', $user->id)->first();
+    $s_profile = StudentProfile::where('user_id', $user->id)->first();
 
-      if (isset($s_profile)) {
-        $exist_recruitment = Recruitment::whereId($id)->first();
+    if (isset($s_profile)) {
+      $exist_recruitment = Recruitment::whereId($id)->first();
 
-        if (isset($exist_recruitment)) {
-          $exist_application = Application::where([
-            ['user_id', $user->id],
-            ['recruitment_id', $id]
-          ])->first();
+      if (isset($exist_recruitment)) {
+        $exist_application = Application::where([
+          ['user_id', $user->id],
+          ['recruitment_id', $id]
+        ])->first();
 
-          if (isset($exist_application)) {
-            $exist_application->update([
-              'state' => false
-            ]);
+        if (isset($exist_application)) {
+          $exist_application->update([
+            'state' => false
+          ]);
 
-            return response()->json([
-              'status' => 1,
-              'code' => 200,
-              'message' => 'Successfully rejected job offer.',
-              'data' => $exist_application
-            ], 200);
-          } else {
-            return response()->json([
-              'status' => 0,
-              'code' => 404,
-              'message' => 'The application doesn\'t exist.'
-            ], 404);
-          }
+          return response()->json([
+            'status' => 1,
+            'code' => 200,
+            'message' => 'Successfully rejected job offer.',
+            'data' => $exist_application
+          ], 200);
         } else {
           return response()->json([
             'status' => 0,
             'code' => 404,
-            'message' => 'The recruitment doesn\'t exist.'
+            'message' => 'The application doesn\'t exist.'
           ], 404);
         }
       } else {
         return response()->json([
           'status' => 0,
           'code' => 404,
-          'message' => 'Your student profile doesn\'t exist.'
+          'message' => 'The recruitment doesn\'t exist.'
         ], 404);
       }
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 404,
+        'message' => 'Your student profile doesn\'t exist.'
+      ], 404);
     }
   }
 

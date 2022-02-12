@@ -19,31 +19,23 @@ class ExperienceController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
-      $_limit = $request['_limit'];
-      $experiences = Experience::where('user_id', $user->id)
-        ->orderBy('updated_at', 'desc')
-        ->paginate($_limit);
+    $_limit = $request['_limit'];
+    $experiences = Experience::where('user_id', $user->id)
+      ->orderBy('updated_at', 'desc')
+      ->paginate($_limit);
 
-      if (isset($experiences)) {
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'data' => $experiences
-        ], 200);
-      } else {
-        return response()->json([
-          'status' => 0,
-          'code' => 404,
-          'message' => 'Experience list does not exist.'
-        ], 404);
-      }
+    if (isset($experiences)) {
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $experiences
+      ], 200);
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 404,
+        'message' => 'Experience list does not exist.'
+      ], 404);
     }
   }
 
@@ -67,30 +59,22 @@ class ExperienceController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
 
-      $new_experience = Experience::create([
-        'position' => $request['position'],
-        'company' => $request['company'],
-        'from_date' => $request['from_date'],
-        'to_date' => $request['to_date'],
-        'current_job' => $request['current_job'],
-        'description' => $request['description'],
-        'user_id' => $user->id
-      ]);
+    $new_experience = Experience::create([
+      'position' => $request['position'],
+      'company' => $request['company'],
+      'from_date' => $request['from_date'],
+      'to_date' => $request['to_date'],
+      'current_job' => $request['current_job'],
+      'description' => $request['description'],
+      'user_id' => $user->id
+    ]);
 
-      return response()->json([
-        'status' => 1,
-        'code' => 200,
-        'data' => $new_experience
-      ], 200);
-    } else {
-      return response()->json([
-        'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
-    }
+    return response()->json([
+      'status' => 1,
+      'code' => 200,
+      'data' => $new_experience
+    ], 200);
   }
 
   /**
@@ -126,31 +110,23 @@ class ExperienceController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
 
-      $experience = Experience::whereId($id)->where('user_id', $user->id)->first();
+    $experience = Experience::whereId($id)->where('user_id', $user->id)->first();
 
-      if (isset($experience)) {
-        $experience->update($request->all());
+    if (isset($experience)) {
+      $experience->update($request->all());
 
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'data' => $experience
-        ], 200);
-      } else {
-        return response()->json([
-          'status' => 0,
-          'code' => 400,
-          'message' => 'Your experience was not found or has not been created.'
-        ], 400);
-      }
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $experience
+      ], 200);
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 400,
+        'message' => 'Your experience was not found or has not been created.'
+      ], 400);
     }
   }
 
@@ -164,32 +140,23 @@ class ExperienceController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
 
-      $experience = Experience::whereId($id)->where('user_id', $user->id)->first();
+    $experience = Experience::whereId($id)->where('user_id', $user->id)->first();
 
-      if (isset($experience)) {
-        $experience->delete();
+    if (isset($experience)) {
+      $experience->delete();
 
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'message' => 'Successfully deleted.'
-        ], 200);
-        
-      } else {
-        return response()->json([
-          'status' => 0,
-          'code' => 404,
-          'message' => 'Your experience was not found or has not been created.'
-        ], 404);
-      }
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'message' => 'Successfully deleted.'
+      ], 200);
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 404,
+        'message' => 'Your experience was not found or has not been created.'
+      ], 404);
     }
   }
 }

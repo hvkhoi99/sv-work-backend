@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\Auth;
 
 class CompanyController extends Controller
 {
-  public function companyInfo($id)
+  public function companyInfo(Request $request, $id)
   {
-    $user = Auth::user();
+    $user = $request->user('api');
 
     if (isset($user)) {
       $s_profile = StudentProfile::where('user_id', $user->id)->first();

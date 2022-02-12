@@ -15,7 +15,7 @@ class StudentSearchController extends Controller
 {
   public function getJobs(Request $request)
   {
-    $user = Auth::user();
+    $user = $request->user('api');
 
     $jobs = Recruitment::query();
     $jobs = $jobs

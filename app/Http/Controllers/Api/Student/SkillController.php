@@ -19,36 +19,27 @@ class SkillController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
 
-      $skills = Skill::where('user_id', $user->id)->first();
+    $skills = Skill::where('user_id', $user->id)->first();
 
-      if (isset($skills)) {
-        // $array_skill = explode(',', $skills->name);
-        $skills->skills = json_decode($skills->skills);
+    if (isset($skills)) {
+      // $array_skill = explode(',', $skills->name);
+      $skills->skills = json_decode($skills->skills);
 
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'data' => $skills
-        ], 200);
-
-      } else {
-        return response()->json([
-          'status' => 1,
-          'code' => 404,
-          'data' => (object) [
-            'skills' => [],
-          ],
-          'message' => 'Skills list does not exist.'
-        ], 200);
-      }
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $skills
+      ], 200);
     } else {
       return response()->json([
-        'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'status' => 1,
+        'code' => 404,
+        'data' => (object) [
+          'skills' => [],
+        ],
+        'message' => 'Skills list does not exist.'
+      ], 200);
     }
   }
 
@@ -72,39 +63,31 @@ class SkillController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
 
-      $skills = Skill::where('user_id', $user->id)->first();
+    $skills = Skill::where('user_id', $user->id)->first();
 
-      if (isset($skills)) {
+    if (isset($skills)) {
 
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'message' => 'Your skill already exists.',
-          'data' => $skills
-        ], 200);
-      } else {
-
-        $new_skills = Skill::create([
-          'skills' => json_encode($request['skills']),
-          'user_id' => $user->id
-        ]);
-
-        $new_skills->skills = $request['skills'];
-
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'data' => $new_skills
-        ], 200);
-      }
-    } else {
       return response()->json([
-        'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'status' => 1,
+        'code' => 200,
+        'message' => 'Your skill already exists.',
+        'data' => $skills
+      ], 200);
+    } else {
+
+      $new_skills = Skill::create([
+        'skills' => json_encode($request['skills']),
+        'user_id' => $user->id
+      ]);
+
+      $new_skills->skills = $request['skills'];
+
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $new_skills
+      ], 200);
     }
   }
 
@@ -141,37 +124,29 @@ class SkillController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
 
-      $skills = Skill::where('user_id', $user->id)->first();
+    $skills = Skill::where('user_id', $user->id)->first();
 
-      if (isset($skills)) {
+    if (isset($skills)) {
 
-        $skills->update([
-          'skills' => json_encode($request['skills']),
-          'user_id' => $user->id
-        ]);
+      $skills->update([
+        'skills' => json_encode($request['skills']),
+        'user_id' => $user->id
+      ]);
 
-        $skills->skills = $request['skills'];
+      $skills->skills = $request['skills'];
 
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'data' => $skills
-        ], 200);
-      } else {
-        return response()->json([
-          'status' => 0,
-          'code' => 400,
-          'message' => 'Something went wrong, please try again later.'
-        ], 400);
-      }
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $skills
+      ], 200);
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 400,
+        'message' => 'Something went wrong, please try again later.'
+      ], 400);
     }
   }
 
@@ -185,31 +160,23 @@ class SkillController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
 
-      $skills = Skill::where('user_id', $user->id)->first();
+    $skills = Skill::where('user_id', $user->id)->first();
 
-      if (isset($skills)) {
-        $skills->delete();
-        
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'message' => 'Successfully deleted.'
-        ], 200);
-      } else {
-        return response()->json([
-          'status' => 0,
-          'code' => 404,
-          'message' => 'Your skill was not found or has not been created.'
-        ], 404);
-      }
+    if (isset($skills)) {
+      $skills->delete();
+
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'message' => 'Successfully deleted.'
+      ], 200);
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 404,
+        'message' => 'Your skill was not found or has not been created.'
+      ], 404);
     }
   }
 }

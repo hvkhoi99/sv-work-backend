@@ -97,7 +97,7 @@ class UserController extends Controller
 
   public function changePassword(ApiChangePasswordRequest $request)
   {
-    $user = Auth::user();
+    $user = $request->user('api');
 
     if (isset($user)) {
 
@@ -122,7 +122,7 @@ class UserController extends Controller
       return response()->json([
         'status' => 0,
         'code' => 401,
-        'message' => 'UNAUTHORIZED'
+        'message' => 'Unauthenticated.'
       ], 401);
     }
   }

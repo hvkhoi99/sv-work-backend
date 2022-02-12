@@ -56,7 +56,6 @@ Route::group([
     Route::put('change', [UserController::class, 'changePassword']);
   });
 
-
   // Admin
   Route::group([
     'name' => 'admin.',
@@ -310,8 +309,8 @@ Route::group([
 });
 
 // Test
-Route::get('test', [TestController::class, 'test']);
-Route::post('upload', [TestController::class, 'upload']);
+// Route::get('test', [TestController::class, 'test']);
+// Route::post('upload', [TestController::class, 'upload']);
 
 // Job 
 Route::prefix('job')->group(function () {

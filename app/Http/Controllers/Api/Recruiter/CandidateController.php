@@ -22,151 +22,135 @@ class CandidateController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
-      $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
+    $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
 
-      if (isset($r_profile)) {
-        $s_profile = StudentProfile::whereId($id)->first();
+    if (isset($r_profile)) {
+      $s_profile = StudentProfile::whereId($id)->first();
 
-        if (isset($s_profile)) {
-          $applied_applications = Application::where([
-            // ['state', null],
-            ['is_applied', true],
-            ['user_id', $s_profile->user_id]
-          ])->orderBy('created_at', 'desc')->get();
+      if (isset($s_profile)) {
+        $applied_applications = Application::where([
+          // ['state', null],
+          ['is_applied', true],
+          ['user_id', $s_profile->user_id]
+        ])->orderBy('created_at', 'desc')->get();
 
-          $applied_jobs = [];
-          foreach ($applied_applications as $application) {
-            $recruitment = Recruitment::where([
-              ['id', $application->recruitment_id],
-            ])->first();
+        $applied_jobs = [];
+        foreach ($applied_applications as $application) {
+          $recruitment = Recruitment::where([
+            ['id', $application->recruitment_id],
+          ])->first();
 
-            $recruitment = collect($recruitment)
-              ->only(['id', 'title', 'is_closed']);
-            $recruitment["application"] = $application;
+          $recruitment = collect($recruitment)
+            ->only(['id', 'title', 'is_closed']);
+          $recruitment["application"] = $application;
 
-            array_push($applied_jobs, $recruitment);
-          }
-          $s_profile["applied_jobs"] = $applied_jobs;
-
-          $invited_applications = Application::where([
-            // ['state', null],
-            ['is_invited', true],
-            ['user_id', $s_profile->user_id]
-          ])->orderBy('created_at', 'desc')->get();
-
-          $invited_jobs = [];
-          foreach ($invited_applications as $application) {
-            $recruitment = Recruitment::where([
-              ['id', $application->recruitment_id],
-            ])->first();
-
-            $recruitment = collect($recruitment)
-              ->only(['id', 'title', 'is_closed']);
-            $recruitment["application"] = $application;
-
-            array_push($invited_jobs, $recruitment);
-          }
-          $s_profile["invited_jobs"] = $invited_jobs;
-
-          $skills = Skill::where('user_id', $s_profile->user_id)->first();
-          $languages = Language::where('user_id', $s_profile->user_id)->first();
-          $experiences = Experience::where('user_id', $s_profile->user_id)->orderBy('created_at', 'desc')->get();
-          $educations = Education::where('user_id', $s_profile->user_id)->orderBy('created_at', 'desc')->get();
-          $certificates = Certificate::where('user_id', $s_profile->user_id)->orderBy('created_at', 'desc')->get();
-          $s_profile["skills"] = isset($skills) ? json_decode($skills->skills) : null;
-          $s_profile["languages"] = isset($languages) ? json_decode($languages->locales) : null;
-          $s_profile["experiences"] = $experiences;
-          $s_profile["educations"] = $educations;
-          $s_profile["certificates"] = $certificates;
-
-          return response()->json([
-            'status' => 1,
-            'code' => 200,
-            'data' => $s_profile
-          ], 200);
-        } else {
-          return response()->json([
-            'status' => 0,
-            'code' => 404,
-            'message' => 'Candidate\'s profile has not been created.'
-          ], 404);
+          array_push($applied_jobs, $recruitment);
         }
+        $s_profile["applied_jobs"] = $applied_jobs;
+
+        $invited_applications = Application::where([
+          // ['state', null],
+          ['is_invited', true],
+          ['user_id', $s_profile->user_id]
+        ])->orderBy('created_at', 'desc')->get();
+
+        $invited_jobs = [];
+        foreach ($invited_applications as $application) {
+          $recruitment = Recruitment::where([
+            ['id', $application->recruitment_id],
+          ])->first();
+
+          $recruitment = collect($recruitment)
+            ->only(['id', 'title', 'is_closed']);
+          $recruitment["application"] = $application;
+
+          array_push($invited_jobs, $recruitment);
+        }
+        $s_profile["invited_jobs"] = $invited_jobs;
+
+        $skills = Skill::where('user_id', $s_profile->user_id)->first();
+        $languages = Language::where('user_id', $s_profile->user_id)->first();
+        $experiences = Experience::where('user_id', $s_profile->user_id)->orderBy('created_at', 'desc')->get();
+        $educations = Education::where('user_id', $s_profile->user_id)->orderBy('created_at', 'desc')->get();
+        $certificates = Certificate::where('user_id', $s_profile->user_id)->orderBy('created_at', 'desc')->get();
+        $s_profile["skills"] = isset($skills) ? json_decode($skills->skills) : null;
+        $s_profile["languages"] = isset($languages) ? json_decode($languages->locales) : null;
+        $s_profile["experiences"] = $experiences;
+        $s_profile["educations"] = $educations;
+        $s_profile["certificates"] = $certificates;
+
+        return response()->json([
+          'status' => 1,
+          'code' => 200,
+          'data' => $s_profile
+        ], 200);
       } else {
         return response()->json([
           'status' => 0,
           'code' => 404,
-          'message' => 'Your recruiter profile has not been created.'
+          'message' => 'Candidate\'s profile has not been created.'
         ], 404);
       }
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 404,
+        'message' => 'Your recruiter profile has not been created.'
+      ], 404);
     }
   }
 
   public function approve($recruitment_id, $candidate_id)
   {
     $user = Auth::user();
+    
+    $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
+    $exist_recruitment = Recruitment::where([
+      ['id', $recruitment_id],
+      ['user_id', $user->id]
+    ])->first();
 
-    if (isset($user)) {
-      $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
-      $exist_recruitment = Recruitment::where([
-        ['id', $recruitment_id],
-        ['user_id', $user->id]
-      ])->first();
+    if (isset($r_profile) && isset($exist_recruitment)) {
+      $s_profile = StudentProfile::whereId($candidate_id)->first();
 
-      if (isset($r_profile) && isset($exist_recruitment)) {
-        $s_profile = StudentProfile::whereId($candidate_id)->first();
+      if (isset($s_profile)) {
+        $exist_application = Application::where([
+          ['recruitment_id', $exist_recruitment->id],
+          ['user_id', $s_profile->user_id],
+        ])->first();
 
-        if (isset($s_profile)) {
-          $exist_application = Application::where([
-            ['recruitment_id', $exist_recruitment->id],
-            ['user_id', $s_profile->user_id],
-          ])->first();
+        if (isset($exist_application) && $exist_application->is_applied) {
 
-          if (isset($exist_application) && $exist_application->is_applied) {
+          $exist_application->update([
+            'state' => !($exist_application->state)
+          ]);
 
-            $exist_application->update([
-              'state' => !($exist_application->state)
-            ]);
-
-            return response()->json([
-              'status' => 1,
-              'code' => 200,
-              'message' => $exist_application->state ? 'Successfully approve.' : 'Successfully reject.',
-              'data' => $exist_application
-            ], 200);
-          } else {
-            return response()->json([
-              'status' => 0,
-              'code' => 404,
-              'message' => 'No applications found.'
-            ], 404);
-          }
+          return response()->json([
+            'status' => 1,
+            'code' => 200,
+            'message' => $exist_application->state ? 'Successfully approve.' : 'Successfully reject.',
+            'data' => $exist_application
+          ], 200);
         } else {
           return response()->json([
             'status' => 0,
             'code' => 404,
-            'message' => 'The candidate\'s profile could not be found.'
+            'message' => 'No applications found.'
           ], 404);
         }
       } else {
         return response()->json([
           'status' => 0,
           'code' => 404,
-          'message' => 'The recruitment doesn\'t exist or your recruiter profile does not exist.'
+          'message' => 'The candidate\'s profile could not be found.'
         ], 404);
       }
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 404,
+        'message' => 'The recruitment doesn\'t exist or your recruiter profile does not exist.'
+      ], 404);
     }
   }
 

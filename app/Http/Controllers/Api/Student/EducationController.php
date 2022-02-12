@@ -19,31 +19,23 @@ class EducationController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
-      $_limit = $request['_limit'];
-      $educations = Education::where('user_id', $user->id)
-        ->orderBy('updated_at', 'desc')
-        ->paginate($_limit);
+    $_limit = $request['_limit'];
+    $educations = Education::where('user_id', $user->id)
+      ->orderBy('updated_at', 'desc')
+      ->paginate($_limit);
 
-      if (isset($educations)) {
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'data' => $educations
-        ], 200);
-      } else {
-        return response()->json([
-          'status' => 0,
-          'code' => 404,
-          'message' => 'Education list does not exist.'
-        ], 404);
-      }
+    if (isset($educations)) {
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $educations
+      ], 200);
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 404,
+        'message' => 'Education list does not exist.'
+      ], 404);
     }
   }
 
@@ -67,29 +59,21 @@ class EducationController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
 
-      $new_education = Education::create([
-        'major' => $request['major'],
-        'school' => $request['school'],
-        'from_date' => $request['from_date'],
-        'to_date' => $request['to_date'],
-        'achievements' => $request['achievements'],
-        'user_id' => $user->id
-      ]);
+    $new_education = Education::create([
+      'major' => $request['major'],
+      'school' => $request['school'],
+      'from_date' => $request['from_date'],
+      'to_date' => $request['to_date'],
+      'achievements' => $request['achievements'],
+      'user_id' => $user->id
+    ]);
 
-      return response()->json([
-        'status' => 1,
-        'code' => 200,
-        'data' => $new_education
-      ], 200);
-    } else {
-      return response()->json([
-        'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
-    }
+    return response()->json([
+      'status' => 1,
+      'code' => 200,
+      'data' => $new_education
+    ], 200);
   }
 
   /**
@@ -125,30 +109,22 @@ class EducationController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
 
-      $education = Education::whereId($id)->where('user_id', $user->id)->first();
+    $education = Education::whereId($id)->where('user_id', $user->id)->first();
 
-      if (isset($education)) {
-        $education->update($request->all());
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'data' => $education
-        ], 200);
-      } else {
-        return response()->json([
-          'status' => 0,
-          'code' => 400,
-          'message' => 'Something went wrong, please try again later.'
-        ], 400);
-      }
+    if (isset($education)) {
+      $education->update($request->all());
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $education
+      ], 200);
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 400,
+        'message' => 'Something went wrong, please try again later.'
+      ], 400);
     }
   }
 
@@ -162,31 +138,23 @@ class EducationController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
 
-      $education = Education::whereId($id)->where('user_id', $user->id)->first();
+    $education = Education::whereId($id)->where('user_id', $user->id)->first();
 
-      if (isset($education)) {
-        $education->delete();
-        
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'message' => 'Successfully deleted.'
-        ], 200);
-      } else {
-        return response()->json([
-          'status' => 0,
-          'code' => 404,
-          'message' => 'Your education was not found or has not been created.'
-        ], 404);
-      }
+    if (isset($education)) {
+      $education->delete();
+
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'message' => 'Successfully deleted.'
+      ], 200);
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 404,
+        'message' => 'Your education was not found or has not been created.'
+      ], 404);
     }
   }
 }

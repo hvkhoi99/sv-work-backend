@@ -21,26 +21,19 @@ class RecruiterProfileController extends Controller
   public function index()
   {
     $user = Auth::user();
-    if (isset($user)) {
-      $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
-      if (isset($r_profile)) {
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'data' => $r_profile
-        ], 200);
-      } else {
-        return response()->json([
-          'status' => 0,
-          'code' => 404,
-          'message' => 'Your recruiter profile was not found or has not been created.',
-        ], 404);
-      }
+
+    $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
+    if (isset($r_profile)) {
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $r_profile
+      ], 200);
     } else {
       return response()->json([
         'status' => 0,
         'code' => 404,
-        'message' => 'UNAUTHORIZED'
+        'message' => 'Your recruiter profile was not found or has not been created.',
       ], 404);
     }
   }
@@ -64,51 +57,44 @@ class RecruiterProfileController extends Controller
   public function store(ApiRecruiterProfileRequest $request)
   {
     $user = Auth::user();
-    if (isset($user)) {
-      $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
-      $s_profile = StudentProfile::where('user_id', $user->id)->first();
-      $user->role_id === 3 && $user["s_profile"] = isset($s_profile) ? $s_profile : null;
 
-      if (isset($r_profile)) {
-        $user["r_profile"] = $r_profile;
+    $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
+    $s_profile = StudentProfile::where('user_id', $user->id)->first();
+    $user->role_id === 3 && $user["s_profile"] = isset($s_profile) ? $s_profile : null;
 
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'message' => 'Your recruiter profile already exists.',
-          'data' => $user
-        ], 200);
-      } else {
-        $new_r_profile = RecruiterProfile::create([
-          'contact_email' => $request['contact_email'],
-          'company_name' => $request['company_name'],
-          'logo_image_link' => "https://res.cloudinary.com/dakhi21gx/image/upload/v1643021161/default-avatar.png",
-          // 'description_image_link' => $request['description_image_link'],
-          'description' => $request['description'],
-          'phone_number' => $request['phone_number'],
-          'verify' => null,
-          'address' => $request['address'],
-          'company_size' => $request['company_size'],
-          'company_industry' => $request['company_industry'],
-          'tax_code' => $request['tax_code'],
-          'user_id' => $user->id
-        ]);
+    if (isset($r_profile)) {
+      $user["r_profile"] = $r_profile;
 
-        $user["r_profile"] = $new_r_profile;
-
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'message' => 'Your recruiter profile was successfully created.',
-          'data' => $user
-        ], 200);
-      }
-    } else {
       return response()->json([
-        'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'status' => 1,
+        'code' => 200,
+        'message' => 'Your recruiter profile already exists.',
+        'data' => $user
+      ], 200);
+    } else {
+      $new_r_profile = RecruiterProfile::create([
+        'contact_email' => $request['contact_email'],
+        'company_name' => $request['company_name'],
+        'logo_image_link' => "https://res.cloudinary.com/dakhi21gx/image/upload/v1643021161/default-avatar.png",
+        // 'description_image_link' => $request['description_image_link'],
+        'description' => $request['description'],
+        'phone_number' => $request['phone_number'],
+        'verify' => null,
+        'address' => $request['address'],
+        'company_size' => $request['company_size'],
+        'company_industry' => $request['company_industry'],
+        'tax_code' => $request['tax_code'],
+        'user_id' => $user->id
+      ]);
+
+      $user["r_profile"] = $new_r_profile;
+
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'message' => 'Your recruiter profile was successfully created.',
+        'data' => $user
+      ], 200);
     }
   }
 
@@ -170,44 +156,37 @@ class RecruiterProfileController extends Controller
   public function update(ApiRecruiterProfileRequest $request, $id)
   {
     $user = Auth::user();
-    if (isset($user)) {
-      $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
-      $s_profile = StudentProfile::where('user_id', $user->id)->first();
-      $user->role_id === 3 && $user["s_profile"] = isset($s_profile) ? $s_profile : null;
 
-      if (isset($r_profile)) {
-        $verify = $request["verify"];
+    $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
+    $s_profile = StudentProfile::where('user_id', $user->id)->first();
+    $user->role_id === 3 && $user["s_profile"] = isset($s_profile) ? $s_profile : null;
 
-        if ($verify) {
-          return response()->json([
-            'status' => 0,
-            'code' => 400,
-            'message' => 'You cannot verify your own profile. Please try again later.'
-          ], 400);
-        } else {
-          $r_profile->update($request->all());
-          $user["r_profile"] = $r_profile;
+    if (isset($r_profile)) {
+      $verify = $request["verify"];
 
-          return response()->json([
-            'status' => 1,
-            'code' => 200,
-            'mesage' => 'Your recruiter profile was successfully updated.',
-            'data' => $user
-          ], 200);
-        }
-      } else {
+      if ($verify) {
         return response()->json([
           'status' => 0,
-          'code' => 404,
-          'message' => 'Your recruiter profile was not found or has not been created.'
-        ], 404);
+          'code' => 400,
+          'message' => 'You cannot verify your own profile. Please try again later.'
+        ], 400);
+      } else {
+        $r_profile->update($request->all());
+        $user["r_profile"] = $r_profile;
+
+        return response()->json([
+          'status' => 1,
+          'code' => 200,
+          'mesage' => 'Your recruiter profile was successfully updated.',
+          'data' => $user
+        ], 200);
       }
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 404,
+        'message' => 'Your recruiter profile was not found or has not been created.'
+      ], 404);
     }
   }
 
@@ -225,35 +204,28 @@ class RecruiterProfileController extends Controller
   public function updateDescription(Request $request, $id)
   {
     $user = Auth::user();
-    if (isset($user)) {
-      $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
-      $s_profile = StudentProfile::where('user_id', $user->id)->first();
-      $user["s_profile"] = isset($s_profile) && $user->role_id === 3 ? $s_profile : null;
 
-      if (isset($r_profile)) {
-        $r_profile->update($request->all());
+    $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
+    $s_profile = StudentProfile::where('user_id', $user->id)->first();
+    $user["s_profile"] = isset($s_profile) && $user->role_id === 3 ? $s_profile : null;
 
-        $user["r_profile"] = $r_profile;
+    if (isset($r_profile)) {
+      $r_profile->update($request->all());
 
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'mesage' => 'Your recruiter profile was successfully updated.',
-          'data' => $user
-        ], 200);
-      } else {
-        return response()->json([
-          'status' => 0,
-          'code' => 404,
-          'message' => 'Your recruiter profile was not found or has not been created.'
-        ], 404);
-      }
+      $user["r_profile"] = $r_profile;
+
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'mesage' => 'Your recruiter profile was successfully updated.',
+        'data' => $user
+      ], 200);
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 404,
+        'message' => 'Your recruiter profile was not found or has not been created.'
+      ], 404);
     }
   }
 
@@ -261,35 +233,28 @@ class RecruiterProfileController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
-      $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
 
-      if (isset($r_profile)) {
-        $response = cloudinary()->upload($request->file('file')->getRealPath())->getSecurePath();
+    $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
 
-        $r_profile->update([
-          'logo_image_link' => $response
-        ]);
+    if (isset($r_profile)) {
+      $response = cloudinary()->upload($request->file('file')->getRealPath())->getSecurePath();
 
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'mesage' => 'Your recruiter profile (avatar) was successfully updated.',
-          'data' => $r_profile
-        ], 200);
-      } else {
-        return response()->json([
-          'status' => 0,
-          'code' => 404,
-          'message' => 'Your recruiter profile has not been created.'
-        ], 404);
-      }
+      $r_profile->update([
+        'logo_image_link' => $response
+      ]);
+
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'mesage' => 'Your recruiter profile (avatar) was successfully updated.',
+        'data' => $r_profile
+      ], 200);
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 404,
+        'message' => 'Your recruiter profile has not been created.'
+      ], 404);
     }
   }
 }

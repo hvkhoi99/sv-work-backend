@@ -21,70 +21,62 @@ class StudentDashboardController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
-      $s_profile = StudentProfile::where('user_id', $user->id)->first();
+    $s_profile = StudentProfile::where('user_id', $user->id)->first();
 
-      if (isset($s_profile)) {
-        $applied_jobs = [];
+    if (isset($s_profile)) {
+      $applied_jobs = [];
 
-        $applications = Application::where([
-          ['is_applied', true],
-          ['user_id', $user->id]
-        ])->orderBy('updated_at', 'desc')->get();
+      $applications = Application::where([
+        ['is_applied', true],
+        ['user_id', $user->id]
+      ])->orderBy('updated_at', 'desc')->get();
 
-        foreach ($applications as $application) {
-          $applied_job = Recruitment::whereId($application->recruitment_id)->first();
+      foreach ($applications as $application) {
+        $applied_job = Recruitment::whereId($application->recruitment_id)->first();
 
-          $company_info = RecruiterProfile::where([
-            ['user_id', $applied_job->user_id]
-          ])->first();
+        $company_info = RecruiterProfile::where([
+          ['user_id', $applied_job->user_id]
+        ])->first();
 
-          $applied_job = collect($applied_job)->only(
-            [
-              'id', 'title', 'job_category', 'location', 'min_salary', 'max_salary',
-              'is_closed', 'user_id', 'created_at', 'updated_at'
-            ]
-          );
-
-          $applied_job["status"] = $application->state;
-          $applied_job["company_info"] = collect($company_info)
-            ->only(['id', 'logo_image_link', 'company_name', 'verify']);
-
-          $hashtags = JobTags::where('recruitment_id', $application->recruitment_id)->first()->hashtags;
-          $applied_job['hashtags'] = json_decode($hashtags);
-
-          array_push($applied_jobs, $applied_job);
-        }
-
-        $perPage = $request["_limit"];
-        $current_page = LengthAwarePaginator::resolveCurrentPage();
-
-        $new_applied_jobs = new LengthAwarePaginator(
-          collect($applied_jobs)->forPage($current_page, $perPage)->values(),
-          count($applied_jobs),
-          $perPage,
-          $current_page,
-          ['path' => url('api/student/dashboard/applied-jobs')]
+        $applied_job = collect($applied_job)->only(
+          [
+            'id', 'title', 'job_category', 'location', 'min_salary', 'max_salary',
+            'is_closed', 'user_id', 'created_at', 'updated_at'
+          ]
         );
 
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'data' => $new_applied_jobs
-        ], 200);
-      } else {
-        return response()->json([
-          'status' => 0,
-          'code' => 404,
-          'message' => 'Your student profile was not found or has not been created.'
-        ], 404);
+        $applied_job["status"] = $application->state;
+        $applied_job["company_info"] = collect($company_info)
+          ->only(['id', 'logo_image_link', 'company_name', 'verify']);
+
+        $hashtags = JobTags::where('recruitment_id', $application->recruitment_id)->first()->hashtags;
+        $applied_job['hashtags'] = json_decode($hashtags);
+
+        array_push($applied_jobs, $applied_job);
       }
+
+      $perPage = $request["_limit"];
+      $current_page = LengthAwarePaginator::resolveCurrentPage();
+
+      $new_applied_jobs = new LengthAwarePaginator(
+        collect($applied_jobs)->forPage($current_page, $perPage)->values(),
+        count($applied_jobs),
+        $perPage,
+        $current_page,
+        ['path' => url('api/student/dashboard/applied-jobs')]
+      );
+
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $new_applied_jobs
+      ], 200);
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 404,
+        'message' => 'Your student profile was not found or has not been created.'
+      ], 404);
     }
   }
 
@@ -92,61 +84,53 @@ class StudentDashboardController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
-      $s_profile = StudentProfile::where('user_id', $user->id)->first();
+    $s_profile = StudentProfile::where('user_id', $user->id)->first();
 
-      if (isset($s_profile)) {
-        $companies = [];
-        $recruitments = [];
+    if (isset($s_profile)) {
+      $companies = [];
+      $recruitments = [];
 
-        $follows = Follow::where([
-          ['is_followed', true],
-          ['s_profile_id', $s_profile->id]
-        ])->orderBy('updated_at', 'desc')->get();
+      $follows = Follow::where([
+        ['is_followed', true],
+        ['s_profile_id', $s_profile->id]
+      ])->orderBy('updated_at', 'desc')->get();
 
-        foreach ($follows as $follow) {
-          $company = RecruiterProfile::whereId($follow->r_profile_id)->first();
-          $recruitments = Recruitment::where([
-            ['is_closed', false],
-            ['user_id', $company->user_id]
-          ])->orderBy('created_at', 'desc')->get();
-          $company = collect($company)->only([
-            'id', 'contact_email', 'company_name', 'logo_image_link', 'phone_number',
-            'verify', 'address', 'company_size', 'company_industry', 'user_id',
-          ]);
-          $company['jobs_available'] = count($recruitments);
-          array_push($companies, $company);
-        }
-
-        $perPage = $request["_limit"];
-        $current_page = LengthAwarePaginator::resolveCurrentPage();
-
-        $new_companies = new LengthAwarePaginator(
-          collect($companies)->forPage($current_page, $perPage)->values(),
-          count($companies),
-          $perPage,
-          $current_page,
-          ['path' => url('api/student/dashboard/company-followed')]
-        );
-
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'data' => $new_companies
-        ], 200);
-      } else {
-        return response()->json([
-          'status' => 0,
-          'code' => 404,
-          'message' => 'Your student profile was not found or has not been created.'
-        ], 404);
+      foreach ($follows as $follow) {
+        $company = RecruiterProfile::whereId($follow->r_profile_id)->first();
+        $recruitments = Recruitment::where([
+          ['is_closed', false],
+          ['user_id', $company->user_id]
+        ])->orderBy('created_at', 'desc')->get();
+        $company = collect($company)->only([
+          'id', 'contact_email', 'company_name', 'logo_image_link', 'phone_number',
+          'verify', 'address', 'company_size', 'company_industry', 'user_id',
+        ]);
+        $company['jobs_available'] = count($recruitments);
+        array_push($companies, $company);
       }
+
+      $perPage = $request["_limit"];
+      $current_page = LengthAwarePaginator::resolveCurrentPage();
+
+      $new_companies = new LengthAwarePaginator(
+        collect($companies)->forPage($current_page, $perPage)->values(),
+        count($companies),
+        $perPage,
+        $current_page,
+        ['path' => url('api/student/dashboard/company-followed')]
+      );
+
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $new_companies
+      ], 200);
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 404,
+        'message' => 'Your student profile was not found or has not been created.'
+      ], 404);
     }
   }
 
@@ -154,70 +138,62 @@ class StudentDashboardController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
-      $s_profile = StudentProfile::where('user_id', $user->id)->first();
+    $s_profile = StudentProfile::where('user_id', $user->id)->first();
 
-      if (isset($s_profile)) {
-        $saved_jobs = [];
+    if (isset($s_profile)) {
+      $saved_jobs = [];
 
-        $applications = Application::where([
-          ['is_saved', true],
-          ['user_id', $user->id]
-        ])->orderBy('updated_at', 'desc')->get();
+      $applications = Application::where([
+        ['is_saved', true],
+        ['user_id', $user->id]
+      ])->orderBy('updated_at', 'desc')->get();
 
-        foreach ($applications as $application) {
-          $saved_job = Recruitment::whereId($application->recruitment_id)->first();
+      foreach ($applications as $application) {
+        $saved_job = Recruitment::whereId($application->recruitment_id)->first();
 
-          $company_info = RecruiterProfile::where([
-            ['user_id', $saved_job->user_id]
-          ])->first();
+        $company_info = RecruiterProfile::where([
+          ['user_id', $saved_job->user_id]
+        ])->first();
 
-          $saved_job = collect($saved_job)->only(
-            [
-              'id', 'title', 'job_category', 'location', 'min_salary', 'max_salary',
-              'is_closed', 'user_id', 'created_at', 'updated_at'
-            ]
-          );
-
-          $saved_job["status"] = $application->state;
-          $saved_job["company_info"] = collect($company_info)
-            ->only(['id', 'logo_image_link', 'company_name', 'verify']);
-
-          $hashtags = JobTags::where('recruitment_id', $application->recruitment_id)->first()->hashtags;
-          $saved_job['hashtags'] = json_decode($hashtags);
-
-          array_push($saved_jobs, $saved_job);
-        }
-
-        $perPage = $request["_limit"];
-        $current_page = LengthAwarePaginator::resolveCurrentPage();
-
-        $new_saved_jobs = new LengthAwarePaginator(
-          collect($saved_jobs)->forPage($current_page, $perPage)->values(),
-          count($saved_jobs),
-          $perPage,
-          $current_page,
-          ['path' => url('api/student/dashboard/saved-jobs')]
+        $saved_job = collect($saved_job)->only(
+          [
+            'id', 'title', 'job_category', 'location', 'min_salary', 'max_salary',
+            'is_closed', 'user_id', 'created_at', 'updated_at'
+          ]
         );
 
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'data' => $new_saved_jobs
-        ], 200);
-      } else {
-        return response()->json([
-          'status' => 0,
-          'code' => 404,
-          'message' => 'Your student profile was not found or has not been created.'
-        ], 404);
+        $saved_job["status"] = $application->state;
+        $saved_job["company_info"] = collect($company_info)
+          ->only(['id', 'logo_image_link', 'company_name', 'verify']);
+
+        $hashtags = JobTags::where('recruitment_id', $application->recruitment_id)->first()->hashtags;
+        $saved_job['hashtags'] = json_decode($hashtags);
+
+        array_push($saved_jobs, $saved_job);
       }
+
+      $perPage = $request["_limit"];
+      $current_page = LengthAwarePaginator::resolveCurrentPage();
+
+      $new_saved_jobs = new LengthAwarePaginator(
+        collect($saved_jobs)->forPage($current_page, $perPage)->values(),
+        count($saved_jobs),
+        $perPage,
+        $current_page,
+        ['path' => url('api/student/dashboard/saved-jobs')]
+      );
+
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $new_saved_jobs
+      ], 200);
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 404,
+        'message' => 'Your student profile was not found or has not been created.'
+      ], 404);
     }
   }
 
@@ -225,75 +201,67 @@ class StudentDashboardController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
-      $s_profile = StudentProfile::where('user_id', $user->id)->first();
+    $s_profile = StudentProfile::where('user_id', $user->id)->first();
 
-      if (isset($s_profile)) {
-        $invited_jobs = [];
+    if (isset($s_profile)) {
+      $invited_jobs = [];
 
-        $applications = Application::where([
-          ['state', true],
-          ['is_invited', true],
-          ['user_id', $user->id]
-        ])->orWhere([
-          ['state', null],
-          ['is_invited', true],
-          ['user_id', $user->id]
-        ])->orderBy('updated_at', 'desc')->get();
+      $applications = Application::where([
+        ['state', true],
+        ['is_invited', true],
+        ['user_id', $user->id]
+      ])->orWhere([
+        ['state', null],
+        ['is_invited', true],
+        ['user_id', $user->id]
+      ])->orderBy('updated_at', 'desc')->get();
 
-        foreach ($applications as $application) {
-          $invited_job = Recruitment::whereId($application->recruitment_id)->first();
+      foreach ($applications as $application) {
+        $invited_job = Recruitment::whereId($application->recruitment_id)->first();
 
-          $company_info = RecruiterProfile::where([
-            ['user_id', $invited_job->user_id]
-          ])->first();
+        $company_info = RecruiterProfile::where([
+          ['user_id', $invited_job->user_id]
+        ])->first();
 
-          $invited_job = collect($invited_job)->only(
-            [
-              'id', 'title', 'job_category', 'location', 'min_salary', 'max_salary',
-              'is_closed', 'user_id', 'created_at', 'updated_at'
-            ]
-          );
-
-          $invited_job["status"] = $application->state;
-          $invited_job["company_info"] = collect($company_info)
-            ->only(['id', 'logo_image_link', 'company_name', 'verify']);
-
-          $hashtags = JobTags::where('recruitment_id', $application->recruitment_id)->first()->hashtags;
-          $invited_job['hashtags'] = json_decode($hashtags);
-
-          array_push($invited_jobs, $invited_job);
-        }
-
-        $perPage = $request["_limit"];
-        $current_page = LengthAwarePaginator::resolveCurrentPage();
-
-        $new_invited_jobs = new LengthAwarePaginator(
-          collect($invited_jobs)->forPage($current_page, $perPage)->values(),
-          count($invited_jobs),
-          $perPage,
-          $current_page,
-          ['path' => url('api/student/dashboard/invited-jobs')]
+        $invited_job = collect($invited_job)->only(
+          [
+            'id', 'title', 'job_category', 'location', 'min_salary', 'max_salary',
+            'is_closed', 'user_id', 'created_at', 'updated_at'
+          ]
         );
 
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'data' => $new_invited_jobs
-        ], 200);
-      } else {
-        return response()->json([
-          'status' => 0,
-          'code' => 404,
-          'message' => 'Your student profile was not found or has not been created.'
-        ], 404);
+        $invited_job["status"] = $application->state;
+        $invited_job["company_info"] = collect($company_info)
+          ->only(['id', 'logo_image_link', 'company_name', 'verify']);
+
+        $hashtags = JobTags::where('recruitment_id', $application->recruitment_id)->first()->hashtags;
+        $invited_job['hashtags'] = json_decode($hashtags);
+
+        array_push($invited_jobs, $invited_job);
       }
+
+      $perPage = $request["_limit"];
+      $current_page = LengthAwarePaginator::resolveCurrentPage();
+
+      $new_invited_jobs = new LengthAwarePaginator(
+        collect($invited_jobs)->forPage($current_page, $perPage)->values(),
+        count($invited_jobs),
+        $perPage,
+        $current_page,
+        ['path' => url('api/student/dashboard/invited-jobs')]
+      );
+
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $new_invited_jobs
+      ], 200);
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 404,
+        'message' => 'Your student profile was not found or has not been created.'
+      ], 404);
     }
   }
 }

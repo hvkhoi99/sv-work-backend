@@ -18,29 +18,21 @@ class CertificateController extends Controller
   {
     $user = $request->user();
 
-    if (isset($user)) {
-      $_limit = $request['_limit'];
-      $certificates = Certificate::where('user_id', $user->id)->orderBy('updated_at', 'desc')->paginate($_limit);
+    $_limit = $request['_limit'];
+    $certificates = Certificate::where('user_id', $user->id)->orderBy('updated_at', 'desc')->paginate($_limit);
 
-      if (isset($certificates)) {
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'data' => $certificates
-        ], 200);
-      } else {
-        return response()->json([
-          'status' => 0,
-          'code' => 404,
-          'message' => 'Certificate list does not exist.'
-        ], 404);
-      }
+    if (isset($certificates)) {
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $certificates
+      ], 200);
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 404,
+        'message' => 'Certificate list does not exist.'
+      ], 404);
     }
   }
 
@@ -64,28 +56,20 @@ class CertificateController extends Controller
   {
     $user = $request->user();
 
-    if (isset($user)) {
 
-      $new_certificate = Certificate::create([
-        'title' => $request['title'],
-        'issuing_organization' => $request['issuing_organization'],
-        'description' => $request['description'],
-        'image_link' => $request['image_link'],
-        'user_id' => $user->id
-      ]);
+    $new_certificate = Certificate::create([
+      'title' => $request['title'],
+      'issuing_organization' => $request['issuing_organization'],
+      'description' => $request['description'],
+      'image_link' => $request['image_link'],
+      'user_id' => $user->id
+    ]);
 
-      return response()->json([
-        'status' => 1,
-        'code' => 200,
-        'data' => $new_certificate
-      ], 200);
-    } else {
-      return response()->json([
-        'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
-    }
+    return response()->json([
+      'status' => 1,
+      'code' => 200,
+      'data' => $new_certificate
+    ], 200);
   }
 
   /**
@@ -121,30 +105,22 @@ class CertificateController extends Controller
   {
     $user = $request->user();
 
-    if (isset($user)) {
 
-      $certificate = Certificate::whereId($id)->where('user_id', $user->id)->first();
+    $certificate = Certificate::whereId($id)->where('user_id', $user->id)->first();
 
-      if (isset($certificate)) {
-        $certificate->update($request->all());
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'data' => $certificate
-        ], 200);
-      } else {
-        return response()->json([
-          'status' => 0,
-          'code' => 400,
-          'message' => 'Something went wrong, please try again later.'
-        ], 400);
-      }
+    if (isset($certificate)) {
+      $certificate->update($request->all());
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $certificate
+      ], 200);
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 400,
+        'message' => 'Something went wrong, please try again later.'
+      ], 400);
     }
   }
 
@@ -158,30 +134,22 @@ class CertificateController extends Controller
   {
     $user = $request->user();
 
-    if (isset($user)) {
 
-      $certificate = Certificate::whereId($id)->where('user_id', $user->id)->first();
+    $certificate = Certificate::whereId($id)->where('user_id', $user->id)->first();
 
-      if (isset($certificate)) {
-        $certificate->delete();
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'message' => 'Successfully deleted.'
-        ], 200);
-      } else {
-        return response()->json([
-          'status' => 0,
-          'code' => 404,
-          'message' => 'Your certificate was not found or has not been created.'
-        ], 404);
-      }
+    if (isset($certificate)) {
+      $certificate->delete();
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'message' => 'Successfully deleted.'
+      ], 200);
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 404,
+        'message' => 'Your certificate was not found or has not been created.'
+      ], 404);
     }
   }
 }

@@ -19,35 +19,27 @@ class LanguageController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
 
-      $languages = Language::where('user_id', $user->id)->first();
+    $languages = Language::where('user_id', $user->id)->first();
 
-      if (isset($languages)) {
-        // $array_language = explode(',', $languages->locale);
-        $languages->locales = json_decode($languages->locales);
+    if (isset($languages)) {
+      // $array_language = explode(',', $languages->locale);
+      $languages->locales = json_decode($languages->locales);
 
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'data' => $languages
-        ], 200);
-      } else {
-        return response()->json([
-          'status' => 1,
-          'code' => 404,
-          'data' => (object) [
-            'locales' => [],
-          ],
-          'message' => 'Languages list does not exist.'
-        ], 200);
-      }
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $languages
+      ], 200);
     } else {
       return response()->json([
-        'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'status' => 1,
+        'code' => 404,
+        'data' => (object) [
+          'locales' => [],
+        ],
+        'message' => 'Languages list does not exist.'
+      ], 200);
     }
   }
 
@@ -71,39 +63,31 @@ class LanguageController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
 
-      $languages = Language::where('user_id', $user->id)->first();
+    $languages = Language::where('user_id', $user->id)->first();
 
-      if (isset($languages)) {
+    if (isset($languages)) {
 
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'message' => 'Your language already exists.',
-          'data' => $languages
-        ], 200);
-      } else {
-
-        $new_language = Language::create([
-          'locales' => json_encode($request['locales']),
-          'user_id' => $user->id
-        ]);
-
-        $new_language->locales = $request['locales'];
-
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'data' => $new_language
-        ], 200);
-      }
-    } else {
       return response()->json([
-        'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'status' => 1,
+        'code' => 200,
+        'message' => 'Your language already exists.',
+        'data' => $languages
+      ], 200);
+    } else {
+
+      $new_language = Language::create([
+        'locales' => json_encode($request['locales']),
+        'user_id' => $user->id
+      ]);
+
+      $new_language->locales = $request['locales'];
+
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $new_language
+      ], 200);
     }
   }
 
@@ -140,38 +124,30 @@ class LanguageController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
 
-      $languages = Language::where('user_id', $user->id)->first();
+    $languages = Language::where('user_id', $user->id)->first();
 
-      if (isset($languages)) {
+    if (isset($languages)) {
 
-        $languages->update([
-          'locales' => json_encode($request['locales']),
-          'user_id' => $user->id
-        ]);
+      $languages->update([
+        'locales' => json_encode($request['locales']),
+        'user_id' => $user->id
+      ]);
 
-        $languages->locales = $request['locales'];
+      $languages->locales = $request['locales'];
 
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'message' => 'Successfully updated',
-          'data' => $languages
-        ], 200);
-      } else {
-        return response()->json([
-          'status' => 0,
-          'code' => 400,
-          'message' => 'Something went wrong, please try again later.'
-        ], 400);
-      }
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'message' => 'Successfully updated',
+        'data' => $languages
+      ], 200);
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 400,
+        'message' => 'Something went wrong, please try again later.'
+      ], 400);
     }
   }
 
@@ -185,33 +161,25 @@ class LanguageController extends Controller
   {
     $user = Auth::user();
 
-    if (isset($user)) {
 
-      $languages = Language::where('user_id', $user->id)->first();
+    $languages = Language::where('user_id', $user->id)->first();
 
-      if (isset($languages)) {
+    if (isset($languages)) {
 
-        $languages->delete();
+      $languages->delete();
 
-        return response()->json([
-          'status' => 1,
-          'code' => 200,
-          'message' => 'Successfully deleted.'
-        ], 200);
-      } else {
-
-        return response()->json([
-          'status' => 0,
-          'code' => 404,
-          'message' => 'Your language was not found or has not been created.'
-        ], 404);
-      }
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'message' => 'Successfully deleted.'
+      ], 200);
     } else {
+
       return response()->json([
         'status' => 0,
-        'code' => 401,
-        'message' => 'UNAUTHORIZED'
-      ], 401);
+        'code' => 404,
+        'message' => 'Your language was not found or has not been created.'
+      ], 404);
     }
   }
 }
