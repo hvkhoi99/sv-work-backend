@@ -14,7 +14,7 @@ class JobController extends Controller
 {
   public function showJob(Request $request, $id)
   {
-    $user = User::where('email', $request['email'])->first();
+    $user = $request->user('api');
 
     $recruitment = Recruitment::whereId($id)->first();
 
@@ -48,7 +48,7 @@ class JobController extends Controller
           'status' => 1,
           'code' => 200,
           'data' => $recruitment,
-          'user' => $user
+          // 'user' => $user
         ], 200);
       } else {
         return response()->json([
