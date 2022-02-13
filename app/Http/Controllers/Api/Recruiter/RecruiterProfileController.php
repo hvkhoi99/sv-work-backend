@@ -75,7 +75,7 @@ class RecruiterProfileController extends Controller
       $new_r_profile = RecruiterProfile::create([
         'contact_email' => $request['contact_email'],
         'company_name' => $request['company_name'],
-        'logo_image_link' => "https://res.cloudinary.com/dakhi21gx/image/upload/v1643021161/default-avatar.png",
+        'logo_image_link' => "https://res.cloudinary.com/dakhi21gx/image/upload/v1644765118/company-avatar.png",
         // 'description_image_link' => $request['description_image_link'],
         'description' => $request['description'],
         'phone_number' => $request['phone_number'],

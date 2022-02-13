@@ -37,21 +37,132 @@ class RecruiterSearchController extends Controller
     // }, $languages);
     // $new_languages = array_values(array_unique($new_languages, SORT_REGULAR));
 
-    $new_candidates = [];
-    if (count($candidates) > 0 && count($languages) > 0 && count($educations) > 0) {
-      foreach ($candidates as $candidate) {
-        $is_exist_language = in_array($candidate['user_id'], array_column($languages, 'user_id'));
-        $is_exist_education = in_array($candidate['user_id'], array_column($educations, 'user_id'));
-        $index = array_search($candidate['user_id'], array_column($languages, 'user_id'));
-        if ($is_exist_language && $is_exist_education && ($index > -1)) {
-          $skills = Skill::where('user_id', $candidate['user_id'])->first();
-          if (isset($skills)) {
-            $candidate['skills'] = json_decode($skills['skills']);
-          } else {
-            $candidate['skills'] = [];
+    if ($request->has('locales') && isset($request->locales)) {
+      $new_candidates = [];
+      if ($request->has('school') && isset($request->school)) {
+        // if (count($candidates) > 0 && count($languages) > 0 && count($educations) > 0) {
+          foreach ($candidates as $candidate) {
+            $is_exist_language = in_array($candidate['user_id'], array_column($languages, 'user_id'));
+            $is_exist_education = in_array($candidate['user_id'], array_column($educations, 'user_id'));
+            // $index = array_search($candidate['user_id'], array_column($languages, 'user_id'));
+            if ($is_exist_language && $is_exist_education) {
+              $skills = Skill::where('user_id', $candidate['user_id'])->first();
+              if (isset($skills)) {
+                $candidate['skills'] = json_decode($skills['skills']);
+              } else {
+                $candidate['skills'] = [];
+              }
+              array_push($new_candidates, $candidate);
+            }
           }
-          array_push($new_candidates, $candidate);
+        // }
+      } else {
+        // if (count($candidates) > 0 && count($languages) > 0) {
+          foreach ($candidates as $candidate) {
+            $is_exist_language = in_array($candidate['user_id'], array_column($languages, 'user_id'));
+            if ($is_exist_language) {
+              $skills = Skill::where('user_id', $candidate['user_id'])->first();
+              if (isset($skills)) {
+                $candidate['skills'] = json_decode($skills['skills']);
+              } else {
+                $candidate['skills'] = [];
+              }
+              array_push($new_candidates, $candidate);
+            }
+          }
+        // }
+      }
+
+      $perPage = $request["_limit"];
+      $current_page = LengthAwarePaginator::resolveCurrentPage();
+
+      $new_candidates = new LengthAwarePaginator(
+        collect($new_candidates)->forPage($current_page, $perPage)->values(),
+        count($new_candidates),
+        $perPage,
+        $current_page,
+        ['path' => url(
+          $user->role_id === 2
+            ? 'api/recruiter/find/candidate'
+            : 'api/student/recruiter/find/candidate'
+        )]
+      );
+
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $new_candidates,
+        // 'type' => gettype($languages)
+      ], 200);
+    } elseif ($request->has('school')  && isset($request->school)) {
+      $new_candidates = [];
+      if ($request->has('locales') && isset($request->locales)) {
+        // if (count($candidates) > 0 && count($languages) > 0 && count($educations) > 0) {
+          foreach ($candidates as $candidate) {
+            $is_exist_language = in_array($candidate['user_id'], array_column($languages, 'user_id'));
+            $is_exist_education = in_array($candidate['user_id'], array_column($educations, 'user_id'));
+            // $index = array_search($candidate['user_id'], array_column($languages, 'user_id'));
+            if ($is_exist_language && $is_exist_education) {
+              $skills = Skill::where('user_id', $candidate['user_id'])->first();
+              if (isset($skills)) {
+                $candidate['skills'] = json_decode($skills['skills']);
+              } else {
+                $candidate['skills'] = [];
+              }
+              array_push($new_candidates, $candidate);
+            }
+          }
+        // }
+      } else {
+        // if (count($candidates) > 0 && count($educations) > 0) {
+          foreach ($candidates as $candidate) {
+            $is_exist_education = in_array($candidate['user_id'], array_column($educations, 'user_id'));
+            if ($is_exist_education) {
+              $skills = Skill::where('user_id', $candidate['user_id'])->first();
+              if (isset($skills)) {
+                $candidate['skills'] = json_decode($skills['skills']);
+              } else {
+                $candidate['skills'] = [];
+              }
+              array_push($new_candidates, $candidate);
+            }
+          }
+        // }
+      }
+
+      $perPage = $request["_limit"];
+      $current_page = LengthAwarePaginator::resolveCurrentPage();
+
+      $new_candidates = new LengthAwarePaginator(
+        collect($new_candidates)->forPage($current_page, $perPage)->values(),
+        count($new_candidates),
+        $perPage,
+        $current_page,
+        ['path' => url(
+          $user->role_id === 2
+            ? 'api/recruiter/find/candidate'
+            : 'api/student/recruiter/find/candidate'
+        )]
+      );
+
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $new_candidates,
+        // 'type' => gettype($languages)
+      ], 200);
+    }
+
+    $new_candidates = [];
+    if (count($candidates) > 0) {
+      foreach ($candidates as $candidate) {
+        $skills = Skill::where('user_id', $candidate['user_id'])->first();
+        if (isset($skills)) {
+          $candidate['skills'] = json_decode($skills['skills']);
+        } else {
+          $candidate['skills'] = [];
         }
+        array_push($new_candidates, $candidate);
       }
     }
 
@@ -70,6 +181,13 @@ class RecruiterSearchController extends Controller
       )]
     );
 
+    return response()->json([
+      'status' => 1,
+      'code' => 200,
+      'data' => $new_candidates,
+      // 'type' => gettype($languages)
+    ], 200);
+
     // $results =
     //   // DB::table('student_profiles')
     //   StudentProfile::join('languages', 'student_profiles.user_id', '=', 'languages.user_id')
@@ -87,12 +205,5 @@ class RecruiterSearchController extends Controller
     //     'languages.locales',
     //     'education.school',
     //   )->get();
-
-    return response()->json([
-      'status' => 1,
-      'code' => 200,
-      'data' => $new_candidates,
-      // 'type' => gettype($languages)
-    ], 200);
   }
 }

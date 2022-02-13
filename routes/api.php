@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Admin\AdminController;
+use App\Http\Controllers\Api\Auth\VerificationController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\Recruiter\CandidateController;
 use App\Http\Controllers\Api\Recruiter\RecruiterDashboardController;
@@ -24,7 +25,6 @@ use App\Http\Controllers\Api\Student\StudentDashboardController;
 use App\Http\Controllers\Api\Student\StudentEventController;
 use App\Http\Controllers\Api\Student\StudentProfileController;
 use App\Http\Controllers\Api\Student\StudentSearchController;
-use App\Http\Controllers\TestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +43,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 //Auth
 Route::post('/register', [UserController::class, 'register']);
+Route::get('/email/verify/{id}', [VerificationController::class, 'verify'])->name('verification.verify'); // Make sure to keep this as your route name
+Route::post('/email/resend', [VerificationController::class, 'resend'])->name('verification.resend');
+
 Route::post('/login', [UserController::class, 'login'])->name('login');
 Route::get('/account', [UserController::class, 'account'])->name('account');
 Route::get('/error', [UserController::class, 'showError'])->name('showError');
@@ -328,7 +331,7 @@ Route::prefix('find')->group(function () {
   Route::get('employers', [StudentSearchController::class, 'getEmployers']);
 });
 
-// Route::get('find/candidate', [RecruiterSearchController::class, 'getCandidateSearch']);
+Route::get('find/candidate', [RecruiterSearchController::class, 'getCandidateSearch']);
 // Route::get('find/jobs', [StudentSearchController::class, 'getJobs']);
 // Route::get('find/employers', [StudentSearchController::class, 'getEmployers']);
 

@@ -20,11 +20,21 @@ class UserController extends Controller
     $user = User::where('email', $request['email'])->first();
 
     if (isset($user)) {
+      if ($user->hasVerifiedEmail()) {
+        return response()->json([
+          "status" => 0,
+          "code" => 400,
+          "message" => "This email address is already registered."
+        ], 200);
+      }
+
+      $user->sendEmailVerificationNotification();
+
       return response()->json([
         'status' => 0,
         'code' => 409,
-        'message' => 'That email address is already registered. You sure you don\'t have an account?'
-      ], 409);
+        'message' => 'This email is registered but not verified. Please verify your email to continue.'
+      ], 200);
     } else {
       $role_id = $request['role_id'];
       switch ($role_id) {
@@ -42,11 +52,16 @@ class UserController extends Controller
         'role_id' => $role_id
       ]);
 
-      return response()->json([
-        'status' => 1,
-        'code' => 200,
-        'data' => $user,
-      ], 200);
+      if (isset($user)) {
+        $user->sendEmailVerificationNotification();
+
+        return response()->json([
+          'status' => 1,
+          'code' => 200,
+          'message' => "You have successfully registered an account.",
+          'data' => $user,
+        ], 200);
+      }
     }
   }
 
@@ -56,6 +71,15 @@ class UserController extends Controller
 
     if (Auth::attempt($login)) {
       $user = User::whereEmail($request['email'])->first();
+
+      if (!$user->hasVerifiedEmail()) {
+        return response()->json([
+          "status" => 0,
+          "code" => 400,
+          "message" => "Email or Password is incorrect."
+        ], 400);
+      }
+
       $user->token = $user->createToken('App')->accessToken;
 
       $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
@@ -72,9 +96,9 @@ class UserController extends Controller
     } else {
       return response()->json([
         'status' => 0,
-        'code' => 401,
+        'code' => 404,
         'message' => 'Email or Password is incorrect.'
-      ], 401);
+      ], 200);
     }
   }
 
@@ -125,5 +149,72 @@ class UserController extends Controller
         'message' => 'Unauthenticated.'
       ], 401);
     }
+  }
+
+  // Google vs Facebook
+  public function login_google(Request $request)
+  {
+    return $this->check_google($request->social_token);
+  }
+
+  public function login_facebook(Request $request)
+  {
+    return $this->checkFacebook($request->social_token);
+  }
+
+  public function check_google($social_token)
+  {
+    try {
+      $verifiedIdToken = $this->auth->verifyIdToken($social_token);
+      $uid = $verifiedIdToken->getClaim('sub');
+      return $this->check_user_UID($uid);
+    } catch (\Exception $e) {
+      return response()->json(['message' => $e->getMessage()], 401);
+    }
+  }
+
+  public function checkFacebook($social_token)
+  {
+    try {
+      $verifiedIdToken = $this->auth->verifyIdToken($social_token);
+      $uid = $verifiedIdToken->getClaim('sub');
+      return $this->check_user_UID($uid);
+    } catch (\Exception $e) {
+      return response()->json(['message' => $e->getMessage()]);
+    }
+  }
+
+  private function check_user_UID($uid)
+  {
+    $user = User::where('firebaseUID', $uid)->first();
+    if (!$user) {
+      $user_information = $this->auth->getUser($uid);
+      // dd($user_information);
+      if (!$this->is_exists_email($user_information->email)) {
+        $user = User::create([
+          'name' => $user_information->displayName,
+          'email' => $user_information->email,
+          'signin_method' => $user_information->providerData[0]->providerId,
+          'phone_number' => $user_information->phoneNumber,
+          'firebaseUID' => $user_information->uid,
+          'avatar_url' => $user_information->photoUrl,
+        ]);
+      } else {
+        return response()->json(['message' => 'Email already exists'], 401);
+      }
+    }
+    $token = $user->createToken('Personal Access Client')->accessToken;
+    return response()->json([
+      'user' => $user,
+      'access_token' => $token,
+      'token_type' => 'Bearer'
+    ]);
+  }
+
+  private function is_exists_email($email)
+  {
+    $user = User::where('email', $email)->first();
+    if ($user) return true;
+    return false;
   }
 }
