@@ -47,6 +47,7 @@ Route::get('/email/verify/{id}', [VerificationController::class, 'verify'])->nam
 Route::post('/email/resend', [VerificationController::class, 'resend'])->name('verification.resend');
 
 Route::post('/login', [UserController::class, 'login'])->name('login');
+Route::post('/login-with-google', [UserController::class, 'login_google']);
 Route::get('/account', [UserController::class, 'account'])->name('account');
 Route::get('/error', [UserController::class, 'showError'])->name('showError');
 

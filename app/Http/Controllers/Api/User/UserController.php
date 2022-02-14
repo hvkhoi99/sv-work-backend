@@ -9,12 +9,19 @@ use App\Http\Requests\ApiRegisterRequest;
 use App\Models\RecruiterProfile;
 use App\Models\StudentProfile;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+  public function __construct()
+  {
+    $this->auth = app('firebase.auth');
+    // $this->middleware('auth:api', ['except' => ['login', 'login_google', 'login_facebook']]);
+  }
+
   public function register(ApiRegisterRequest $request)
   {
     $user = User::where('email', $request['email'])->first();
@@ -154,61 +161,127 @@ class UserController extends Controller
   // Google vs Facebook
   public function login_google(Request $request)
   {
-    return $this->check_google($request->social_token);
+    return $this->check_google($request);
   }
 
   public function login_facebook(Request $request)
   {
-    return $this->checkFacebook($request->social_token);
+    return $this->checkFacebook($request);
   }
 
-  public function check_google($social_token)
+  public function check_google(Request $request)
   {
     try {
-      $verifiedIdToken = $this->auth->verifyIdToken($social_token);
-      $uid = $verifiedIdToken->getClaim('sub');
-      return $this->check_user_UID($uid);
+      $verifiedIdToken = $this->auth->verifyIdToken($request->social_token);
+      $uid = $verifiedIdToken->claims()->get('sub');
+      return $this->check_user_UID($request, $uid);
+      // return $uid;
     } catch (\Exception $e) {
       return response()->json(['message' => $e->getMessage()], 401);
     }
   }
 
-  public function checkFacebook($social_token)
+  public function checkFacebook(Request $request)
   {
     try {
-      $verifiedIdToken = $this->auth->verifyIdToken($social_token);
-      $uid = $verifiedIdToken->getClaim('sub');
-      return $this->check_user_UID($uid);
+      $verifiedIdToken = $this->auth->verifyIdToken($request->social_token);
+      $uid = $verifiedIdToken->claims()->get('sub');
+      return $this->check_user_UID($request, $uid);
     } catch (\Exception $e) {
       return response()->json(['message' => $e->getMessage()]);
     }
   }
 
-  private function check_user_UID($uid)
+  private function check_user_UID(Request $request, $uid)
   {
     $user = User::where('firebaseUID', $uid)->first();
     if (!$user) {
       $user_information = $this->auth->getUser($uid);
       // dd($user_information);
       if (!$this->is_exists_email($user_information->email)) {
-        $user = User::create([
+        $role_id = $request['role_id'];
+        $new_user = User::create([
           'name' => $user_information->displayName,
           'email' => $user_information->email,
           'signin_method' => $user_information->providerData[0]->providerId,
-          'phone_number' => $user_information->phoneNumber,
           'firebaseUID' => $user_information->uid,
-          'avatar_url' => $user_information->photoUrl,
+          'role_id' => $role_id,
         ]);
+        switch ($role_id) {
+          case 2:
+            $r_profile = RecruiterProfile::create([
+              'contact_email' => $user_information->email,
+              'company_name' => $user_information->displayName,
+              'logo_image_link' => $user_information->photoUrl,
+              'phone_number' => $user_information->phoneNumber,
+              'description' => "",
+              'address' => "",
+              'company_size' => 0,
+              'company_industry' => "",
+              'tax_code' => "",
+              'verify' => null,
+              'user_id' => $new_user->id
+            ]);
+            $new_user["r_profile"] = $r_profile;
+            $new_user["s_profile"] = null;
+            break;
+          case 3:
+            $s_profile = StudentProfile::create([
+              'email' => $user_information->email,
+              'last_name' => $user_information->displayName,
+              'avatar_link' => $user_information->photoUrl,
+              'phone_number' => $user_information->phoneNumber,
+              'open_for_job' => false,
+              'date_of_birth' => Carbon::now(),
+              'nationality' => "",
+              'address' => "",
+              'gender' => null,
+              'over_view' => "",
+              'open_for_job' => false,
+              'job_title' => "",
+              'user_id' => $new_user->id
+            ]);
+            $new_user["s_profile"] = $s_profile;
+            $new_user["r_profile"] = null;
+            break;
+          default:
+            break;
+        }
+
+        $new_user->token = $new_user->createToken('Personal Access Client')->accessToken;
+
+        return response()->json([
+          'status' => 1,
+          'code' => 200,
+          'message' => 'Successfully signed in with Google account. (Email successfully registered)',
+          'data' => $new_user,
+          // 'access_token' => $token,
+          // 'token_type' => 'Bearer'
+        ], 200);
       } else {
-        return response()->json(['message' => 'Email already exists'], 401);
+        return response()->json([
+          'status' => 0,
+          'code' => 400,
+          'message' => 'Email already exists.'
+        ], 200);
       }
     }
-    $token = $user->createToken('Personal Access Client')->accessToken;
+    $user->token = $user->createToken('Personal Access Client')->accessToken;
+
+    $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
+    $s_profile = StudentProfile::where('user_id', $user->id)->first();
+
+    $user["r_profile"] = isset($r_profile) ? $r_profile : null;
+    $user->role_id === 3 && $user["s_profile"] = isset($s_profile) ? $s_profile : null;
+
     return response()->json([
-      'user' => $user,
-      'access_token' => $token,
-      'token_type' => 'Bearer'
-    ]);
+      'status' => 1,
+      'code' => 200,
+      'message' => 'Successfully signed in with Google account. (Re-Login with exist email)',
+      'data' => $user,
+      // 'access_token' => $token,
+      // 'token_type' => 'Bearer'
+    ], 200);
   }
 
   private function is_exists_email($email)

@@ -15,17 +15,17 @@ class CreateRecruiterProfilesTable extends Migration
     {
         Schema::create('recruiter_profiles', function (Blueprint $table) {
             $table->id();
-            $table->string('contact_email');
-            $table->string('company_name');
+            $table->string('contact_email')->nullable(); // new nullable
+            $table->string('company_name')->nullable(); // new nullable
             $table->string('logo_image_link')->nullable();
             // $table->string('description_image_link');
             $table->longText('description')->nullable();
-            $table->string('phone_number');
+            $table->string('phone_number')->nullable(); // new nullable
             $table->boolean('verify')->nullable();
-            $table->string('address');
-            $table->unsignedInteger('company_size');
-            $table->string('company_industry');
-            $table->string('tax_code');
+            $table->string('address')->nullable(); // new nullable
+            $table->unsignedInteger('company_size')->nullable(); // new nullable
+            $table->string('company_industry')->nullable(); // new nullable
+            $table->string('tax_code')->nullable(); // new nullable
             $table->unsignedBigInteger('user_id')->unique();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
