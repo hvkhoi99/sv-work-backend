@@ -25,6 +25,7 @@ use App\Http\Controllers\Api\Student\StudentDashboardController;
 use App\Http\Controllers\Api\Student\StudentEventController;
 use App\Http\Controllers\Api\Student\StudentProfileController;
 use App\Http\Controllers\Api\Student\StudentSearchController;
+use App\Http\Controllers\TestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -313,7 +314,7 @@ Route::group([
 });
 
 // Test
-// Route::get('test', [TestController::class, 'test']);
+Route::get('test', [TestController::class, 'test']);
 // Route::post('upload', [TestController::class, 'upload']);
 
 // Job 

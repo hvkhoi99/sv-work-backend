@@ -38,13 +38,16 @@ class CandidateController extends Controller
         foreach ($applied_applications as $application) {
           $recruitment = Recruitment::where([
             ['id', $application->recruitment_id],
+            ['user_id', $user->id]
           ])->first();
 
-          $recruitment = collect($recruitment)
-            ->only(['id', 'title', 'is_closed']);
-          $recruitment["application"] = $application;
+          if (isset($recruitment)) {
+            $recruitment = collect($recruitment)
+              ->only(['id', 'title', 'is_closed']);
+            $recruitment["application"] = $application;
 
-          array_push($applied_jobs, $recruitment);
+            array_push($applied_jobs, $recruitment);
+          }
         }
         $s_profile["applied_jobs"] = $applied_jobs;
 
@@ -58,13 +61,16 @@ class CandidateController extends Controller
         foreach ($invited_applications as $application) {
           $recruitment = Recruitment::where([
             ['id', $application->recruitment_id],
+            ['user_id', $user->id]
           ])->first();
 
-          $recruitment = collect($recruitment)
-            ->only(['id', 'title', 'is_closed']);
-          $recruitment["application"] = $application;
+          if (isset($recruitment)) {
+            $recruitment = collect($recruitment)
+              ->only(['id', 'title', 'is_closed']);
+            $recruitment["application"] = $application;
 
-          array_push($invited_jobs, $recruitment);
+            array_push($invited_jobs, $recruitment);
+          }
         }
         $s_profile["invited_jobs"] = $invited_jobs;
 
@@ -103,7 +109,7 @@ class CandidateController extends Controller
   public function approve($recruitment_id, $candidate_id)
   {
     $user = Auth::user();
-    
+
     $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
     $exist_recruitment = Recruitment::where([
       ['id', $recruitment_id],
@@ -128,7 +134,9 @@ class CandidateController extends Controller
           return response()->json([
             'status' => 1,
             'code' => 200,
-            'message' => $exist_application->state ? 'Successfully approve.' : 'Successfully reject.',
+            'message' => $exist_application->state 
+            ? 'This application has been successfully approved.' 
+            : 'This application has been successfully rejected.',
             'data' => $exist_application
           ], 200);
         } else {

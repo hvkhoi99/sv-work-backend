@@ -17,7 +17,10 @@ class AdminController extends Controller
   public function recruiters(Request $request)
   {
     $_limit = $request["_limit"];
-    $recruiters = RecruiterProfile::where('verify', null)->paginate($_limit);
+    $recruiters = RecruiterProfile::where([
+      ['verify', null],
+      ['tax_code', '!=', null]
+    ])->paginate($_limit);
 
     if (isset($recruiters)) {
       return response()->json([

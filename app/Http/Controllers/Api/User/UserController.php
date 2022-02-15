@@ -214,11 +214,11 @@ class UserController extends Controller
               'company_name' => $user_information->displayName,
               'logo_image_link' => $user_information->photoUrl,
               'phone_number' => $user_information->phoneNumber,
-              'description' => "",
-              'address' => "",
+              'description' => null,
+              'address' => null,
               'company_size' => 0,
-              'company_industry' => "",
-              'tax_code' => "",
+              'company_industry' => null,
+              'tax_code' => null,
               'verify' => null,
               'user_id' => $new_user->id
             ]);
@@ -233,12 +233,12 @@ class UserController extends Controller
               'phone_number' => $user_information->phoneNumber,
               'open_for_job' => false,
               'date_of_birth' => Carbon::now(),
-              'nationality' => "",
-              'address' => "",
+              'nationality' => null,
+              'address' => null,
               'gender' => null,
-              'over_view' => "",
+              'over_view' => null,
               'open_for_job' => false,
-              'job_title' => "",
+              'job_title' => null,
               'user_id' => $new_user->id
             ]);
             $new_user["s_profile"] = $s_profile;

@@ -210,6 +210,18 @@ class RecruiterProfileController extends Controller
     $user["s_profile"] = isset($s_profile) && $user->role_id === 3 ? $s_profile : null;
 
     if (isset($r_profile)) {
+      // $r_profile->update([
+      //   'contact_email' => $r_profile->contact_email,
+      //   'company_name' => $r_profile->company_name,
+      //   'logo_image_link' => $r_profile->logo_image_link,
+      //   'phone_number' => $r_profile->phone_number,
+      //   'verify' => $r_profile->verify,
+      //   'address' => $r_profile->address,
+      //   'company_size' => $r_profile->company_size,
+      //   'company_industry' => $r_profile->company_industry,
+      //   'tax_code' => $r_profile->tax_code,
+      //   'description' => $request['description']
+      // ]);
       $r_profile->update($request->all());
 
       $user["r_profile"] = $r_profile;
