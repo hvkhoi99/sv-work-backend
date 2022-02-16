@@ -158,7 +158,7 @@ class StudentSearchController extends Controller
         'status' => 1,
         'code' => 200,
         'data' => $new_employers
-      ]);
+      ], 200);
     }
 
     $perPage = $request["_limit"];
@@ -176,6 +176,6 @@ class StudentSearchController extends Controller
       'status' => 1,
       'code' => 200,
       'data' => $employers
-    ]);
+    ], 200);
   }
 }

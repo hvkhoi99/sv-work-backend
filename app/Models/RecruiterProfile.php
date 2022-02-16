@@ -23,7 +23,7 @@ class RecruiterProfile extends Model
   // Search Name
   public function scopeKeyword($query, $request)
   {
-    if ($request->has('keyword')) {
+    if ($request->has('keyword') && isset($request->keyword)) {
       $query->where(DB::raw('lower(company_name)'), 'like', '%' . strtolower($request->keyword) . '%');
     }
 
@@ -32,7 +32,7 @@ class RecruiterProfile extends Model
 
   public function scopeLocation($query, $request)
   {
-    if ($request->has('location')) {
+    if ($request->has('location') && isset($request->location)) {
       $query->where(DB::raw('lower(address)'), 'like', '%' . strtolower($request->location) . '%');
     }
 

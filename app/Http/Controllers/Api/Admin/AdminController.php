@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Application;
 use App\Models\Event;
 use App\Models\RecruiterProfile;
+use App\Models\Recruitment;
 use App\Models\StudentProfile;
 use App\User;
 use Carbon\Carbon;
@@ -195,13 +196,261 @@ class AdminController extends Controller
         'status' => 1,
         'code' => 200,
         'data' => $total
-      ]);
+      ], 200);
     } else {
       return response()->json([
         'status' => 0,
         'code' => 400,
         'message' => 'An incident has occurred. Please try again later.'
-      ], 400);
+      ], 200);
     }
+  }
+
+  public function chartFigure()
+  {
+    // now Time
+    // $now = Carbon::now();
+
+    // Last week
+    // $last_last_sunday = Carbon::now()->startOfWeek()->subDays(8);
+    // $last_monday = $last_last_sunday->copy()->addDay();
+    // $last_tuesday = $last_monday->copy()->addDay();
+    // $last_wednesday = $last_tuesday->copy()->addDay();
+    // $last_thursday = $last_wednesday->copy()->addDay();
+    // $last_friday = $last_thursday->copy()->addDay();
+    // $last_saturday = $last_friday->copy()->addDay();
+
+    // Current Week
+    $last_sunday = Carbon::now()->startOfWeek()->subDay();
+    $monday = Carbon::now()->startOfWeek();
+    $tuesday = $monday->copy()->addDay();
+    $wednesday = $tuesday->copy()->addDay();
+    $thursday = $wednesday->copy()->addDay();
+    $friday = $thursday->copy()->addDay();
+    $saturday = $friday->copy()->addDay();
+    $sunday = $saturday->copy()->addDay();
+    // $sunday = $now->endOfWeek();
+
+    // Total Student of Current Week
+    $last_sunday_users = User::where([
+      ['created_at', '>=', $last_sunday],
+      ['created_at', '<', $monday]
+    ])->get()->count();
+    $monday_users = User::where([
+      ['created_at', '>=', $monday],
+      ['created_at', '<', $tuesday]
+    ])->get()->count();
+    $tuesday_users = User::where([
+      ['created_at', '>=', $tuesday],
+      ['created_at', '<', $wednesday]
+    ])->get()->count();
+    $wednesday_users = User::where([
+      ['created_at', '>=', $wednesday],
+      ['created_at', '<', $thursday]
+    ])->get()->count();
+    $thursday_users = User::where([
+      ['created_at', '>=', $thursday],
+      ['created_at', '<', $friday]
+    ])->get()->count();
+    $friday_users = User::where([
+      ['created_at', '>=', $friday],
+      ['created_at', '<', $saturday]
+    ])->get()->count();
+    $saturday_users = User::where([
+      ['created_at', '>=', $saturday],
+      ['created_at', '<', $sunday]
+    ])->get()->count();
+
+    $users_result = [
+      $last_sunday_users,
+      $monday_users,
+      $tuesday_users,
+      $wednesday_users,
+      $thursday_users,
+      $friday_users,
+      $saturday_users
+    ];
+
+    // Total Student of Current Week
+    $last_sunday_students = StudentProfile::where([
+      ['created_at', '>=', $last_sunday],
+      ['created_at', '<', $monday]
+    ])->get()->count();
+    $monday_students = StudentProfile::where([
+      ['created_at', '>=', $monday],
+      ['created_at', '<', $tuesday]
+    ])->get()->count();
+    $tuesday_students = StudentProfile::where([
+      ['created_at', '>=', $tuesday],
+      ['created_at', '<', $wednesday]
+    ])->get()->count();
+    $wednesday_students = StudentProfile::where([
+      ['created_at', '>=', $wednesday],
+      ['created_at', '<', $thursday]
+    ])->get()->count();
+    $thursday_students = StudentProfile::where([
+      ['created_at', '>=', $thursday],
+      ['created_at', '<', $friday]
+    ])->get()->count();
+    $friday_students = StudentProfile::where([
+      ['created_at', '>=', $friday],
+      ['created_at', '<', $saturday]
+    ])->get()->count();
+    $saturday_students = StudentProfile::where([
+      ['created_at', '>=', $saturday],
+      ['created_at', '<', $sunday]
+    ])->get()->count();
+
+    $students_result = [
+      $last_sunday_students,
+      $monday_students,
+      $tuesday_students,
+      $wednesday_students,
+      $thursday_students,
+      $friday_students,
+      $saturday_students
+    ];
+
+    // Total Recruiter of Current Week
+    $last_sunday_recruiters = RecruiterProfile::where([
+      ['created_at', '>=', $last_sunday],
+      ['created_at', '<', $monday]
+    ])->get()->count();
+    $monday_recruiters = RecruiterProfile::where([
+      ['created_at', '>=', $monday],
+      ['created_at', '<', $tuesday]
+    ])->get()->count();
+    $tuesday_recruiters = RecruiterProfile::where([
+      ['created_at', '>=', $tuesday],
+      ['created_at', '<', $wednesday]
+    ])->get()->count();
+    $wednesday_recruiters = RecruiterProfile::where([
+      ['created_at', '>=', $wednesday],
+      ['created_at', '<', $thursday]
+    ])->get()->count();
+    $thursday_recruiters = RecruiterProfile::where([
+      ['created_at', '>=', $thursday],
+      ['created_at', '<', $friday]
+    ])->get()->count();
+    $friday_recruiters = RecruiterProfile::where([
+      ['created_at', '>=', $friday],
+      ['created_at', '<', $saturday]
+    ])->get()->count();
+    $saturday_recruiters = RecruiterProfile::where([
+      ['created_at', '>=', $saturday],
+      ['created_at', '<', $sunday]
+    ])->get()->count();
+
+    $recruiters_result = [
+      $last_sunday_recruiters,
+      $monday_recruiters,
+      $tuesday_recruiters,
+      $wednesday_recruiters,
+      $thursday_recruiters,
+      $friday_recruiters,
+      $saturday_recruiters
+    ];
+
+    // Total Recruitments of Current Week
+    $last_sunday_recruitments = Recruitment::where([
+      ['created_at', '>=', $last_sunday],
+      ['created_at', '<', $monday]
+    ])->get()->count();
+    $monday_recruitments = Recruitment::where([
+      ['created_at', '>=', $monday],
+      ['created_at', '<', $tuesday]
+    ])->get()->count();
+    $tuesday_recruitments = Recruitment::where([
+      ['created_at', '>=', $tuesday],
+      ['created_at', '<', $wednesday]
+    ])->get()->count();
+    $wednesday_recruitments = Recruitment::where([
+      ['created_at', '>=', $wednesday],
+      ['created_at', '<', $thursday]
+    ])->get()->count();
+    $thursday_recruitments = Recruitment::where([
+      ['created_at', '>=', $thursday],
+      ['created_at', '<', $friday]
+    ])->get()->count();
+    $friday_recruitments = Recruitment::where([
+      ['created_at', '>=', $friday],
+      ['created_at', '<', $saturday]
+    ])->get()->count();
+    $saturday_recruitments = Recruitment::where([
+      ['created_at', '>=', $saturday],
+      ['created_at', '<', $sunday]
+    ])->get()->count();
+
+    $recruitments_result = [
+      $last_sunday_recruitments,
+      $monday_recruitments,
+      $tuesday_recruitments,
+      $wednesday_recruitments,
+      $thursday_recruitments,
+      $friday_recruitments,
+      $saturday_recruitments
+    ];
+
+    // Total Applications of Current Week
+    $last_sunday_applications = Application::where([
+      ['created_at', '>=', $last_sunday],
+      ['created_at', '<', $monday]
+    ])->get()->count();
+    $monday_applications = Application::where([
+      ['created_at', '>=', $monday],
+      ['created_at', '<', $tuesday]
+    ])->get()->count();
+    $tuesday_applications = Application::where([
+      ['created_at', '>=', $tuesday],
+      ['created_at', '<', $wednesday]
+    ])->get()->count();
+    $wednesday_applications = Application::where([
+      ['created_at', '>=', $wednesday],
+      ['created_at', '<', $thursday]
+    ])->get()->count();
+    $thursday_applications = Application::where([
+      ['created_at', '>=', $thursday],
+      ['created_at', '<', $friday]
+    ])->get()->count();
+    $friday_applications = Application::where([
+      ['created_at', '>=', $friday],
+      ['created_at', '<', $saturday]
+    ])->get()->count();
+    $saturday_applications = Application::where([
+      ['created_at', '>=', $saturday],
+      ['created_at', '<', $sunday]
+    ])->get()->count();
+
+    $applications_result = [
+      $last_sunday_applications,
+      $monday_applications,
+      $tuesday_applications,
+      $wednesday_applications,
+      $thursday_applications,
+      $friday_applications,
+      $saturday_applications
+    ];
+
+    $data = (object) [
+      "accounts" => [
+        "total_users" => $users_result,
+        "total_students" => $students_result,
+        "total_recruiters" =>  $recruiters_result,
+      ],
+      "jobs" => [
+        "total_recruitments" => $recruitments_result,
+        "total_applications" => $applications_result
+      ],
+      // "events" => [
+      //   "events" => $events,
+      //   "participants" => $participants
+      // ]
+    ];
+
+    return response()->json([
+      'status' => 1,
+      'code' => 200,
+      'data' => $data,
+    ], 200);
   }
 }

@@ -69,6 +69,7 @@ Route::group([
   ], function () {
     // Total 
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/chartFigure', [AdminController::class, 'chartFigure'])->name('chartFigure');
 
     // Recruiters
     Route::get('recruiters', [AdminController::class, 'recruiters'])->name('recruiters');
@@ -333,9 +334,10 @@ Route::prefix('find')->group(function () {
   Route::get('employers', [StudentSearchController::class, 'getEmployers']);
 });
 
+// Search Candidate with none account
 Route::get('find/candidate', [RecruiterSearchController::class, 'getCandidateSearch']);
-// Route::get('find/jobs', [StudentSearchController::class, 'getJobs']);
-// Route::get('find/employers', [StudentSearchController::class, 'getEmployers']);
 
 // Home
 Route::get('getTopRecruiters', [HomeController::class, 'getTopRecruiters']);
+Route::get('/getTopRecruitments', [HomeController::class, 'getTopRecruitments']);
+Route::get('/getTotalJobs', [HomeController::class, 'getTotalJobs']);

@@ -330,19 +330,23 @@ class TestController extends Controller
     ];
 
     $data = (object) [
-      "last_week" => [
-        "students_data" => $students_result_last_week,
-        "recruiters_data" => $recruiters_result_last_week,
-        "applications_result" => $applications_result_last_week,
+      "students_data" => [
+        "last_week" => $students_result_last_week,
+        "current_week" => $students_result,
       ],
-      "currentWeek" => [
-        "students_data" => $students_result,
-        "recruiters_data" => $recruiters_result,
-        "applications_result" => $applications_result,
+      "recruiters_data" => [
+        "last_week" => $recruiters_result_last_week,
+        "current_week" =>  $recruiters_result,
+      ],
+      "applications_data" => [
+        "last_week" => $applications_result_last_week,
+        "current_week" => $applications_result,
       ]
     ];
 
     return response()->json([
+      'status' => 1,
+      'code' => 200,
       'data' => $data,
     ], 200);
   }
