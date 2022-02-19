@@ -40,51 +40,73 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
-    public function role() {
+    public function role()
+    {
         return $this->belongsTo('App\Models\Role');
     }
 
-    public function student() {
+    public function student()
+    {
         return $this->hasOne('App\Models\StudentProfile');
     }
 
-    public function recruiterProfile() {
+    public function recruiterProfile()
+    {
         return $this->hasOne(RecruiterProfile::class);
     }
 
-    public function recruitments() {
+    public function recruitments()
+    {
         return $this->hasMany(Recruitment::class);
     }
 
-    public function applications() {
+    public function applications()
+    {
         return $this->hasMany('App\Models\Application');
     }
 
-    public function experiences() {
+    public function experiences()
+    {
         return $this->hasMany('App\Models\Experience');
     }
 
-    public function educations() {
+    public function educations()
+    {
         return $this->hasMany('App\Models\Education');
     }
 
-    public function skill() {
+    public function skill()
+    {
         return $this->hasOne('App\Models\Skill');
     }
 
-    public function certificates() {
+    public function certificates()
+    {
         return $this->hasMany('App\Models\Certificate');
     }
 
-    public function languages() {
+    public function languages()
+    {
         return $this->hasOne('App\Models\Language');
     }
 
-    public function events() {
+    public function events()
+    {
         return $this->hasMany('App\Models\Event');
     }
 
-    public function participantEvents() {
+    public function participantEvents()
+    {
         return $this->hasMany('App\Models\ParticipantEvent');
+    }
+
+    public function userMessages()
+    {
+        return $this->hasMany('App\Models\UserMessage');
+    }
+
+    public function userCVs()
+    {
+        return $this->hasMany('App\Models\UserCV');
     }
 }
