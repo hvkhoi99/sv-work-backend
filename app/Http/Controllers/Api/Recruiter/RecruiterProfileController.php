@@ -7,6 +7,7 @@ use App\Http\Requests\ApiRecruiterProfileRequest;
 use App\Http\Requests\ApiStudentAvatarRequest;
 use App\Models\Follow;
 use App\Models\RecruiterProfile;
+use App\Models\Recruitment;
 use App\Models\StudentProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -267,6 +268,29 @@ class RecruiterProfileController extends Controller
         'code' => 404,
         'message' => 'Your recruiter profile has not been created.'
       ], 404);
+    }
+  }
+
+  public function checkVerified(Request $request) {
+    $user = Auth::user();
+
+    $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
+
+    if (isset($r_profile)) {
+
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        // 'data' => isset($r_profile->verify) ? $r_profile->verify : false,
+        'data' => $r_profile->verify
+      ], 200);
+    } else {
+
+      return response()->json([
+        'status' => 0,
+        'code' => 404,
+        'message' => 'Your recruiter profile has not been created.'
+      ], 200);
     }
   }
 }

@@ -195,6 +195,7 @@ Route::group([
       // Student -> Recruiter -> Profile
       Route::prefix('profile')->group(function () {
         Route::get('index', [RecruiterProfileController::class, 'index']);
+        Route::get('checkVerified', [RecruiterProfileController::class, 'checkVerified']);
         Route::post('store', [RecruiterProfileController::class, 'store']);
         Route::get('{id}', [RecruiterProfileController::class, 'show']);
         Route::put('{id}', [RecruiterProfileController::class, 'update']);
@@ -251,6 +252,7 @@ Route::group([
     // Recruiter Profile
     Route::prefix('profile')->group(function () {
       Route::get('index', [RecruiterProfileController::class, 'index']);
+      Route::get('checkVerified', [RecruiterProfileController::class, 'checkVerified']);
       Route::post('store', [RecruiterProfileController::class, 'store']);
       Route::post('{id}', [RecruiterProfileController::class, 'edit']);
       Route::put('{id}', [RecruiterProfileController::class, 'update']);
@@ -320,6 +322,7 @@ Route::get('test', [TestController::class, 'test']);
 
 // Job 
 Route::prefix('job')->group(function () {
+  Route::get('getJobsByRecruiterId/{id}', [JobController::class, 'getJobsByRecruiterId']);
   Route::get('{id}', [JobController::class, 'showJob']);
 });
 
