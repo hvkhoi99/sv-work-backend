@@ -344,3 +344,8 @@ Route::get('find/candidate', [RecruiterSearchController::class, 'getCandidateSea
 Route::get('getTopRecruiters', [HomeController::class, 'getTopRecruiters']);
 Route::get('/getTopRecruitments', [HomeController::class, 'getTopRecruitments']);
 Route::get('/getTotalJobs', [HomeController::class, 'getTotalJobs']);
+
+
+// Notification
+Route::post('update-device-token', [UserController::class, 'addDeviceToken']);
+Route::post('send-notifications', [UserController::class, 'sendNotification']);
