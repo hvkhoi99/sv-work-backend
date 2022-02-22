@@ -347,5 +347,5 @@ Route::get('/getTotalJobs', [HomeController::class, 'getTotalJobs']);
 
 
 // Notification
-Route::post('update-device-token', [UserController::class, 'addDeviceToken']);
-Route::post('send-notifications', [UserController::class, 'sendNotification']);
+Route::post('/update-device-token', [UserController::class, 'addDeviceToken']);
+Route::post('/send-notifications', [UserController::class, 'sendNotification']);

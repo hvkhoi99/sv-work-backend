@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ApiChangePasswordRequest;
 use App\Http\Requests\ApiLoginRequest;
 use App\Http\Requests\ApiRegisterRequest;
+use App\Jobs\PushNotificationJob;
 use App\Models\RecruiterProfile;
 use App\Models\StudentProfile;
 use App\User;
@@ -87,6 +88,7 @@ class UserController extends Controller
         ], 400);
       }
 
+      $user->update(['device_token' => $request['device_token']]);
       $user->token = $user->createToken('App')->accessToken;
 
       $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
@@ -205,6 +207,7 @@ class UserController extends Controller
           'email' => $user_information->email,
           'signin_method' => $user_information->providerData[0]->providerId,
           'firebaseUID' => $user_information->uid,
+          'device_token' => $request->device_token,
           'role_id' => $role_id,
         ]);
         switch ($role_id) {
@@ -266,6 +269,7 @@ class UserController extends Controller
         ], 200);
       }
     }
+    $user->update(['device_token' => $request->device_token]);
     $user->token = $user->createToken('Personal Access Client')->accessToken;
 
     $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
@@ -296,47 +300,38 @@ class UserController extends Controller
   {
     $user = $request->user('api');
     //getUser($request->bearerToken()) là mình đang sử dụng JWT nên mình chỉ lấy ra user với user_id truyển nên mà thôi 
-    return response()->json([
-      $user->update(['device_token' => $request->device_token])
-    ], 200);
+    if (isset($user)) {
+      $data = $user->update(['device_token' => $request->device_token]);
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'message' => 'Successfully updated device token.',
+        'data' => $data
+      ], 200);
+    } else {
+      return response()->json([
+        'status' => 0,
+        'code' => 404,
+        'message' => 'Cannot found user.'
+      ], 200);
+    }
   }
 
   public function sendNotification(Request $request)
   {
-    $deviceToken = User::whereNotNull('device_token')->pluck('device_token')->all();
-
-    $dataEndCode = json_encode([
-      "registration_ids" => $deviceToken,
-      "notification" => [
-        "title" => $request->title,
-        "body" => $request->body,
-      ]
+    $deviceTokens = User::whereNotNull('device_token')->pluck('device_token')->all();
+    // $deviceTokens = User::whereDay('birthday', now()->format('d'))
+    //   ->whereMonth('birthday', now()->format('m'))
+    //   ->pluck('device_token')
+    //   ->toArray();
+    PushNotificationJob::dispatch('sendBatchNotification', [
+      $deviceTokens,
+      [
+        'topicName' => 'birthday',
+        'title' => 'Happy birthday to you!',
+        'body' => 'Chúc bạn sinh nhật vui vẻ.',
+        'image' => 'https://picsum.photos/536/354',
+      ],
     ]);
-
-    $headerRequest = [
-      'Authorization: key=' . env('FIRE_BASE_FCM_KEY'),
-      'Content-Type: application/json'
-    ];
-    // FIRE_BASE_FCM_KEY mình có note ở phần 2.setting firebase nhé
-
-    // CURL
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, env('FIRE_BASE_URL'));
-    //FIRE_BASE_URL = https://fcm.googleapis.com/fcm/send 
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headerRequest);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-    curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $dataEndCode);
-    // Mục đích mình đưa các tham số kia vào env để tùy biến nhé
-    $output = curl_exec($ch);
-    if ($output === FALSE) {
-      log('Curl error: ' . curl_error($ch));
-    }
-    curl_close($ch);
-
-    return response()->json($output);
   }
 }
