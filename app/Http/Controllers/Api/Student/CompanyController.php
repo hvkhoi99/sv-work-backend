@@ -49,11 +49,35 @@ class CompanyController extends Controller
           ], 404);
         }
       } else {
-        return response()->json([
-          'status' => 0,
-          'code' => 404,
-          'message' => 'Your student profile was not found or has not been created.'
-        ], 404);
+        $company_info = RecruiterProfile::whereId($id)->first();
+
+        if (isset($company_info)) {
+          $company_info = collect($company_info)->only([
+            'id', 'company_name', 'company_industry', 'address', 'company_size',
+            'contact_email', 'description', 'logo_image_link', 'phone_number',
+            'verify'
+          ]);
+
+          $company_info['is_followed'] = false;
+
+          return response()->json([
+            'status' => 1,
+            'code' => 200,
+            'message' => 'Cannot found your student profile.',
+            'data' => $company_info
+          ], 200);
+        } else {
+          return response()->json([
+            'status' => 0,
+            'code' => 404,
+            'message' => 'No information found for this company.'
+          ], 404);
+        }
+        // return response()->json([
+        //   'status' => 0,
+        //   'code' => 404,
+        //   'message' => 'Your student profile was not found or has not been created.'
+        // ], 404);
       }
     } else {
       $company_info = RecruiterProfile::whereId($id)->first();

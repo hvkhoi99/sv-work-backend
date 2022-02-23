@@ -36,6 +36,7 @@ class FcmService implements NotificationService
         'body' => $data['body'] ?? 'Something',
         'title' => $data['title'] ?? 'Something',
         'image' => $data['image'] ?? null,
+        'name' => $data['name'] ?? 'Something'
       ],
       'data' => [
         'url' => $data['url'] ?? null,
