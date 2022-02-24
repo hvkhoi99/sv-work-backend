@@ -328,14 +328,16 @@ class UserController extends Controller
       $deviceTokens,
       [
         'topicName' => 'birthday',
-        'title' => [
-          'name' => 'khoidz',
-          'title' => 'Happy birthday to you!'
-        ],
-        'body' => [
-          'time'=> Carbon::now(),
-          'description' => 'Chúc bạn sinh nhật vui vẻ.'
-        ],
+        // 'title' => [
+        //   'name' => 'khoidz',
+        //   'title' => 'Happy birthday to you!'
+        // ],
+        // 'body' => [
+        //   'time'=> Carbon::now(),
+        //   'description' => 'Chúc bạn sinh nhật vui vẻ.'
+        // ],
+        'title' => 'Khoi',
+        'body' => 'depzai',
         'image' => 'https://picsum.photos/536/354',
       ],
     ]);
