@@ -4,16 +4,23 @@ namespace App\Http\Controllers\Api\Recruiter;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ApiRecruitmentRequest;
+use App\Jobs\PushNotificationJob;
 use App\Models\Application;
+use App\Models\Follow;
 use App\Models\Hashtag;
 use App\Models\JobTags;
+use App\Models\Message;
 use App\Models\RecruiterProfile;
 use App\Models\Recruitment;
 use App\Models\RecruitmentTag;
 use App\Models\StudentProfile;
+use App\Models\UserMessage;
+use App\User;
+use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class RecruitmentController extends Controller
 {
@@ -53,7 +60,7 @@ class RecruitmentController extends Controller
    */
   public function store(ApiRecruitmentRequest $request)
   {
-    $user = $request->user();
+    $user = Auth::user();
 
     $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
 
@@ -80,19 +87,93 @@ class RecruitmentController extends Controller
         ]);
 
         // $hashtags_id = array_map('intval', explode(',', $request['hashtags_id']));
-
-        // foreach ($hashtags_id as $hashtag_id) {
-        //     RecruitmentTag::create([
-        //         'recruitment_id' => $new_recruiment->id,
-        //         'hashtag_id' => $hashtag_id
-        //     ]);
-        // }
+        if (!isset($new_recruiment)) {
+          return response()->json([
+            'status' => 0,
+            'code' => 400,
+            'message' => 'Something went wrong. Please try again!'
+          ], 400);
+        }
 
         $hashtags = JobTags::create([
           'hashtags' => json_encode($request['hashtags']),
           'recruitment_id' => $new_recruiment->id
         ]);
         $new_recruiment["hashtags"] = $hashtags;
+
+        // create new job notification
+        $title = 'Employer creates a new job.';
+        $body = [
+          'job' => (object) [
+            'id' => $new_recruiment->id,
+            'title' => $new_recruiment->title,
+            'user_id' => $user->id
+          ],
+          'company_info' => $r_profile->only([
+            'id', 'company_name', 'verify', 'logo_image_link', 'user_id'
+          ]),
+        ];
+        // Message (Notification)
+        $new_notification = Message::create([
+          'title' => $title,
+          'body' => json_encode($body),
+          'type' => 'create-recruitment',
+          'link' => $r_profile->logo_image_link,
+        ]);
+
+        // Message_user
+        $list_students = DB::table('student_profiles')
+          ->join('follows', 'student_profiles.id', '=', 'follows.s_profile_id')
+          ->select(
+            'student_profiles.id as s_profile_id',
+            'student_profiles.user_id',
+            'follows.r_profile_id'
+          )
+          ->where('r_profile_id', $r_profile->id)
+          ->get()
+          ->toArray();
+
+        $list_id = array_values(array_unique(array_column($list_students, 's_profile_id')));
+        if (isset($new_notification)) {
+          foreach ($list_id as $id) {
+            UserMessage::create([
+              'message_id' => $new_notification->id,
+              's_profile_id' => $id,
+              'r_profile_id' => null,
+              'is_read' => false
+            ]);
+          }
+        }
+
+        $list_user_id = array_values(array_unique(array_column($list_students, 'user_id')));
+        // push notification
+        $deviceTokens = User::whereNotNull('device_token')->whereIn('id', $list_user_id)->pluck('device_token')->all();
+        if (isset($deviceTokens)) {
+          $title = 'Employer creates a new job.';
+          $body = [
+            'job' => (object) [
+              'id' => $new_recruiment->id,
+              'title' => $new_recruiment->title,
+              'user_id' => $user->id
+            ],
+            'company_info' => $r_profile->only([
+              'id', 'company_name', 'verify', 'logo_image_link', 'user_id'
+            ]),
+            'type' => 'create-recruitment',
+            'is_read' => false,
+            'updated_at' => Carbon::now()
+          ];
+
+          PushNotificationJob::dispatch('sendBatchNotification', [
+            $deviceTokens,
+            [
+              'topicName' => 'create-recruitment',
+              'title' => $title,
+              'body' => $body,
+              'image' => $r_profile->logo_image_link,
+            ],
+          ]);
+        }
 
         return response()->json([
           'status' => 1,

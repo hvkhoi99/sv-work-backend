@@ -18,8 +18,12 @@ class CreateUserMessagesTable extends Migration
             $table->timestamps();
             $table->unsignedBigInteger('message_id');
             $table->foreign('message_id')->references('id')->on('messages')->onDelete('cascade');
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            // $table->unsignedBigInteger('user_id');
+            // $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('r_profile_id')->nullable();
+            $table->foreign('r_profile_id')->references('id')->on('recruiter_profiles')->onDelete('cascade');
+            $table->unsignedBigInteger('s_profile_id')->nullable();
+            $table->foreign('s_profile_id')->references('id')->on('student_profiles')->onDelete('cascade');
             $table->boolean('is_read')->nullable();
         });
     }

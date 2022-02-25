@@ -100,13 +100,18 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany('App\Models\ParticipantEvent');
     }
 
-    public function userMessages()
-    {
-        return $this->hasMany('App\Models\UserMessage');
-    }
+    // public function userMessages()
+    // {
+    //     return $this->hasMany('App\Models\UserMessage');
+    // }
 
     public function userCVs()
     {
         return $this->hasMany('App\Models\UserCV');
     }
+
+    // public function messages()
+    // {
+    //     return $this->hasMany('App\Models\Message');
+    // }
 }

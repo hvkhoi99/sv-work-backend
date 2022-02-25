@@ -12,7 +12,15 @@ class UserMessage extends Model
         return $this->belongsTo('App\Models\Message');
     }
 
-    public function user() {
-        return $this->belongsTo('App\Models\User');
+    public function recruiterProfile() {
+        return $this->belongsTo('App\Models\RecruiterProfile');
     }
+
+    public function studentProfile() {
+        return $this->belongsTo('App\Models\StudentProfile');
+    }
+
+    // public function user() {
+    //     return $this->belongsTo('App\User');
+    // }
 }

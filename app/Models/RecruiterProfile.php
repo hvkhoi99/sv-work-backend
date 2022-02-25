@@ -20,6 +20,11 @@ class RecruiterProfile extends Model
     return $this->hasMany(Follow::class);
   }
 
+  public function userMessages()
+  {
+    return $this->hasMany('App\Models\UserMessage');
+  }
+
   // Search Name
   public function scopeKeyword($query, $request)
   {

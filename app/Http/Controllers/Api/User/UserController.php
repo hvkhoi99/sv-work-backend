@@ -319,25 +319,36 @@ class UserController extends Controller
 
   public function sendNotification(Request $request)
   {
-    $deviceTokens = User::whereNotNull('device_token')->pluck('device_token')->all();
+    $deviceTokens = User::whereNotNull('device_token')->where('email', 'hvkhoi.99@gmail.com')->pluck('device_token')->all();
     // $deviceTokens = User::whereDay('birthday', now()->format('d'))
     //   ->whereMonth('birthday', now()->format('m'))
     //   ->pluck('device_token')
     //   ->toArray();
+    $title = 'Happy birthday to you!';
+    $body = [
+      'job' => (object) [
+        'id' => 10,
+        'title' => 'Application Job',
+        'user_id' => 3
+      ],
+      'company_info' => (object) [
+        'id' => 10,
+        'company_name' => 'WhiteHouse',
+        'logo_image_link' => 'https://picsum.photos/536/354',
+        'verify' => true,
+        'user_id' => 3
+      ],
+      'type' => 'approved-application',
+      'is_read' => 0,
+      'updated_at' => Carbon::now()
+    ];
+
     PushNotificationJob::dispatch('sendBatchNotification', [
       $deviceTokens,
       [
         'topicName' => 'birthday',
-        // 'title' => [
-        //   'name' => 'khoidz',
-        //   'title' => 'Happy birthday to you!'
-        // ],
-        // 'body' => [
-        //   'time'=> Carbon::now(),
-        //   'description' => 'Chúc bạn sinh nhật vui vẻ.'
-        // ],
-        'title' => 'Khoi',
-        'body' => 'depzai',
+        'title' => $title,
+        'body' => $body,
         'image' => 'https://picsum.photos/536/354',
       ],
     ]);

@@ -16,10 +16,12 @@ class CreateMessagesTable extends Migration
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->longText('title');
+            $table->longText('title')->nullable();
             $table->longText('body');
             $table->longText('type');
             $table->longText('link')->nullable();
+            // $table->unsignedBigInteger('user_id');
+            // $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

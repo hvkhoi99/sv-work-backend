@@ -25,7 +25,7 @@ class ApiRecruiterProfileRequest extends FormRequest
     {
         return [
             'contact_email' => 'required|email',
-            'company_name' => 'required|min:10|max:50',
+            'company_name' => 'required|min:5|max:50',
             // 'logo_image_link' => 'required',
             // 'description_image_link' => 'required',
             // 'description' => 'required|min:10',

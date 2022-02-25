@@ -25,6 +25,7 @@ use App\Http\Controllers\Api\Student\StudentDashboardController;
 use App\Http\Controllers\Api\Student\StudentEventController;
 use App\Http\Controllers\Api\Student\StudentProfileController;
 use App\Http\Controllers\Api\Student\StudentSearchController;
+use App\Http\Controllers\Api\User\NotificationController;
 use App\Http\Controllers\TestController;
 
 /*
@@ -91,6 +92,12 @@ Route::group([
     'prefix' => 'student',
     'middleware' => 'role:student'
   ], function () {
+
+    // Student Notification
+    Route::prefix('notifications')->group(function () {
+      Route::get('count', [NotificationController::class, 'getStudentCountNotifications']);
+    });
+
 
     // Student Account
     Route::post('/password/change', [UserController::class, 'changePassword']);
@@ -172,6 +179,10 @@ Route::group([
       'prefix' => 'recruiter'
     ], function () {
 
+      Route::prefix('notifications')->group(function () {
+        Route::get('count', [NotificationController::class, 'getRecruiterCountNotifications']);
+      });
+
       // Student -> Recruiter -> Recruitment
       Route::prefix('recruitment')->group(function () {
         Route::get('{id}', [RecruitmentController::class, 'show']);
@@ -245,6 +256,10 @@ Route::group([
     'prefix' => 'recruiter',
     'middleware' => 'role:recruiter'
   ], function () {
+
+    Route::prefix('notifications')->group(function () {
+      Route::get('count', [NotificationController::class, 'getRecruiterCountNotifications']);
+    });
 
     // Recruiter account
     Route::post('/password/change', [UserController::class, 'changePassword']);

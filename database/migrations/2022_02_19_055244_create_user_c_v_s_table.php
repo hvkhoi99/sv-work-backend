@@ -16,7 +16,6 @@ class CreateUserCVSTable extends Migration
         Schema::create('user_c_v_s', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            
             $table->unsignedBigInteger('cv_id');
             $table->foreign('cv_id')->references('id')->on('c_v_s')->onDelete('cascade');
             $table->unsignedBigInteger('user_id');
