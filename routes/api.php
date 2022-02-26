@@ -96,6 +96,7 @@ Route::group([
     // Student Notification
     Route::prefix('notifications')->group(function () {
       Route::get('count', [NotificationController::class, 'getStudentCountNotifications']);
+      Route::get('list', [NotificationController::class, 'getNotificationsByStudent']);
     });
 
 

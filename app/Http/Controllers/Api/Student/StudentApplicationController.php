@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Api\Student;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\PushNotificationJob;
 use App\Models\Application;
+use App\Models\Message;
 use App\Models\RecruiterProfile;
 use App\Models\Recruitment;
 use App\Models\StudentProfile;
-use Illuminate\Http\Request;
+use App\Models\UserMessage;
+use App\User;
 use Illuminate\Support\Facades\Auth;
 
 class StudentApplicationController extends Controller
@@ -249,6 +252,68 @@ class StudentApplicationController extends Controller
             $recruitment = collect($recruitment)->only(['id', 'title', 'is_closed']);
             $recruitment["application"] = $application;
 
+            if ($application->is_invited) {
+              // create new job notification
+              $title = 'Invited to the job.';
+              $body = [
+                'job' => (object) [
+                  'id' => $recruitment['id'],
+                  'title' => $recruitment['title'],
+                  'user_id' => $user->id
+                ],
+                'company_info' => $r_profile->only([
+                  'id', 'company_name', 'verify', 'logo_image_link', 'user_id'
+                ]),
+                'updated_at' => $application->updated_at
+              ];
+              // Message (Notification)
+              $new_notification = Message::create([
+                'title' => $title,
+                'body' => json_encode($body),
+                'type' => 'invited-job',
+                'link' => $r_profile->logo_image_link,
+              ]);
+
+              // Message_user
+              if (isset($new_notification)) {
+                UserMessage::create([
+                  'message_id' => $new_notification->id,
+                  's_profile_id' => $candidate_profile->id,
+                  'r_profile_id' => null,
+                  'is_read' => false
+                ]);
+              }
+
+              // push notification
+              $deviceTokens = User::whereNotNull('device_token')->whereId($candidate_profile->user_id)->pluck('device_token')->all();
+              if (isset($deviceTokens)) {
+                $title = 'Invited to the job.';
+                $body = [
+                  'job' => (object) [
+                    'id' => $recruitment['id'],
+                    'title' => $recruitment['title'],
+                    'user_id' => $user->id
+                  ],
+                  'company_info' => $r_profile->only([
+                    'id', 'company_name', 'verify', 'logo_image_link', 'user_id'
+                  ]),
+                  'type' => 'invited-job',
+                  'is_read' => false,
+                  'updated_at' => $application->updated_at
+                ];
+
+                PushNotificationJob::dispatch('sendBatchNotification', [
+                  $deviceTokens,
+                  [
+                    'topicName' => 'invited-job',
+                    'title' => $title,
+                    'body' => $body,
+                    'image' => $r_profile->logo_image_link,
+                  ],
+                ]);
+              }
+            }
+
             return response()->json([
               'status' => 1,
               'code' => 200,
@@ -274,6 +339,68 @@ class StudentApplicationController extends Controller
           ]);
           $recruitment = collect($recruitment)->only(['id', 'title', 'is_closed']);
           $recruitment["application"] = $new_application;
+
+          if ($new_application->is_invited) {
+            // create new job notification
+            $title = 'Invited to the job.';
+            $body = [
+              'job' => (object) [
+                'id' => $recruitment['id'],
+                'title' => $recruitment['title'],
+                'user_id' => $user->id
+              ],
+              'company_info' => $r_profile->only([
+                'id', 'company_name', 'verify', 'logo_image_link', 'user_id'
+              ]),
+              'updated_at' => $new_application->updated_at
+            ];
+            // Message (Notification)
+            $new_notification = Message::create([
+              'title' => $title,
+              'body' => json_encode($body),
+              'type' => 'invited-job',
+              'link' => $r_profile->logo_image_link,
+            ]);
+
+            // Message_user
+            if (isset($new_notification)) {
+              UserMessage::create([
+                'message_id' => $new_notification->id,
+                's_profile_id' => $candidate_profile->id,
+                'r_profile_id' => null,
+                'is_read' => false
+              ]);
+            }
+
+            // push notification
+            $deviceTokens = User::whereNotNull('device_token')->whereId($candidate_profile->user_id)->pluck('device_token')->all();
+            if (isset($deviceTokens)) {
+              $title = 'Invited to the job.';
+              $body = [
+                'job' => (object) [
+                  'id' => $recruitment['id'],
+                  'title' => $recruitment['title'],
+                  'user_id' => $user->id
+                ],
+                'company_info' => $r_profile->only([
+                  'id', 'company_name', 'verify', 'logo_image_link', 'user_id'
+                ]),
+                'type' => 'invited-job',
+                'is_read' => false,
+                'updated_at' => $new_application->updated_at
+              ];
+
+              PushNotificationJob::dispatch('sendBatchNotification', [
+                $deviceTokens,
+                [
+                  'topicName' => 'invited-job',
+                  'title' => $title,
+                  'body' => $body,
+                  'image' => $r_profile->logo_image_link,
+                ],
+              ]);
+            }
+          }
 
           return response()->json([
             'status' => 1,

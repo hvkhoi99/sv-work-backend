@@ -112,6 +112,7 @@ class RecruitmentController extends Controller
           'company_info' => $r_profile->only([
             'id', 'company_name', 'verify', 'logo_image_link', 'user_id'
           ]),
+          'updated_at' => $new_recruiment->updated_at
         ];
         // Message (Notification)
         $new_notification = Message::create([
@@ -161,7 +162,7 @@ class RecruitmentController extends Controller
             ]),
             'type' => 'create-recruitment',
             'is_read' => false,
-            'updated_at' => Carbon::now()
+            'updated_at' => $new_recruiment->updated_at
           ];
 
           PushNotificationJob::dispatch('sendBatchNotification', [
@@ -254,8 +255,9 @@ class RecruitmentController extends Controller
     $user = $request->user();
     $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
     $recruitment = Recruitment::whereId($id)->where('user_id', $user->id)->first();
-    if (isset($r_profile) && isset($recruitment)) {
 
+    $last_title = $recruitment->title;
+    if (isset($r_profile) && isset($recruitment)) {
       $recruitment->update([
         'title' => $request['title'],
         'position' => $request['position'],
@@ -301,6 +303,83 @@ class RecruitmentController extends Controller
         //     "code" => 400,
         //     "message" => "The hashtags field cannot be left blank. Please try again."
         // ], 400);
+      }
+
+      // create new job notification
+      $title = 'Employer has updated the job.';
+      $body = [
+        'job' => (object) [
+          'id' => $recruitment->id,
+          'last_title' => $last_title !== $recruitment->title ? $last_title : '',
+          'title' => $recruitment->title,
+          'user_id' => $user->id
+        ],
+        'company_info' => $r_profile->only([
+          'id', 'company_name', 'verify', 'logo_image_link', 'user_id'
+        ]),
+        'updated_at' => $recruitment->updated_at
+      ];
+      // Message (Notification)
+      $new_notification = Message::create([
+        'title' => $title,
+        'body' => json_encode($body),
+        'type' => 'update-recruitment',
+        'link' => $r_profile->logo_image_link,
+      ]);
+
+      // Message_user
+      $list_students = DB::table('student_profiles')
+        ->join('follows', 'student_profiles.id', '=', 'follows.s_profile_id')
+        ->select(
+          'student_profiles.id as s_profile_id',
+          'student_profiles.user_id',
+          'follows.r_profile_id'
+        )
+        ->where('r_profile_id', $r_profile->id)
+        ->get()
+        ->toArray();
+
+      $list_id = array_values(array_unique(array_column($list_students, 's_profile_id')));
+      if (isset($new_notification)) {
+        foreach ($list_id as $id) {
+          UserMessage::create([
+            'message_id' => $new_notification->id,
+            's_profile_id' => $id,
+            'r_profile_id' => null,
+            'is_read' => false
+          ]);
+        }
+      }
+
+      $list_user_id = array_values(array_unique(array_column($list_students, 'user_id')));
+      // push notification
+      $deviceTokens = User::whereNotNull('device_token')->whereIn('id', $list_user_id)->pluck('device_token')->all();
+      if (isset($deviceTokens)) {
+        $title = 'Employer has updated the job.';
+        $body = [
+          'job' => (object) [
+            'id' => $recruitment->id,
+            'last_title' => $last_title !== $recruitment->title ? $last_title : '',
+            'title' => $recruitment->title,
+            'user_id' => $user->id
+          ],
+          'company_info' => $r_profile->only([
+            'id', 'company_name', 'verify', 'logo_image_link', 'user_id'
+          ]),
+          'type' => 'update-recruitment',
+          'is_read' => false,
+          'updated_at' => $recruitment->updated_at
+        ];
+
+        PushNotificationJob::dispatch('sendBatchNotification', [
+          $deviceTokens,
+          [
+            'topicName' => 'update-recruitment',
+            'title' => $title,
+            'body' => $body,
+            'image' => $r_profile->logo_image_link,
+          ],
+        ]);
       }
 
       return response()->json([

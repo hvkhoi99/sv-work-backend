@@ -95,14 +95,14 @@ class CandidateController extends Controller
           'status' => 0,
           'code' => 404,
           'message' => 'Candidate\'s profile has not been created.'
-        ], 404);
+        ], 400);
       }
     } else {
       return response()->json([
         'status' => 0,
         'code' => 404,
         'message' => 'Your recruiter profile has not been created.'
-      ], 404);
+      ], 400);
     }
   }
 
@@ -144,7 +144,7 @@ class CandidateController extends Controller
             'status' => 0,
             'code' => 404,
             'message' => 'No applications found.'
-          ], 404);
+          ], 400);
         }
       } else {
         return response()->json([
