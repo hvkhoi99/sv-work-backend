@@ -5,12 +5,17 @@ namespace App\Http\Controllers\Api\Recruiter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ApiRecruiterProfileRequest;
 use App\Http\Requests\ApiStudentAvatarRequest;
+use App\Jobs\PushNotificationJob;
 use App\Models\Follow;
+use App\Models\Message;
 use App\Models\RecruiterProfile;
 use App\Models\Recruitment;
 use App\Models\StudentProfile;
+use App\Models\UserMessage;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class RecruiterProfileController extends Controller
 {
@@ -245,8 +250,6 @@ class RecruiterProfileController extends Controller
   public function changeRecruiterAvatar(ApiStudentAvatarRequest $request)
   {
     $user = Auth::user();
-
-
     $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
 
     if (isset($r_profile)) {
@@ -255,6 +258,71 @@ class RecruiterProfileController extends Controller
       $r_profile->update([
         'logo_image_link' => $response
       ]);
+
+      // create new job notification
+      $title = 'Employer updated avatar profile.';
+      $body = [
+        'company_info' => $r_profile->only([
+          'id', 'company_name', 'verify', 'logo_image_link', 'user_id'
+        ]),
+        'updated_at' => $r_profile->updated_at
+      ];
+      // Message (Notification)
+      $new_notification = Message::create([
+        'title' => $title,
+        'body' => json_encode($body),
+        'type' => 'update-avatar',
+        'link' => $r_profile->logo_image_link,
+      ]);
+
+      // Message_user
+      $list_students = DB::table('student_profiles')
+        ->join('follows', 'student_profiles.id', '=', 'follows.s_profile_id')
+        ->select(
+          'student_profiles.id as s_profile_id',
+          'student_profiles.user_id',
+          'follows.r_profile_id'
+        )
+        ->where('r_profile_id', $r_profile->id)
+        ->get()
+        ->toArray();
+
+      $list_id = array_values(array_unique(array_column($list_students, 's_profile_id')));
+      if (isset($new_notification)) {
+        foreach ($list_id as $id) {
+          UserMessage::create([
+            'message_id' => $new_notification->id,
+            's_profile_id' => $id,
+            'r_profile_id' => null,
+            'is_read' => false
+          ]);
+        }
+      }
+
+      $list_user_id = array_values(array_unique(array_column($list_students, 'user_id')));
+      // push notification
+      $deviceTokens = User::whereNotNull('device_token')->whereIn('id', $list_user_id)->pluck('device_token')->all();
+      if (isset($deviceTokens)) {
+        $title = 'Employer updated avatar profile.';
+        $body = [
+          'company_info' => $r_profile->only([
+            'id', 'company_name', 'verify', 'logo_image_link', 'user_id'
+          ]),
+          'type' => 'update-avatar',
+          'is_read' => false,
+          'updated_at' => $r_profile->updated_at
+        ];
+
+        PushNotificationJob::dispatch('sendBatchNotification', [
+          $deviceTokens,
+          [
+            'topicName' => 'update-avatar',
+            'title' => $title,
+            'body' => $body,
+            'image' => $r_profile->logo_image_link,
+          ],
+        ]);
+      }
 
       return response()->json([
         'status' => 1,

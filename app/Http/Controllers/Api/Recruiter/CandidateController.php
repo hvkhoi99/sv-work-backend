@@ -3,15 +3,19 @@
 namespace App\Http\Controllers\Api\Recruiter;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\PushNotificationJob;
 use App\Models\Application;
 use App\Models\Certificate;
 use App\Models\Education;
 use App\Models\Experience;
 use App\Models\Language;
+use App\Models\Message;
 use App\Models\RecruiterProfile;
 use App\Models\Recruitment;
 use App\Models\Skill;
 use App\Models\StudentProfile;
+use App\Models\UserMessage;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -128,15 +132,191 @@ class CandidateController extends Controller
         if (isset($exist_application) && $exist_application->is_applied) {
 
           $exist_application->update([
-            'state' => !($exist_application->state)
+            'state' => true
           ]);
+
+          // create new job notification
+          $title = 'Application approved.';
+          $body = [
+            'job' => (object) [
+              'id' => $exist_recruitment->id,
+              'title' => $exist_recruitment->title,
+              'user_id' => $user->id
+            ],
+            'company_info' => $r_profile->only([
+              'id', 'company_name', 'verify', 'logo_image_link', 'user_id'
+            ]),
+            'updated_at' => $exist_application->updated_at
+          ];
+          // Message (Notification)
+          $new_notification = Message::create([
+            'title' => $title,
+            'body' => json_encode($body),
+            'type' => 'approved-application',
+            'link' => $r_profile->logo_image_link,
+          ]);
+
+          // Message_user
+          if (isset($new_notification)) {
+            UserMessage::create([
+              'message_id' => $new_notification->id,
+              's_profile_id' => $s_profile->id,
+              'r_profile_id' => null,
+              'is_read' => false
+            ]);
+          }
+
+          // push notification
+          $deviceTokens = User::whereNotNull('device_token')->whereId($s_profile->user_id)->pluck('device_token')->all();
+          if (isset($deviceTokens)) {
+            $title = 'Application approved.';
+            $body = [
+              'job' => (object) [
+                'id' => $exist_recruitment->id,
+                'title' => $exist_recruitment->title,
+                'user_id' => $user->id
+              ],
+              'company_info' => $r_profile->only([
+                'id', 'company_name', 'verify', 'logo_image_link', 'user_id'
+              ]),
+              'type' => 'approved-application',
+              'is_read' => false,
+              'updated_at' => $exist_application->updated_at
+            ];
+
+            PushNotificationJob::dispatch('sendBatchNotification', [
+              $deviceTokens,
+              [
+                'topicName' => 'approved-application',
+                'title' => $title,
+                'body' => $body,
+                'image' => $r_profile->logo_image_link,
+              ],
+            ]);
+          }
 
           return response()->json([
             'status' => 1,
             'code' => 200,
-            'message' => $exist_application->state 
-            ? 'This application has been successfully approved.' 
-            : 'This application has been successfully rejected.',
+            'message' => $exist_application->state
+              ? 'This application has been successfully approved.'
+              : 'This application has been successfully rejected.',
+            'data' => $exist_application
+          ], 200);
+        } else {
+          return response()->json([
+            'status' => 0,
+            'code' => 404,
+            'message' => 'No applications found.'
+          ], 400);
+        }
+      } else {
+        return response()->json([
+          'status' => 0,
+          'code' => 404,
+          'message' => 'The candidate\'s profile could not be found.'
+        ], 404);
+      }
+    } else {
+      return response()->json([
+        'status' => 0,
+        'code' => 404,
+        'message' => 'The recruitment doesn\'t exist or your recruiter profile does not exist.'
+      ], 404);
+    }
+  }
+
+  public function reject($recruitment_id, $candidate_id)
+  {
+    $user = Auth::user();
+
+    $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
+    $exist_recruitment = Recruitment::where([
+      ['id', $recruitment_id],
+      ['user_id', $user->id]
+    ])->first();
+
+    if (isset($r_profile) && isset($exist_recruitment)) {
+      $s_profile = StudentProfile::whereId($candidate_id)->first();
+
+      if (isset($s_profile)) {
+        $exist_application = Application::where([
+          ['recruitment_id', $exist_recruitment->id],
+          ['user_id', $s_profile->user_id],
+        ])->first();
+
+        if (isset($exist_application) && $exist_application->is_applied) {
+
+          $exist_application->update([
+            'state' => false
+          ]);
+
+          // create new job notification
+          $title = 'Application rejected.';
+          $body = [
+            'job' => (object) [
+              'id' => $exist_recruitment->id,
+              'title' => $exist_recruitment->title,
+              'user_id' => $user->id
+            ],
+            'company_info' => $r_profile->only([
+              'id', 'company_name', 'verify', 'logo_image_link', 'user_id'
+            ]),
+            'updated_at' => $exist_application->updated_at
+          ];
+          // Message (Notification)
+          $new_notification = Message::create([
+            'title' => $title,
+            'body' => json_encode($body),
+            'type' => 'rejected-application',
+            'link' => $r_profile->logo_image_link,
+          ]);
+
+          // Message_user
+          if (isset($new_notification)) {
+            UserMessage::create([
+              'message_id' => $new_notification->id,
+              's_profile_id' => $s_profile->id,
+              'r_profile_id' => null,
+              'is_read' => false
+            ]);
+          }
+
+          // push notification
+          $deviceTokens = User::whereNotNull('device_token')->whereId($s_profile->user_id)->pluck('device_token')->all();
+          if (isset($deviceTokens)) {
+            $title = 'Application rejected.';
+            $body = [
+              'job' => (object) [
+                'id' => $exist_recruitment->id,
+                'title' => $exist_recruitment->title,
+                'user_id' => $user->id
+              ],
+              'company_info' => $r_profile->only([
+                'id', 'company_name', 'verify', 'logo_image_link', 'user_id'
+              ]),
+              'type' => 'rejected-application',
+              'is_read' => false,
+              'updated_at' => $exist_application->updated_at
+            ];
+
+            PushNotificationJob::dispatch('sendBatchNotification', [
+              $deviceTokens,
+              [
+                'topicName' => 'rejected-application',
+                'title' => $title,
+                'body' => $body,
+                'image' => $r_profile->logo_image_link,
+              ],
+            ]);
+          }
+
+          return response()->json([
+            'status' => 1,
+            'code' => 200,
+            'message' => $exist_application->state
+              ? 'This application has been successfully approved.'
+              : 'This application has been successfully rejected.',
             'data' => $exist_application
           ], 200);
         } else {
