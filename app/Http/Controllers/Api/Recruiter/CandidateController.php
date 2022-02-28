@@ -157,13 +157,18 @@ class CandidateController extends Controller
           ]);
 
           // Message_user
+          $user_messages_id = 0;
           if (isset($new_notification)) {
-            UserMessage::create([
+            $user_messages = UserMessage::create([
               'message_id' => $new_notification->id,
               's_profile_id' => $s_profile->id,
               'r_profile_id' => null,
               'is_read' => false
             ]);
+
+            if (isset($user_messages)) {
+              $user_messages_id = $user_messages->id;
+            }
           }
 
           // push notification
@@ -181,7 +186,8 @@ class CandidateController extends Controller
               ]),
               'type' => 'approved-application',
               'is_read' => false,
-              'updated_at' => $exist_application->updated_at
+              'updated_at' => $exist_application->updated_at,
+              'user_messages_id' => $user_messages_id
             ];
 
             PushNotificationJob::dispatch('sendBatchNotification', [
@@ -273,13 +279,18 @@ class CandidateController extends Controller
           ]);
 
           // Message_user
+          $user_messages_id = 0;
           if (isset($new_notification)) {
-            UserMessage::create([
+            $user_messages = UserMessage::create([
               'message_id' => $new_notification->id,
               's_profile_id' => $s_profile->id,
               'r_profile_id' => null,
               'is_read' => false
             ]);
+
+            if (isset($user_messages)) {
+              $user_messages_id = $user_messages->id;
+            }
           }
 
           // push notification
@@ -297,7 +308,8 @@ class CandidateController extends Controller
               ]),
               'type' => 'rejected-application',
               'is_read' => false,
-              'updated_at' => $exist_application->updated_at
+              'updated_at' => $exist_application->updated_at,
+              'user_messages_id' => $user_messages_id
             ];
 
             PushNotificationJob::dispatch('sendBatchNotification', [

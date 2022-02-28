@@ -275,13 +275,18 @@ class StudentApplicationController extends Controller
               ]);
 
               // Message_user
+              $user_messages_id = 0;
               if (isset($new_notification)) {
-                UserMessage::create([
+                $user_messages = UserMessage::create([
                   'message_id' => $new_notification->id,
                   's_profile_id' => $candidate_profile->id,
                   'r_profile_id' => null,
                   'is_read' => false
                 ]);
+
+                if (isset($user_messages)) {
+                  $user_messages_id = $user_messages->id;
+                }
               }
 
               // push notification
@@ -299,7 +304,8 @@ class StudentApplicationController extends Controller
                   ]),
                   'type' => 'invited-job',
                   'is_read' => false,
-                  'updated_at' => $application->updated_at
+                  'updated_at' => $application->updated_at,
+                  'user_messages_id' => $user_messages_id
                 ];
 
                 PushNotificationJob::dispatch('sendBatchNotification', [
@@ -363,13 +369,18 @@ class StudentApplicationController extends Controller
             ]);
 
             // Message_user
+            $user_messages_id = 0;
             if (isset($new_notification)) {
-              UserMessage::create([
+              $user_messages = UserMessage::create([
                 'message_id' => $new_notification->id,
                 's_profile_id' => $candidate_profile->id,
                 'r_profile_id' => null,
                 'is_read' => false
               ]);
+
+              if (isset($user_messages)) {
+                $user_messages_id = $user_messages->id;
+              }
             }
 
             // push notification
@@ -387,7 +398,8 @@ class StudentApplicationController extends Controller
                 ]),
                 'type' => 'invited-job',
                 'is_read' => false,
-                'updated_at' => $new_application->updated_at
+                'updated_at' => $new_application->updated_at,
+                'user_messages_id' => $user_messages_id
               ];
 
               PushNotificationJob::dispatch('sendBatchNotification', [

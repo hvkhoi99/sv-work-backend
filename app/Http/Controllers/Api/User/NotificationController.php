@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Application;
 use App\Models\Message;
 use App\Models\RecruiterProfile;
 use App\Models\StudentProfile;
@@ -69,26 +70,44 @@ class NotificationController extends Controller
     $user = Auth::user();
 
     $s_profile = StudentProfile::where('user_id', $user->id)->first();
-    
+
     if (isset($s_profile)) {
       $notifications = DB::table('messages')
-      ->join('user_messages', 'messages.id', '=', 'user_messages.message_id')
-      ->select(
-        'messages.id as message_id',
-        'messages.type',
-        'messages.body',
-        'messages.title',
-        'messages.link',
-        'user_messages.s_profile_id',
-        'user_messages.is_read',
-        'user_messages.updated_at'
-      )
-      ->where('s_profile_id', $s_profile->id)
-      ->orderBy('updated_at', 'desc')
-      ->get();
+        ->join('user_messages', 'messages.id', '=', 'user_messages.message_id')
+        ->select(
+          'messages.id as message_id',
+          'messages.type',
+          'messages.body',
+          'messages.title',
+          'messages.link',
+          'user_messages.id as user_messages_id',
+          'user_messages.s_profile_id',
+          'user_messages.is_read',
+          'user_messages.updated_at',
+          'user_messages.created_at'
+        )
+        ->where('s_profile_id', $s_profile->id)
+        ->orderBy('created_at', 'desc')
+        ->get();
 
       foreach ($notifications as $notification) {
         $notification->body = json_decode($notification->body);
+        if ($notification->type === "invited-job") {
+          $s_profile = StudentProfile::whereId($notification->s_profile_id)->first();
+          if (isset($s_profile)) {
+            $application = Application::where([
+              'user_id' => $s_profile->user_id,
+              'recruitment_id' => $notification->body->job->id
+            ])->first();
+            if (isset($application)) {
+              $notification->is_replied = $application->state;
+            } else {
+              $notification->is_replied = null;
+            }
+          } else {
+            $notification->is_replied = null;
+          }
+        }
       }
 
       $perPage = $request["_limit"];
@@ -113,6 +132,132 @@ class NotificationController extends Controller
         'code' => 404,
         'message' => 'Your student profile has not been created.',
       ], 404);
+    }
+  }
+
+  public function getUnreadNotificationsByStudent(Request $request)
+  {
+    $user = Auth::user();
+
+    $s_profile = StudentProfile::where('user_id', $user->id)->first();
+
+    if (isset($s_profile)) {
+      $notifications = DB::table('messages')
+        ->join('user_messages', 'messages.id', '=', 'user_messages.message_id')
+        ->select(
+          'messages.id as message_id',
+          'messages.type',
+          'messages.body',
+          'messages.title',
+          'messages.link',
+          'user_messages.id as user_messages_id',
+          'user_messages.s_profile_id',
+          'user_messages.is_read',
+          'user_messages.updated_at',
+          'user_messages.created_at'
+        )
+        ->where([
+          ['s_profile_id', $s_profile->id],
+          ['is_read', false]
+        ])
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+      foreach ($notifications as $notification) {
+        $notification->body = json_decode($notification->body);
+        if ($notification->type === "invited-job") {
+          $s_profile = StudentProfile::whereId($notification->s_profile_id)->first();
+          if (isset($s_profile)) {
+            $application = Application::where([
+              'user_id' => $s_profile->user_id,
+              'recruitment_id' => $notification->body->job->id
+            ])->first();
+            if (isset($application)) {
+              $notification->is_replied = $application->state;
+            } else {
+              $notification->is_replied = null;
+            }
+          } else {
+            $notification->is_replied = null;
+          }
+        }
+      }
+
+      $perPage = $request["_limit"];
+      $current_page = LengthAwarePaginator::resolveCurrentPage();
+
+      $notifications = new LengthAwarePaginator(
+        collect($notifications)->forPage($current_page, $perPage)->values(),
+        count($notifications),
+        $perPage,
+        $current_page,
+        ['path' => url('api/student/notifications/list')]
+      );
+
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $notifications
+      ], 200);
+    } else {
+      return response()->json([
+        'status' => 0,
+        'code' => 404,
+        'message' => 'Your student profile has not been created.',
+      ], 404);
+    }
+  }
+
+  public function onMarkAsReadByStudent($id)
+  {
+    $user = Auth::user();
+
+    $s_profile = StudentProfile::where('user_id', $user->id)->first();
+
+    if (isset($s_profile)) {
+      $user_messages = UserMessage::where([
+        ['id', $id],
+        ['s_profile_id', $s_profile->id]
+      ])->first();
+
+      $user_messages->update([
+        'is_read' => !$user_messages->is_read
+      ]);
+
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $user_messages
+      ], 200);
+    } else {
+      return response()->json([
+        'status' => 0,
+        'code' => 404,
+        'message' => 'Student profile has not been created.'
+      ], 200);
+    }
+  }
+
+  public function markAllAsReadByStudent()
+  {
+    $user = Auth::user();
+
+    $s_profile = StudentProfile::where('user_id', $user->id)->first();
+
+    if (isset($s_profile)) {
+      $user_messages = UserMessage::where('s_profile_id', $s_profile->id)->update(['is_read' => true]);
+
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $user_messages
+      ], 200);
+    } else {
+      return response()->json([
+        'status' => 0,
+        'code' => 404,
+        'message' => 'Student profile has not been created.'
+      ], 200);
     }
   }
 }

@@ -97,6 +97,12 @@ Route::group([
     Route::prefix('notifications')->group(function () {
       Route::get('count', [NotificationController::class, 'getStudentCountNotifications']);
       Route::get('list', [NotificationController::class, 'getNotificationsByStudent']);
+      Route::get('list-unread', [NotificationController::class, 'getUnreadNotificationsByStudent']);
+    });
+
+    Route::prefix('notification')->group(function () {
+      Route::put('{id}/mark-as-read', [NotificationController::class, 'onMarkAsReadByStudent']);
+      Route::put('mark-all-as-read', [NotificationController::class, 'markAllAsReadByStudent']);
     });
 
 
