@@ -24,6 +24,7 @@ class CreateUserMessagesTable extends Migration
             $table->foreign('r_profile_id')->references('id')->on('recruiter_profiles')->onDelete('cascade');
             $table->unsignedBigInteger('s_profile_id')->nullable();
             $table->foreign('s_profile_id')->references('id')->on('student_profiles')->onDelete('cascade');
+            $table->unsignedBigInteger('admin_id')->nullable();
             $table->boolean('is_read')->nullable();
         });
     }

@@ -191,7 +191,7 @@ class NotificationController extends Controller
         count($notifications),
         $perPage,
         $current_page,
-        ['path' => url('api/student/notifications/list')]
+        ['path' => url('api/student/notifications/list-unread')]
       );
 
       return response()->json([
@@ -257,6 +257,178 @@ class NotificationController extends Controller
         'status' => 0,
         'code' => 404,
         'message' => 'Student profile has not been created.'
+      ], 200);
+    }
+  }
+
+  public function getNotificationsByRecruiter(Request $request)
+  {
+    $user = Auth::user();
+
+    $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
+
+    if (isset($r_profile)) {
+      $notifications = DB::table('messages')
+        ->join('user_messages', 'messages.id', '=', 'user_messages.message_id')
+        ->select(
+          'messages.id as message_id',
+          'messages.type',
+          'messages.body',
+          'messages.title',
+          'messages.link',
+          'user_messages.id as user_messages_id',
+          'user_messages.r_profile_id',
+          'user_messages.is_read',
+          'user_messages.updated_at',
+          'user_messages.created_at'
+        )
+        ->where('r_profile_id', $r_profile->id)
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+      foreach ($notifications as $notification) {
+        $notification->body = json_decode($notification->body);
+      }
+
+      $perPage = $request["_limit"];
+      $current_page = LengthAwarePaginator::resolveCurrentPage();
+
+      $notifications = new LengthAwarePaginator(
+        collect($notifications)->forPage($current_page, $perPage)->values(),
+        count($notifications),
+        $perPage,
+        $current_page,
+        ['path' => url(
+          $user->role_id === 2
+          ? 'api/recruiter/notifications/list'
+          : 'api/student/recruiter/notifications/list'
+        )]
+      );
+
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $notifications
+      ], 200);
+    } else {
+      return response()->json([
+        'status' => 0,
+        'code' => 404,
+        'message' => 'Your recruiter profile has not been created.',
+      ], 404);
+    }
+  }
+
+  public function getUnreadNotificationsByRecruiter(Request $request)
+  {
+    $user = Auth::user();
+
+    $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
+
+    if (isset($r_profile)) {
+      $notifications = DB::table('messages')
+        ->join('user_messages', 'messages.id', '=', 'user_messages.message_id')
+        ->select(
+          'messages.id as message_id',
+          'messages.type',
+          'messages.body',
+          'messages.title',
+          'messages.link',
+          'user_messages.id as user_messages_id',
+          'user_messages.r_profile_id',
+          'user_messages.is_read',
+          'user_messages.updated_at',
+          'user_messages.created_at'
+        )
+        ->where([
+          ['r_profile_id', $r_profile->id],
+          ['is_read', false]
+        ])
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+      foreach ($notifications as $notification) {
+        $notification->body = json_decode($notification->body);
+      }
+
+      $perPage = $request["_limit"];
+      $current_page = LengthAwarePaginator::resolveCurrentPage();
+
+      $notifications = new LengthAwarePaginator(
+        collect($notifications)->forPage($current_page, $perPage)->values(),
+        count($notifications),
+        $perPage,
+        $current_page,
+        ['path' => url(
+          $user->role_id === 2
+          ? 'api/recruiter/notifications/list-unread'
+          : 'api/student/recruiter/notifications/list-unread'
+        )]
+      );
+
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $notifications
+      ], 200);
+    } else {
+      return response()->json([
+        'status' => 0,
+        'code' => 404,
+        'message' => 'Your recruiter profile has not been created.',
+      ], 404);
+    }
+  }
+
+  public function onMarkAsReadByRecruiter($id)
+  {
+    $user = Auth::user();
+
+    $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
+
+    if (isset($r_profile)) {
+      $user_messages = UserMessage::where([
+        ['id', $id],
+        ['r_profile_id', $r_profile->id]
+      ])->first();
+
+      $user_messages->update([
+        'is_read' => !$user_messages->is_read
+      ]);
+
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $user_messages
+      ], 200);
+    } else {
+      return response()->json([
+        'status' => 0,
+        'code' => 404,
+        'message' => 'Recruiter profile has not been created.'
+      ], 200);
+    }
+  }
+
+  public function markAllAsReadByRecruiter()
+  {
+    $user = Auth::user();
+
+    $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
+
+    if (isset($r_profile)) {
+      $user_messages = UserMessage::where('r_profile_id', $r_profile->id)->update(['is_read' => true]);
+
+      return response()->json([
+        'status' => 1,
+        'code' => 200,
+        'data' => $user_messages
+      ], 200);
+    } else {
+      return response()->json([
+        'status' => 0,
+        'code' => 404,
+        'message' => 'Recruiter profile has not been created.'
       ], 200);
     }
   }

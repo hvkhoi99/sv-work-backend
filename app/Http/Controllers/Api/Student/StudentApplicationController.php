@@ -281,6 +281,7 @@ class StudentApplicationController extends Controller
                   'message_id' => $new_notification->id,
                   's_profile_id' => $candidate_profile->id,
                   'r_profile_id' => null,
+                  'admin_id' => null,
                   'is_read' => false
                 ]);
 
@@ -375,6 +376,7 @@ class StudentApplicationController extends Controller
                 'message_id' => $new_notification->id,
                 's_profile_id' => $candidate_profile->id,
                 'r_profile_id' => null,
+                'admin_id' => null,
                 'is_read' => false
               ]);
 

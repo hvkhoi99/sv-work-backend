@@ -105,7 +105,6 @@ Route::group([
       Route::put('mark-all-as-read', [NotificationController::class, 'markAllAsReadByStudent']);
     });
 
-
     // Student Account
     Route::post('/password/change', [UserController::class, 'changePassword']);
 
@@ -188,6 +187,13 @@ Route::group([
 
       Route::prefix('notifications')->group(function () {
         Route::get('count', [NotificationController::class, 'getRecruiterCountNotifications']);
+        Route::get('list', [NotificationController::class, 'getNotificationsByRecruiter']);
+        Route::get('list-unread', [NotificationController::class, 'getUnreadNotificationsByRecruiter']);
+      });
+
+      Route::prefix('notification')->group(function () {
+        Route::put('{id}/mark-as-read', [NotificationController::class, 'onMarkAsReadByRecruiter']);
+        Route::put('mark-all-as-read', [NotificationController::class, 'markAllAsReadByRecruiter']);
       });
 
       // Student -> Recruiter -> Recruitment
@@ -267,6 +273,13 @@ Route::group([
 
     Route::prefix('notifications')->group(function () {
       Route::get('count', [NotificationController::class, 'getRecruiterCountNotifications']);
+      Route::get('list', [NotificationController::class, 'getNotificationsByRecruiter']);
+      Route::get('list-unread', [NotificationController::class, 'getUnreadNotificationsByRecruiter']);
+    });
+
+    Route::prefix('notification')->group(function () {
+      Route::put('{id}/mark-as-read', [NotificationController::class, 'onMarkAsReadByRecruiter']);
+      Route::put('mark-all-as-read', [NotificationController::class, 'markAllAsReadByRecruiter']);
     });
 
     // Recruiter account
