@@ -8,6 +8,7 @@ use App\Models\Message;
 use App\Models\RecruiterProfile;
 use App\Models\StudentProfile;
 use App\Models\UserMessage;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -15,6 +16,20 @@ use Illuminate\Support\Facades\DB;
 
 class NotificationController extends Controller
 {
+  public function getAdminCountNotifications()
+  {
+    $count_notifications = UserMessage::where([
+      ['admin_id', 1],
+      ['is_read', false]
+    ])->get()->count();
+
+    return response()->json([
+      'status' => 1,
+      'code' => 200,
+      'data' => $count_notifications
+    ], 200);
+  }
+
   public function getRecruiterCountNotifications()
   {
     $user = Auth::user();
@@ -27,16 +42,16 @@ class NotificationController extends Controller
       ])->get()->count();
 
       return response()->json([
-        'message' => 1,
+        'status' => 1,
         'code' => 200,
         'data' => $count_notifications
       ], 200);
     } else {
       return response()->json([
-        'message' => 1,
-        'code' => 200,
+        'status' => 0,
+        'code' => 404,
         'data' => 0
-      ], 200);
+      ], 404);
     }
   }
 
@@ -52,16 +67,16 @@ class NotificationController extends Controller
       ])->get()->count();
 
       return response()->json([
-        'message' => 1,
+        'status' => 1,
         'code' => 200,
         'data' => $count_notifications
       ], 200);
     } else {
       return response()->json([
-        'message' => 1,
-        'code' => 200,
+        'status' => 0,
+        'code' => 404,
         'data' => 0
-      ], 200);
+      ], 404);
     }
   }
 
@@ -300,8 +315,8 @@ class NotificationController extends Controller
         $current_page,
         ['path' => url(
           $user->role_id === 2
-          ? 'api/recruiter/notifications/list'
-          : 'api/student/recruiter/notifications/list'
+            ? 'api/recruiter/notifications/list'
+            : 'api/student/recruiter/notifications/list'
         )]
       );
 
@@ -361,8 +376,8 @@ class NotificationController extends Controller
         $current_page,
         ['path' => url(
           $user->role_id === 2
-          ? 'api/recruiter/notifications/list-unread'
-          : 'api/student/recruiter/notifications/list-unread'
+            ? 'api/recruiter/notifications/list-unread'
+            : 'api/student/recruiter/notifications/list-unread'
         )]
       );
 
@@ -431,5 +446,121 @@ class NotificationController extends Controller
         'message' => 'Recruiter profile has not been created.'
       ], 200);
     }
+  }
+
+  public function getNotificationsByAdmin(Request $request)
+  {
+    $notifications = DB::table('messages')
+      ->join('user_messages', 'messages.id', '=', 'user_messages.message_id')
+      ->select(
+        'messages.id as message_id',
+        'messages.type',
+        'messages.body',
+        'messages.title',
+        'messages.link',
+        'user_messages.id as user_messages_id',
+        'user_messages.admin_id',
+        'user_messages.is_read',
+        'user_messages.updated_at',
+        'user_messages.created_at'
+      )
+      ->where('admin_id', 1)
+      ->orderBy('created_at', 'desc')
+      ->get();
+
+    foreach ($notifications as $notification) {
+      $notification->body = json_decode($notification->body);
+    }
+
+    $perPage = $request["_limit"];
+    $current_page = LengthAwarePaginator::resolveCurrentPage();
+
+    $notifications = new LengthAwarePaginator(
+      collect($notifications)->forPage($current_page, $perPage)->values(),
+      count($notifications),
+      $perPage,
+      $current_page,
+      ['path' => url('api/admin/notifications/list')]
+    );
+
+    return response()->json([
+      'status' => 1,
+      'code' => 200,
+      'data' => $notifications
+    ], 200);
+  }
+
+  public function getUnreadNotificationsByAdmin(Request $request)
+  {
+    $notifications = DB::table('messages')
+      ->join('user_messages', 'messages.id', '=', 'user_messages.message_id')
+      ->select(
+        'messages.id as message_id',
+        'messages.type',
+        'messages.body',
+        'messages.title',
+        'messages.link',
+        'user_messages.id as user_messages_id',
+        'user_messages.admin_id',
+        'user_messages.is_read',
+        'user_messages.updated_at',
+        'user_messages.created_at'
+      )
+      ->where([
+        ['admin_id', 1],
+        ['is_read', false]
+      ])
+      ->orderBy('created_at', 'desc')
+      ->get();
+
+    foreach ($notifications as $notification) {
+      $notification->body = json_decode($notification->body);
+    }
+
+    $perPage = $request["_limit"];
+    $current_page = LengthAwarePaginator::resolveCurrentPage();
+
+    $notifications = new LengthAwarePaginator(
+      collect($notifications)->forPage($current_page, $perPage)->values(),
+      count($notifications),
+      $perPage,
+      $current_page,
+      ['path' => url('api/admin/notifications/list-unread')]
+    );
+
+    return response()->json([
+      'status' => 1,
+      'code' => 200,
+      'data' => $notifications
+    ], 200);
+  }
+
+  public function onMarkAsReadByAdmin($id)
+  {
+    $user_messages = UserMessage::where([
+      ['id', $id],
+      ['admin_id', 1]
+    ])->first();
+
+    $user_messages->update([
+      'is_read' => !$user_messages->is_read
+    ]);
+
+    return response()->json([
+      'status' => 1,
+      'code' => 200,
+      'data' => $user_messages
+    ], 200);
+  }
+
+  public function markAllAsReadByAdmin()
+  {
+    $user_messages = UserMessage::where('admin_id', 1)->update(['is_read' => true]);
+
+    return response()->json([
+      'status' => 1,
+      'code' => 200,
+      'data' => $user_messages
+    ], 200);
   }
 }

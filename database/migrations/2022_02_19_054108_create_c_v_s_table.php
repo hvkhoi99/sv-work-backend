@@ -22,8 +22,8 @@ class CreateCVSTable extends Migration
             $table->longText('link')->nullable();
             // $table->medium('data')->nullable();
         });
-        // DB::statement("ALTER TABLE c_v_s ADD cv_data MEDIUMBLOB"); // MySQL
-        DB::statement("ALTER TABLE c_v_s ADD cv_data BYTEA"); // PostgreSQL
+        DB::statement("ALTER TABLE c_v_s ADD cv_data MEDIUMBLOB"); // MySQL
+        // DB::statement("ALTER TABLE c_v_s ADD cv_data BYTEA"); // PostgreSQL
     }
 
     /**

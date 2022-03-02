@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\PushNotificationJob;
 use App\Models\Application;
 use App\Models\Event;
+use App\Models\Message;
 use App\Models\RecruiterProfile;
 use App\Models\Recruitment;
 use App\Models\StudentProfile;
+use App\Models\UserMessage;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -21,7 +24,7 @@ class AdminController extends Controller
     $recruiters = RecruiterProfile::where([
       ['verify', null],
       ['tax_code', '!=', null]
-    ])->paginate($_limit);
+    ])->orderBy('updated_at', 'desc')->paginate($_limit);
 
     if (isset($recruiters)) {
       return response()->json([
@@ -40,7 +43,7 @@ class AdminController extends Controller
 
   public function showRecruiter($id)
   {
-    $r_profile = RecruiterProfile::where('id', $id)->first();
+    $r_profile = RecruiterProfile::whereId($id)->first();
     if (isset($r_profile)) {
       return response()->json([
         'status' => 1,
@@ -51,7 +54,7 @@ class AdminController extends Controller
       return response()->json([
         'status' => 0,
         'code' => 404,
-        'message' => 'Your recruiter profile was not found or has not been created.'
+        'message' => 'Recruiter profile was not found or has not been created.'
       ], 404);
     }
   }
@@ -63,6 +66,120 @@ class AdminController extends Controller
     if (isset($recruiter)) {
 
       $recruiter->update($request->all());
+
+      if ($recruiter->verify) {
+        $title = "The administrator has accepted the verification of the company's profile.";
+        $body = [
+          'company_info' => $recruiter->only([
+            'id', 'company_name', 'verify', 'logo_image_link', 'user_id'
+          ]),
+          'updated_at' => $recruiter->updated_at
+        ];
+        // Message (Notification)
+        $new_notification = Message::create([
+          'title' => $title,
+          'body' => json_encode($body),
+          'type' => 'accepted-verify-profile',
+          'link' => $recruiter->avatar_link,
+        ]);
+
+        // Message_user
+        $user_messages_id = 0;
+        if (isset($new_notification)) {
+          $user_messages = UserMessage::create([
+            'message_id' => $new_notification->id,
+            's_profile_id' => null,
+            'r_profile_id' => $recruiter->id,
+            'admin_id' => null,
+            'is_read' => false
+          ]);
+
+          if (isset($user_messages)) {
+            $user_messages_id = $user_messages->id;
+          }
+        }
+
+        // push notification
+        $deviceTokens = User::whereNotNull('device_token')->whereId($recruiter->user_id)->pluck('device_token')->all();
+        if (isset($deviceTokens)) {
+          $title = "The administrator has accepted the verification of the company's profile.";
+          $body = [
+            'company_info' => $recruiter->only([
+              'id', 'company_name', 'verify', 'logo_image_link', 'user_id'
+            ]),
+            'type' => 'accepted-verify-profile',
+            'is_read' => false,
+            'updated_at' => $recruiter->updated_at,
+            'user_messages_id' => $user_messages_id
+          ];
+
+          PushNotificationJob::dispatch('sendBatchNotification', [
+            $deviceTokens,
+            [
+              'topicName' => 'accepted-verify-profile',
+              'title' => $title,
+              'body' => $body,
+              'image' => $recruiter->avatar_link,
+            ],
+          ]);
+        }
+      } else {
+        $title = "The administrator refused to verify the company's profile.";
+        $body = [
+          'company_info' => $recruiter->only([
+            'id', 'company_name', 'verify', 'logo_image_link', 'user_id'
+          ]),
+          'updated_at' => $recruiter->updated_at
+        ];
+        // Message (Notification)
+        $new_notification = Message::create([
+          'title' => $title,
+          'body' => json_encode($body),
+          'type' => 'rejected-verify-profile',
+          'link' => $recruiter->avatar_link,
+        ]);
+
+        // Message_user
+        $user_messages_id = 0;
+        if (isset($new_notification)) {
+          $user_messages = UserMessage::create([
+            'message_id' => $new_notification->id,
+            's_profile_id' => null,
+            'r_profile_id' => $recruiter->id,
+            'admin_id' => null,
+            'is_read' => false
+          ]);
+
+          if (isset($user_messages)) {
+            $user_messages_id = $user_messages->id;
+          }
+        }
+
+        // push notification
+        $deviceTokens = User::whereNotNull('device_token')->whereId($recruiter->user_id)->pluck('device_token')->all();
+        if (isset($deviceTokens)) {
+          $title = "The administrator refused to verify the company's profile.";
+          $body = [
+            'company_info' => $recruiter->only([
+              'id', 'company_name', 'verify', 'logo_image_link', 'user_id'
+            ]),
+            'type' => 'rejected-verify-profile',
+            'is_read' => false,
+            'updated_at' => $recruiter->updated_at,
+            'user_messages_id' => $user_messages_id
+          ];
+
+          PushNotificationJob::dispatch('sendBatchNotification', [
+            $deviceTokens,
+            [
+              'topicName' => 'rejected-verify-profile',
+              'title' => $title,
+              'body' => $body,
+              'image' => $recruiter->avatar_link,
+            ],
+          ]);
+        }
+      }
 
       return response()->json([
         'status' => 1,

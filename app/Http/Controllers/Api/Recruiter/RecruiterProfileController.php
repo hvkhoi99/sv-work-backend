@@ -93,7 +93,65 @@ class RecruiterProfileController extends Controller
         'user_id' => $user->id
       ]);
 
-      $user["r_profile"] = $new_r_profile;
+      if (isset($new_r_profile)) {
+        $user["r_profile"] = $new_r_profile;
+        // create new job notification
+        $title = 'Employer sends a request to verify company profile.';
+        $body = [
+          'company_info' => $new_r_profile->only([
+            'id', 'company_name', 'verify', 'logo_image_link', 'user_id'
+          ]),
+          'updated_at' => $new_r_profile->updated_at
+        ];
+        // Message (Notification)
+        $new_notification = Message::create([
+          'title' => $title,
+          'body' => json_encode($body),
+          'type' => 'verify-company-profile',
+          'link' => $new_r_profile->avatar_link,
+        ]);
+
+        // Message_user
+        $user_messages_id = 0;
+        if (isset($new_notification)) {
+          $user_messages = UserMessage::create([
+            'message_id' => $new_notification->id,
+            's_profile_id' => null,
+            'r_profile_id' => null,
+            'admin_id' => 1,
+            'is_read' => false
+          ]);
+
+          if (isset($user_messages)) {
+            $user_messages_id = $user_messages->id;
+          }
+        }
+
+        // push notification
+        $deviceTokens = User::whereNotNull('device_token')->where('role_id', 1)->pluck('device_token')->all();
+        if (isset($deviceTokens)) {
+          $title = 'Employer sends a request to verify company profile.';
+          $body = [
+            'company_info' => $new_r_profile->only([
+              'id', 'company_name', 'verify', 'logo_image_link', 'user_id'
+            ]),
+            'type' => 'verify-company-profile',
+            'is_read' => false,
+            'updated_at' => $new_r_profile->updated_at,
+            'user_messages_id' => $user_messages_id
+          ];
+
+          PushNotificationJob::dispatch('sendBatchNotification', [
+            $deviceTokens,
+            [
+              'topicName' => 'verify-company-profile',
+              'title' => $title,
+              'body' => $body,
+              'image' => $new_r_profile->avatar_link,
+            ],
+          ]);
+        }
+      }
 
       return response()->json([
         'status' => 1,
@@ -177,8 +235,80 @@ class RecruiterProfileController extends Controller
           'message' => 'You cannot verify your own profile. Please try again later.'
         ], 400);
       } else {
-        $r_profile->update($request->all());
+        $last_tax_code = $r_profile->tax_code;
         $user["r_profile"] = $r_profile;
+
+        if ($request['tax_code'] !== $last_tax_code) {
+          $r_profile->update([
+            'contact_email' => $request['contact_email'],
+            'company_name' => $request['company_name'],
+            'phone_number' => $request['phone_number'],
+            'verify' => null,
+            'address' => $request['address'],
+            'company_size' => $request['company_size'],
+            'company_industry' => $request['company_industry'],
+            'tax_code' => $request['tax_code'],
+          ]);
+
+          // create new job notification
+          $title = 'Employer sends a request to verify company profile.';
+          $body = [
+            'company_info' => $r_profile->only([
+              'id', 'company_name', 'verify', 'logo_image_link', 'user_id'
+            ]),
+            'updated_at' => $r_profile->updated_at
+          ];
+          // Message (Notification)
+          $new_notification = Message::create([
+            'title' => $title,
+            'body' => json_encode($body),
+            'type' => 'verify-company-profile',
+            'link' => $r_profile->avatar_link,
+          ]);
+
+          // Message_user
+          $user_messages_id = 0;
+          if (isset($new_notification)) {
+            $user_messages = UserMessage::create([
+              'message_id' => $new_notification->id,
+              's_profile_id' => null,
+              'r_profile_id' => null,
+              'admin_id' => 1,
+              'is_read' => false
+            ]);
+
+            if (isset($user_messages)) {
+              $user_messages_id = $user_messages->id;
+            }
+          }
+
+          // push notification
+          $deviceTokens = User::whereNotNull('device_token')->where('role_id', 1)->pluck('device_token')->all();
+          if (isset($deviceTokens)) {
+            $title = 'Employer sends a request to verify company profile.';
+            $body = [
+              'company_info' => $r_profile->only([
+                'id', 'company_name', 'verify', 'logo_image_link', 'user_id'
+              ]),
+              'type' => 'verify-company-profile',
+              'is_read' => false,
+              'updated_at' => $r_profile->updated_at,
+              'user_messages_id' => $user_messages_id
+            ];
+
+            PushNotificationJob::dispatch('sendBatchNotification', [
+              $deviceTokens,
+              [
+                'topicName' => 'verify-company-profile',
+                'title' => $title,
+                'body' => $body,
+                'image' => $s_profile->avatar_link,
+              ],
+            ]);
+          }
+        } else {
+          $r_profile->update($request->all());
+        }
 
         return response()->json([
           'status' => 1,
@@ -340,7 +470,8 @@ class RecruiterProfileController extends Controller
     }
   }
 
-  public function checkVerified(Request $request) {
+  public function checkVerified(Request $request)
+  {
     $user = Auth::user();
 
     $r_profile = RecruiterProfile::where('user_id', $user->id)->first();

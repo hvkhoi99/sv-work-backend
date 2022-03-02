@@ -68,6 +68,18 @@ Route::group([
     'prefix' => 'admin',
     'middleware' => 'role:admin'
   ], function () {
+    // Notification
+    Route::prefix('notifications')->group(function () {
+      Route::get('count', [NotificationController::class, 'getAdminCountNotifications']);
+      Route::get('list', [NotificationController::class, 'getNotificationsByAdmin']);
+      Route::get('list-unread', [NotificationController::class, 'getUnreadNotificationsByAdmin']);
+    });
+
+    Route::prefix('notification')->group(function () {
+      Route::put('{id}/mark-as-read', [NotificationController::class, 'onMarkAsReadByAdmin']);
+      Route::put('mark-all-as-read', [NotificationController::class, 'markAllAsReadByAdmin']);
+    });
+
     // Total 
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/chartFigure', [AdminController::class, 'chartFigure'])->name('chartFigure');
