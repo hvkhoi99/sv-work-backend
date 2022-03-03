@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Student;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ApiStudentAvatarRequest;
 use App\Http\Requests\ApiStudentProfileRequest;
+use App\Http\Requests\ApiUploadPDFRequest;
 use App\Models\RecruiterProfile;
 use App\Models\StudentProfile;
 use Illuminate\Http\Request;
@@ -195,7 +196,6 @@ class StudentProfileController extends Controller
   public function changeAvatar(ApiStudentAvatarRequest $request)
   {
     $user = Auth::user();
-
 
     $s_profile = StudentProfile::where('user_id', $user->id)->first();
 

@@ -370,6 +370,15 @@ class TestController extends Controller
     // if ($file = $request->file('file')) {
     //   $file_name = $file->getClientOriginalName();
     // }
+    // $response = cloudinary()
+    //   ->upload($request->file('file')
+    //     ->resource(
+    //       "sample",
+    //       array(
+    //         "pages" => TRUE
+    //       )
+    //     )->getRealPath())
+    //   ->getSecurePath();
     $response = cloudinary()->upload($request->file('file')->getRealPath())->getSecurePath();
     dd($response);
   }

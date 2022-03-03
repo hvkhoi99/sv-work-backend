@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\Student\JobController;
 use App\Http\Controllers\Api\Student\LanguageController;
 use App\Http\Controllers\Api\Student\SkillController;
 use App\Http\Controllers\Api\Student\StudentApplicationController;
+use App\Http\Controllers\Api\Student\StudentCVController;
 use App\Http\Controllers\Api\Student\StudentDashboardController;
 use App\Http\Controllers\Api\Student\StudentEventController;
 use App\Http\Controllers\Api\Student\StudentProfileController;
@@ -116,9 +117,15 @@ Route::group([
       Route::put('{id}/mark-as-read', [NotificationController::class, 'onMarkAsReadByStudent']);
       Route::put('mark-all-as-read', [NotificationController::class, 'markAllAsReadByStudent']);
     });
-
+    
     // Student Account
     Route::post('/password/change', [UserController::class, 'changePassword']);
+    
+    Route::prefix('cv')->group(function () {
+      Route::get('list', [StudentCVController::class, 'getListCV']);
+      Route::post('upload', [StudentCVController::class, 'uploadCV']);
+      Route::delete('{id}/delete', [StudentCVController::class, 'deleteCV']);
+    });
 
     // Student Profile
     Route::prefix('profile')->group(function () {
@@ -365,10 +372,6 @@ Route::group([
   Route::get('events', [RecruiterEventController::class, 'index']);
 });
 
-// Test
-Route::get('test', [TestController::class, 'test']);
-// Route::post('upload', [TestController::class, 'upload']);
-
 // Job 
 Route::prefix('job')->group(function () {
   Route::get('getJobsByRecruiterId/{id}', [JobController::class, 'getJobsByRecruiterId']);
@@ -398,3 +401,7 @@ Route::get('/getTotalJobs', [HomeController::class, 'getTotalJobs']);
 // Notification
 Route::post('/update-device-token', [UserController::class, 'addDeviceToken']);
 Route::post('/send-notifications', [UserController::class, 'sendNotification']);
+
+// Test
+Route::get('test', [TestController::class, 'test']);
+Route::post('upload', [TestController::class, 'upload']);
