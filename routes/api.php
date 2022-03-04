@@ -27,6 +27,7 @@ use App\Http\Controllers\Api\Student\StudentEventController;
 use App\Http\Controllers\Api\Student\StudentProfileController;
 use App\Http\Controllers\Api\Student\StudentSearchController;
 use App\Http\Controllers\Api\User\NotificationController;
+use App\Http\Controllers\Api\User\ResetPasswordController;
 use App\Http\Controllers\TestController;
 
 /*
@@ -405,3 +406,7 @@ Route::post('/send-notifications', [UserController::class, 'sendNotification']);
 // Test
 Route::get('test', [TestController::class, 'test']);
 Route::post('upload', [TestController::class, 'upload']);
+
+// Reset Password
+Route::post('reset-password', [ResetPasswordController::class, 'sendMail']);
+Route::put('reset-password/{token}', [ResetPasswordController::class, 'resetPassword']);

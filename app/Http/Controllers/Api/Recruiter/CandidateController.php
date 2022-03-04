@@ -19,6 +19,7 @@ use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CandidateController extends Controller
 {
@@ -88,6 +89,17 @@ class CandidateController extends Controller
         $s_profile["experiences"] = $experiences;
         $s_profile["educations"] = $educations;
         $s_profile["certificates"] = $certificates;
+
+        $list_cv = DB::table('user_c_v_s')
+        ->join('c_v_s', 'user_c_v_s.cv_id', '=', 'c_v_s.id')
+        ->select(
+          'user_c_v_s.user_id',
+          'c_v_s.*'
+        )
+        ->where('user_id', $s_profile->user_id)
+        ->orderBy('updated_at', 'desc')
+        ->get();
+        $s_profile["cvs"] = $list_cv;
 
         return response()->json([
           'status' => 1,

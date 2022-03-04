@@ -571,7 +571,10 @@ class StudentApplicationController extends Controller
               }
 
               // push notification
-              $deviceTokens = User::whereNotNull('device_token')->whereId($candidate_profile->user_id)->pluck('device_token')->all();
+              $deviceTokens = User::whereNotNull('device_token')
+              ->whereId($candidate_profile->user_id)
+              ->pluck('device_token')
+              ->all();
               if (isset($deviceTokens)) {
                 $title = 'Invited to the job.';
                 $body = [

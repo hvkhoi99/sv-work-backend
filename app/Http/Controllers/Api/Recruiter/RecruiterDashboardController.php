@@ -32,7 +32,7 @@ class RecruiterDashboardController extends Controller
     foreach ($recruitments as $recruitment) {
       $count_applicant = Application::where([
         ['recruitment_id', $recruitment->id],
-        ['state', null],
+        // ['state', null],
         ['is_applied', true]
       ])->count();
       if (isset($count_applicant)) {
@@ -74,7 +74,7 @@ class RecruiterDashboardController extends Controller
       foreach ($recruitments as $rec) {
         $applicant = Application::where([
           ['recruitment_id', $rec->id],
-          ['state', null],
+          // ['state', null],
           ['is_applied', true]
         ])->get();
         $rec['applicants'] = count($applicant);
@@ -127,7 +127,7 @@ class RecruiterDashboardController extends Controller
       foreach ($recruitments as $rec) {
         $applicant = Application::where([
           ['recruitment_id', $rec->id],
-          ['state', null],
+          // ['state', null],
           ['is_applied', true]
         ])->get();
         $rec['applicants'] = count($applicant);

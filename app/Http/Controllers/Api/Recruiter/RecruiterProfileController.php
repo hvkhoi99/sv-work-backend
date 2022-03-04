@@ -108,7 +108,7 @@ class RecruiterProfileController extends Controller
           'title' => $title,
           'body' => json_encode($body),
           'type' => 'verify-company-profile',
-          'link' => $new_r_profile->avatar_link,
+          'link' => $new_r_profile->logo_image_link,
         ]);
 
         // Message_user
@@ -147,7 +147,7 @@ class RecruiterProfileController extends Controller
               'topicName' => 'verify-company-profile',
               'title' => $title,
               'body' => $body,
-              'image' => $new_r_profile->avatar_link,
+              'image' => $new_r_profile->logo_image_link,
             ],
           ]);
         }
@@ -263,7 +263,7 @@ class RecruiterProfileController extends Controller
             'title' => $title,
             'body' => json_encode($body),
             'type' => 'verify-company-profile',
-            'link' => $r_profile->avatar_link,
+            'link' => $r_profile->logo_image_link,
           ]);
 
           // Message_user
@@ -302,7 +302,7 @@ class RecruiterProfileController extends Controller
                 'topicName' => 'verify-company-profile',
                 'title' => $title,
                 'body' => $body,
-                'image' => $s_profile->avatar_link,
+                'image' => $r_profile->logo_image_link,
               ],
             ]);
           }

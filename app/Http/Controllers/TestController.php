@@ -345,7 +345,7 @@ class TestController extends Controller
     //   ]
     // ];
 
-    $data = DB::table('student_profiles')
+    $list_students = DB::table('student_profiles')
       ->join('follows', 'student_profiles.id', '=', 'follows.s_profile_id')
       ->select(
         'student_profiles.id as s_profile_id',
@@ -353,15 +353,18 @@ class TestController extends Controller
         'follows.r_profile_id'
       )
       ->where([
-        ['r_profile_id', 1],
+        ['r_profile_id', 4],
         // ['user_id', '!=', 2]
       ])
-      ->get();
+      ->get()
+      ->toArray();
+
+    $list_user_id = array_values(array_unique(array_column($list_students, 'user_id')));
 
     return response()->json([
       'status' => 1,
       'code' => 200,
-      'data' => $data,
+      'data' => $list_user_id,
     ], 200);
   }
 

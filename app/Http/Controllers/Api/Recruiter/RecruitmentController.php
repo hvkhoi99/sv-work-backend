@@ -149,7 +149,10 @@ class RecruitmentController extends Controller
 
         $list_user_id = array_values(array_unique(array_column($list_students, 'user_id')));
         // push notification
-        $deviceTokens = User::whereNotNull('device_token')->whereIn('id', $list_user_id)->pluck('device_token')->all();
+        $deviceTokens = User::whereNotNull('device_token')
+        ->whereIn('id', $list_user_id)
+        ->pluck('device_token')
+        ->all();
         if (isset($deviceTokens)) {
           $title = 'Employer creates a new job.';
           $body = [
@@ -449,10 +452,11 @@ class RecruitmentController extends Controller
 
     if (isset($r_profile) && isset($exist_recruitment)) {
       $candidates = [];
-      $applications = Application::where('recruitment_id', $id)->where('state', null)->where('is_applied', true)->orderBy('id', 'DESC')->get();
+      $applications = Application::where('recruitment_id', $id)->where('is_applied', true)->orderBy('state', 'asc')->get();
 
       foreach ($applications as $application) {
         $candidate = StudentProfile::where('user_id', $application->user_id)->first();
+        $candidate['application'] = $application;
         array_push($candidates, $candidate);
       }
 
