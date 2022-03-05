@@ -611,11 +611,27 @@ class StudentApplicationController extends Controller
               'data' => $recruitment
             ], 200);
           } else {
-            return response()->json([
-              'status' => 0,
-              'code' => 400,
-              'message' => 'This candidate did or is doing this job.'
-            ], 200);
+            if ($application->state) {
+              return response()->json([
+                'status' => 0,
+                'code' => 400,
+                'message' => 'This candidate did or is doing this job.'
+              ], 200);
+            } else {
+              if (!$application->state && !$application->is_invited) {
+                return response()->json([
+                  'status' => 0,
+                  'code' => 400,
+                  'message' => 'You have declined this student\'s application.'
+                ], 200);
+              } else {
+                return response()->json([
+                  'status' => 0,
+                  'code' => 400,
+                  'message' => 'This student has declined your offer of this job.'
+                ], 200);
+              }
+            }
           }
         } else {
           // tao moi application -> invite = true
