@@ -151,6 +151,7 @@ class RecruitmentController extends Controller
         // push notification
         $deviceTokens = User::whereNotNull('device_token')
         ->whereIn('id', $list_user_id)
+        // ->where('id', '!=', $user->id)
         ->pluck('device_token')
         ->all();
         if (isset($deviceTokens)) {
@@ -358,7 +359,11 @@ class RecruitmentController extends Controller
 
       $list_user_id = array_values(array_unique(array_column($list_students, 'user_id')));
       // push notification
-      $deviceTokens = User::whereNotNull('device_token')->whereIn('id', $list_user_id)->pluck('device_token')->all();
+      $deviceTokens = User::whereNotNull('device_token')
+      ->whereIn('id', $list_user_id)
+      // ->where('id', '!=', $user->id)
+      ->pluck('device_token')
+      ->all();
       if (isset($deviceTokens)) {
         $title = 'Employer has updated the job.';
         $body = [
