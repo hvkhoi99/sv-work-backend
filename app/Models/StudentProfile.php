@@ -32,6 +32,11 @@ class StudentProfile extends Model
     return $this->hasMany('App\Models\UserMessage');
   }
 
+  public function events()
+  {
+    return $this->hasMany('App\Models\Event');
+  }
+
   // Search
   public function scopeName($query, $request)
   {

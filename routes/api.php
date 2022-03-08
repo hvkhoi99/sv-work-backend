@@ -5,7 +5,7 @@ use App\Http\Controllers\Api\Auth\VerificationController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\Recruiter\CandidateController;
 use App\Http\Controllers\Api\Recruiter\RecruiterDashboardController;
-use App\Http\Controllers\Api\Recruiter\RecruiterEventController;
+// use App\Http\Controllers\Api\Recruiter\RecruiterEventController;
 use App\Http\Controllers\Api\User\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -59,6 +59,14 @@ Route::get('/error', [UserController::class, 'showError'])->name('showError');
 Route::group([
   'middleware' => 'auth:api',
 ], function () {
+  // Event
+  Route::prefix('event')->group(function () {
+    Route::post('{id}/join', [StudentEventController::class, 'join']);
+    Route::put('{id}/close', [StudentEventController::class, 'close']);
+    Route::put('{id}/update', [StudentEventController::class, 'update']);
+    Route::delete('{id}', [StudentEventController::class, 'delete']);
+  });
+
   // Change Password
   Route::prefix('auth/password')->group(function () {
     Route::put('change', [UserController::class, 'changePassword']);
@@ -106,6 +114,10 @@ Route::group([
     'prefix' => 'student',
     'middleware' => 'role:student'
   ], function () {
+    // Student Event
+    Route::prefix('event')->group(function () {
+      Route::post('store', [StudentEventController::class, 'storeByStudent']);
+    });
 
     // Student Notification
     Route::prefix('notifications')->group(function () {
@@ -118,10 +130,10 @@ Route::group([
       Route::put('{id}/mark-as-read', [NotificationController::class, 'onMarkAsReadByStudent']);
       Route::put('mark-all-as-read', [NotificationController::class, 'markAllAsReadByStudent']);
     });
-    
+
     // Student Account
     Route::post('/password/change', [UserController::class, 'changePassword']);
-    
+
     Route::prefix('cv')->group(function () {
       Route::get('list', [StudentCVController::class, 'getListCV']);
       Route::post('upload', [StudentCVController::class, 'uploadCV']);
@@ -194,17 +206,24 @@ Route::group([
       Route::put('{id}/reject-invited', [StudentApplicationController::class, 'rejectInvitedJob']);
     });
 
-    // Event
-    Route::prefix('event')->group(function () {
-      Route::post('{id}', [StudentEventController::class, 'join']);
-    });
-
     // Student -> Recruiter
     Route::group([
       'name' => 'recruiter.',
       'prefix' => 'recruiter'
     ], function () {
+      // Student -> Recruiter -> Event
+      Route::prefix('event')->group(function () {
+        Route::post('store', [StudentEventController::class, 'storeByRecruiter']);
+      });
 
+      // Manage event
+      // Route::prefix('manage-event')->group(function () {
+      //   Route::get('index', [RecruiterEventController::class, 'dashboardIndex']);
+      //   Route::get('posted', [RecruiterEventController::class, 'posted']);
+      //   Route::get('closed', [RecruiterEventController::class, 'closed']);
+      // });
+
+      // Student -> Recruiter -> Notifications
       Route::prefix('notifications')->group(function () {
         Route::get('count', [NotificationController::class, 'getRecruiterCountNotifications']);
         Route::get('list', [NotificationController::class, 'getNotificationsByRecruiter']);
@@ -251,22 +270,6 @@ Route::group([
       // Student -> Recruiter -> Follow
       Route::post('{id}/follow', [FollowController::class, 'follow']);
 
-      // Event
-      Route::prefix('event')->group(function () {
-        Route::get('{id}', [RecruiterEventController::class, 'show']);
-        Route::post('store', [RecruiterEventController::class, 'store']);
-        Route::put('{id}', [RecruiterEventController::class, 'update']);
-        Route::delete('{id}', [RecruiterEventController::class, 'destroy']);
-        Route::post('{id}/close', [RecruiterEventController::class, 'close']);
-      });
-
-      // Manage event
-      Route::prefix('manage-event')->group(function () {
-        Route::get('index', [RecruiterEventController::class, 'dashboardIndex']);
-        Route::get('posted', [RecruiterEventController::class, 'posted']);
-        Route::get('closed', [RecruiterEventController::class, 'closed']);
-      });
-
       // Candidate
       Route::prefix('candidate')->group(function () {
         Route::get('{id}', [CandidateController::class, 'candidateInfo']);
@@ -290,7 +293,12 @@ Route::group([
     'prefix' => 'recruiter',
     'middleware' => 'role:recruiter'
   ], function () {
+    // Recruiter Event
+    Route::prefix('event')->group(function () {
+      Route::post('store', [StudentEventController::class, 'storeByRecruiter']);
+    });
 
+    // Recruiter Notifications
     Route::prefix('notifications')->group(function () {
       Route::get('count', [NotificationController::class, 'getRecruiterCountNotifications']);
       Route::get('list', [NotificationController::class, 'getNotificationsByRecruiter']);
@@ -337,22 +345,6 @@ Route::group([
       Route::get('closed-recruitments', [RecruiterDashboardController::class, 'closedRecruitments']);
     });
 
-    // Event
-    Route::prefix('event')->group(function () {
-      Route::get('{id}', [RecruiterEventController::class, 'show']);
-      Route::post('store', [RecruiterEventController::class, 'store']);
-      Route::put('{id}', [RecruiterEventController::class, 'update']);
-      Route::delete('{id}', [RecruiterEventController::class, 'destroy']);
-      Route::post('{id}/close', [RecruiterEventController::class, 'close']);
-    });
-
-    // Manage event
-    Route::prefix('manage-event')->group(function () {
-      Route::get('index', [RecruiterEventController::class, 'dashboardIndex']);
-      Route::get('posted', [RecruiterEventController::class, 'posted']);
-      Route::get('closed', [RecruiterEventController::class, 'closed']);
-    });
-
     // Candidate
     Route::prefix('candidate')->group(function () {
       Route::get('{id}', [CandidateController::class, 'candidateInfo']);
@@ -370,7 +362,7 @@ Route::group([
   });
 
   // User
-  Route::get('events', [RecruiterEventController::class, 'index']);
+  // Route::get('events', [StudentEventController::class, 'index']);
 });
 
 // Job 
@@ -410,3 +402,8 @@ Route::post('upload', [TestController::class, 'upload']);
 // Reset Password
 Route::post('reset-password', [ResetPasswordController::class, 'sendMail']);
 Route::put('reset-password/{token}', [ResetPasswordController::class, 'resetPassword']);
+
+// Event
+Route::prefix('event')->group(function () {
+  Route::get('list-event', [StudentEventController::class, 'listEvents']);
+});

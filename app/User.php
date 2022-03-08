@@ -90,10 +90,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne('App\Models\Language');
     }
 
-    public function events()
-    {
-        return $this->hasMany('App\Models\Event');
-    }
+    // public function events()
+    // {
+    //     return $this->hasMany('App\Models\Event');
+    // }
 
     public function participantEvents()
     {

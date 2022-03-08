@@ -25,6 +25,11 @@ class RecruiterProfile extends Model
     return $this->hasMany('App\Models\UserMessage');
   }
 
+  public function events()
+  {
+    return $this->hasMany('App\Models\Event');
+  }
+
   // Search Name
   public function scopeKeyword($query, $request)
   {
