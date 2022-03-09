@@ -8,10 +8,10 @@ class Event extends Model
 {
     protected $guarded = [];
 
-    protected $casts = [
-        'from_date' => 'datetime:m/d/Y', // Change your format
-        'to_date' => 'datetime:m/d/Y', // Change your format
-    ];
+    // protected $casts = [
+    //     'from_date' => 'datetime:m/d/Y', // Change your format
+    //     'to_date' => 'datetime:m/d/Y', // Change your format
+    // ];
 
     public function student_profile()
     {

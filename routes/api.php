@@ -65,6 +65,14 @@ Route::group([
     Route::put('{id}/close', [StudentEventController::class, 'close']);
     Route::put('{id}/update', [StudentEventController::class, 'update']);
     Route::delete('{id}', [StudentEventController::class, 'delete']);
+    Route::get('{id}', [StudentEventController::class, 'show']);
+  });
+
+  Route::prefix('events')->group(function () {
+    Route::get('available', [StudentEventController::class, 'availableEvents']);
+    Route::get('closed', [StudentEventController::class, 'closedEvents']);
+    Route::get('joined', [StudentEventController::class, 'joinedEvents']);
+    Route::get('dashboard-data', [StudentEventController::class, 'getEventDashboardData']);
   });
 
   // Change Password
@@ -383,10 +391,10 @@ Route::prefix('find')->group(function () {
 });
 
 // Search Candidate with none account
-Route::get('find/candidate', [RecruiterSearchController::class, 'getCandidateSearch']);
+Route::get('/find/candidate', [RecruiterSearchController::class, 'getCandidateSearch']);
 
 // Home
-Route::get('getTopRecruiters', [HomeController::class, 'getTopRecruiters']);
+Route::get('/getTopRecruiters', [HomeController::class, 'getTopRecruiters']);
 Route::get('/getTopRecruitments', [HomeController::class, 'getTopRecruitments']);
 Route::get('/getTotalJobs', [HomeController::class, 'getTotalJobs']);
 
@@ -404,6 +412,7 @@ Route::post('reset-password', [ResetPasswordController::class, 'sendMail']);
 Route::put('reset-password/{token}', [ResetPasswordController::class, 'resetPassword']);
 
 // Event
-Route::prefix('event')->group(function () {
-  Route::get('list-event', [StudentEventController::class, 'listEvents']);
-});
+// Route::prefix('event')->group(function () {
+//   Route::get('up', [StudentEventController::class, 'listEvents']);
+// });
+  Route::get('upcoming-events', [StudentEventController::class, 'listEvents']);
