@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Application;
+use App\Models\Event;
 use App\Models\Follow;
+use App\Models\ParticipantEvent;
 use App\Models\RecruiterProfile;
 use App\Models\Recruitment;
 use App\Models\StudentProfile;
@@ -345,26 +347,39 @@ class TestController extends Controller
     //   ]
     // ];
 
-    $list_students = DB::table('student_profiles')
-      ->join('follows', 'student_profiles.id', '=', 'follows.s_profile_id')
-      ->select(
-        'student_profiles.id as s_profile_id',
-        'student_profiles.user_id',
-        'follows.r_profile_id'
-      )
-      ->where([
-        ['r_profile_id', 4],
-        // ['user_id', '!=', 2]
-      ])
-      ->get()
-      ->toArray();
+    // $list_students = DB::table('student_profiles')
+    //   ->join('follows', 'student_profiles.id', '=', 'follows.s_profile_id')
+    //   ->select(
+    //     'student_profiles.id as s_profile_id',
+    //     'student_profiles.user_id',
+    //     'follows.r_profile_id'
+    //   )
+    //   ->where([
+    //     ['r_profile_id', 4],
+    //     // ['user_id', '!=', 2]
+    //   ])
+    //   ->get()
+    //   ->toArray();
 
-    $list_user_id = array_values(array_unique(array_column($list_students, 'user_id')));
+    // $list_user_id = array_values(array_unique(array_column($list_students, 'user_id')));
+    $data = Event::orderBy('created_at', 'desc')->get([
+      'id', 'title', 'location', 'start_date', 'end_date', 'image_link', 'created_at'
+    ]);
+
+    foreach ($data as $event) {
+      $count_participants = ParticipantEvent::where([
+        ['event_id', $event->id],
+        ['is_joined', true]
+      ])->get()->count();
+      $event['count_participants'] = $count_participants;
+    }
+    $data = collect($data)->toArray();
+    usort($data, fn ($a, $b) => -1 * strcmp($a['count_participants'], $b['count_participants']));
 
     return response()->json([
       'status' => 1,
       'code' => 200,
-      'data' => $list_user_id,
+      'data' => array_slice($data, 0, 2),
     ], 200);
   }
 

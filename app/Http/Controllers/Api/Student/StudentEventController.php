@@ -23,7 +23,10 @@ class StudentEventController extends Controller
     ]);
 
     foreach ($events as $event) {
-      $count_participants = ParticipantEvent::where('event_id', $event->id)->get()->count();
+      $count_participants = ParticipantEvent::where([
+        ['event_id', $event->id],
+        ['is_joined', true]
+      ])->get()->count();
       $event['count_participants'] = $count_participants;
     }
 
@@ -53,13 +56,18 @@ class StudentEventController extends Controller
     $s_profile = StudentProfile::where('user_id', $user->id)->first();
 
     if (isset($s_profile)) {
+      $response = null;
+      if ($request->hasFile('file')) {
+        $response = cloudinary()->upload($request->file('file')->getRealPath())->getSecurePath();
+      }
+
       $new_event = Event::create([
         'title' => $request['title'],
         'description' => $request['description'],
         'location' => $request['location'],
         'start_date' => $request['start_date'],
         'end_date' => $request['end_date'],
-        'image_link' => cloudinary()->upload($request->file('file')->getRealPath())->getSecurePath(),
+        'image_link' => $response,
         'is_closed' => false,
         's_profile_id' => $s_profile->id,
         'r_profile_id' => null
@@ -68,6 +76,7 @@ class StudentEventController extends Controller
       return response()->json([
         'status' => 1,
         'code' => 200,
+        'message' => 'Successfully created new event.',
         'data' => $new_event
       ], 200);
     } else {
@@ -87,7 +96,10 @@ class StudentEventController extends Controller
     $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
 
     if (isset($r_profile)) {
-      $response = cloudinary()->upload($request->file('file')->getRealPath())->getSecurePath();
+      $response = null;
+      if ($request->hasFile('file')) {
+        $response = cloudinary()->upload($request->file('file')->getRealPath())->getSecurePath();
+      }
 
       $new_event = Event::create([
         'title' => $request['title'],
@@ -104,6 +116,7 @@ class StudentEventController extends Controller
       return response()->json([
         'status' => 1,
         'code' => 200,
+        'message' => 'Successfully created new event.',
         'data' => $new_event
       ], 200);
     } else {
@@ -122,12 +135,14 @@ class StudentEventController extends Controller
     $event = Event::whereId($id)->first();
 
     if (isset($event)) {
-      $last_event_image = $event->image_link;
-
+      // $last_event_image = $event->image_link;
       // student
       $s_profile = StudentProfile::where('user_id', $user->id)->first();
       if (isset($s_profile) && ($event->s_profile_id === $s_profile->id)) {
-        $response = cloudinary()->upload($request->file('file')->getRealPath())->getSecurePath();
+        $response = null;
+        if ($request->hasFile('file')) {
+          $response = cloudinary()->upload($request->file('file')->getRealPath())->getSecurePath();
+        }
 
         $event->update([
           'title' => $request['title'],
@@ -135,7 +150,7 @@ class StudentEventController extends Controller
           'location' => $request['location'],
           'start_date' => $request['start_date'],
           'end_date' => $request['end_date'],
-          $response !== $last_event_image && 'image_link' => $response,
+          'image_link' => $response ?? $event->image_link,
         ]);
 
         return response()->json([
@@ -149,7 +164,10 @@ class StudentEventController extends Controller
       // recruiter
       $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
       if (isset($r_profile) && ($event->r_profile_id === $r_profile->id)) {
-        $response = cloudinary()->upload($request->file('file')->getRealPath())->getSecurePath();
+        $response = null;
+        if ($request->hasFile('file')) {
+          $response = cloudinary()->upload($request->file('file')->getRealPath())->getSecurePath();
+        }
 
         $event->update([
           'title' => $request['title'],
@@ -157,7 +175,7 @@ class StudentEventController extends Controller
           'location' => $request['location'],
           'start_date' => $request['start_date'],
           'end_date' => $request['end_date'],
-          $response !== $last_event_image && 'image_link' => $response,
+          'image_link' => $response ?? $event->image_link
         ]);
 
         return response()->json([
@@ -263,6 +281,7 @@ class StudentEventController extends Controller
           'status' => 1,
           'code' => 200,
           'message' => 'Successfully closed. (by Recruiter)',
+          'data' => $event
         ], 200);
       }
 
@@ -421,7 +440,7 @@ class StudentEventController extends Controller
       }
     }
 
-    $events = collect($s_events)->toArray() + collect($r_events)->toArray();
+    $events = array_merge(collect($s_events)->toArray(), collect($r_events)->toArray());
     usort(($events), fn ($a, $b) => -1 * strcmp($a['created_at'], $b['created_at']));
 
 
@@ -607,7 +626,7 @@ class StudentEventController extends Controller
     if (isset($event)) {
       if ($event->s_profile_id !== null) {
         $student_info = StudentProfile::whereId($event->s_profile_id)->first();
-        $event['creator_name'] =( $student_info->first_name ?? "").' '.($student_info->last_name ?? "");
+        $event['creator_name'] = ($student_info->first_name ?? "") . ' ' . ($student_info->last_name ?? "");
       } else {
         if ($event->r_profile_id !== null) {
           $recruiter_info = RecruiterProfile::whereId($event->r_profile_id)->first();
@@ -623,9 +642,14 @@ class StudentEventController extends Controller
       if (isset($user)) {
         // user
         $s_profile = StudentProfile::where('user_id', $user->id)->first();
+        $r_profile = RecruiterProfile::where('user_id', $user->id)->first();
 
         if (isset($s_profile)) {
           $event['is_creator'] = $s_profile->id === $event->s_profile_id;
+
+          if (!$event->is_creator && isset($r_profile)) {
+            $event['is_creator'] = $r_profile->id === $event->r_profile_id;
+          }
 
           $participant_event = ParticipantEvent::where([
             ['event_id', $event->id],
@@ -640,8 +664,7 @@ class StudentEventController extends Controller
             'data' => $event
           ], 200);
         }
-
-        $r_profile = StudentProfile::where('user_id', $user->id)->first();
+        
         if (isset($r_profile)) {
           $event['is_creator'] = $r_profile->id === $event->r_profile_id;
 
@@ -683,5 +706,27 @@ class StudentEventController extends Controller
         'message' => 'Event was not found.'
       ], 400);
     }
+  }
+
+  public function topEvents(Request $request) {
+    $events = Event::orderBy('created_at', 'desc')->get([
+      'id', 'title', 'location', 'start_date', 'end_date', 'image_link', 'created_at'
+    ]);
+
+    foreach ($events as $event) {
+      $count_participants = ParticipantEvent::where([
+        ['event_id', $event->id],
+        ['is_joined', true]
+      ])->get()->count();
+      $event['count_participants'] = $count_participants;
+    }
+    $events = collect($events)->toArray();
+    usort($events, fn ($a, $b) => -1 * strcmp($a['count_participants'], $b['count_participants']));
+
+    return response()->json([
+      'status' => 1,
+      'code' => 200,
+      'data' => array_slice($events, 0, $request['_limit']),
+    ], 200);
   }
 }
