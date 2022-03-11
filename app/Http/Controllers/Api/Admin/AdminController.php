@@ -7,6 +7,7 @@ use App\Jobs\PushNotificationJob;
 use App\Models\Application;
 use App\Models\Event;
 use App\Models\Message;
+use App\Models\ParticipantEvent;
 use App\Models\RecruiterProfile;
 use App\Models\Recruitment;
 use App\Models\StudentProfile;
@@ -548,6 +549,133 @@ class AdminController extends Controller
       $saturday_applications
     ];
 
+    // Total Events by Student of Current Week
+    $last_sunday_events = Event::where([
+      ['created_at', '>=', $last_sunday],
+      ['created_at', '<', $monday]
+    ])->get()->count();
+    $monday_events = Event::where([
+      ['created_at', '>=', $monday],
+      ['created_at', '<', $tuesday]
+    ])->get()->count();
+    $tuesday_events = Event::where([
+      ['created_at', '>=', $tuesday],
+      ['created_at', '<', $wednesday]
+    ])->get()->count();
+    $wednesday_events = Event::where([
+      ['created_at', '>=', $wednesday],
+      ['created_at', '<', $thursday]
+    ])->get()->count();
+    $thursday_events = Event::where([
+      ['created_at', '>=', $thursday],
+      ['created_at', '<', $friday]
+    ])->get()->count();
+    $friday_events = Event::where([
+      ['created_at', '>=', $friday],
+      ['created_at', '<', $saturday]
+    ])->get()->count();
+    $saturday_events = Event::where([
+      ['created_at', '>=', $saturday],
+      ['created_at', '<', $sunday]
+    ])->get()->count();
+
+    $events_result = [
+      $last_sunday_events,
+      $monday_events,
+      $tuesday_events,
+      $wednesday_events,
+      $thursday_events,
+      $friday_events,
+      $saturday_events
+    ];
+
+    // // Total Events by Student of Current Week
+    // $last_sunday_recruiter_events = Event::where([
+    //   ['r_profile_id', '!=', null],
+    //   ['created_at', '>=', $last_sunday],
+    //   ['created_at', '<', $monday]
+    // ])->get()->count();
+    // $monday_recruiter_events = Event::where([
+    //   ['r_profile_id', '!=', null],
+    //   ['created_at', '>=', $monday],
+    //   ['created_at', '<', $tuesday]
+    // ])->get()->count();
+    // $tuesday_recruiter_events = Event::where([
+    //   ['r_profile_id', '!=', null],
+    //   ['created_at', '>=', $tuesday],
+    //   ['created_at', '<', $wednesday]
+    // ])->get()->count();
+    // $wednesday_recruiter_events = Event::where([
+    //   ['r_profile_id', '!=', null],
+    //   ['created_at', '>=', $wednesday],
+    //   ['created_at', '<', $thursday]
+    // ])->get()->count();
+    // $thursday_recruiter_events = Event::where([
+    //   ['r_profile_id', '!=', null],
+    //   ['created_at', '>=', $thursday],
+    //   ['created_at', '<', $friday]
+    // ])->get()->count();
+    // $friday_recruiter_events = Event::where([
+    //   ['r_profile_id', '!=', null],
+    //   ['created_at', '>=', $friday],
+    //   ['created_at', '<', $saturday]
+    // ])->get()->count();
+    // $saturday_recruiter_events = Event::where([
+    //   ['r_profile_id', '!=', null],
+    //   ['created_at', '>=', $saturday],
+    //   ['created_at', '<', $sunday]
+    // ])->get()->count();
+
+    // $recruiter_events_result = [
+    //   $last_sunday_recruiter_events,
+    //   $monday_recruiter_events,
+    //   $tuesday_recruiter_events,
+    //   $wednesday_recruiter_events,
+    //   $thursday_recruiter_events,
+    //   $friday_recruiter_events,
+    //   $saturday_recruiter_events
+    // ];
+
+    // // Total Events by Student of Current Week
+    // $last_sunday_participant_events = ParticipantEvent::where([
+    //   ['created_at', '>=', $last_sunday],
+    //   ['created_at', '<', $monday]
+    // ])->get()->count();
+    // $monday_participant_events = ParticipantEvent::where([
+    //   ['created_at', '>=', $monday],
+    //   ['created_at', '<', $tuesday]
+    // ])->get()->count();
+    // $tuesday_participant_events = ParticipantEvent::where([
+    //   ['created_at', '>=', $tuesday],
+    //   ['created_at', '<', $wednesday]
+    // ])->get()->count();
+    // $wednesday_participant_events = ParticipantEvent::where([
+    //   ['created_at', '>=', $wednesday],
+    //   ['created_at', '<', $thursday]
+    // ])->get()->count();
+    // $thursday_participant_events = ParticipantEvent::where([
+    //   ['created_at', '>=', $thursday],
+    //   ['created_at', '<', $friday]
+    // ])->get()->count();
+    // $friday_participant_events = ParticipantEvent::where([
+    //   ['created_at', '>=', $friday],
+    //   ['created_at', '<', $saturday]
+    // ])->get()->count();
+    // $saturday_participant_events = ParticipantEvent::where([
+    //   ['created_at', '>=', $saturday],
+    //   ['created_at', '<', $sunday]
+    // ])->get()->count();
+
+    // $participant_events_result = [
+    //   $last_sunday_participant_events,
+    //   $monday_participant_events,
+    //   $tuesday_participant_events,
+    //   $wednesday_participant_events,
+    //   $thursday_participant_events,
+    //   $friday_participant_events,
+    //   $saturday_participant_events
+    // ];
+
     $data = (object) [
       "accounts" => [
         "total_users" => $users_result,
@@ -558,10 +686,12 @@ class AdminController extends Controller
         "total_recruitments" => $recruitments_result,
         "total_applications" => $applications_result
       ],
-      // "events" => [
-      //   "events" => $events,
-      //   "participants" => $participants
-      // ]
+      "events" => [
+        // "total_student_events" => $student_events_result,
+        // "total_recruiter_events" => $recruiter_events_result,
+        // "total_participant_events" => $participant_events_result
+        "total" => $events_result
+      ]
     ];
 
     return response()->json([

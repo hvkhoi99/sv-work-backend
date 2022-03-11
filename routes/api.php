@@ -417,3 +417,4 @@ Route::put('reset-password/{token}', [ResetPasswordController::class, 'resetPass
 // });
   Route::get('upcoming-events', [StudentEventController::class, 'listEvents']);
   Route::get('top-events', [StudentEventController::class, 'topEvents']);
+  Route::get('find-event', [StudentEventController::class, 'search']);

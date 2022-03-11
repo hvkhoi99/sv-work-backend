@@ -4,10 +4,14 @@ namespace App\Http\Controllers\Api\Student;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ApiEventRequest;
+use App\Jobs\PushNotificationJob;
 use App\Models\Event;
+use App\Models\Message;
 use App\Models\ParticipantEvent;
 use App\Models\RecruiterProfile;
 use App\Models\StudentProfile;
+use App\Models\UserMessage;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -112,6 +116,86 @@ class StudentEventController extends Controller
         's_profile_id' => null,
         'r_profile_id' => $r_profile->id
       ]);
+
+      // create event notification
+      // $title = 'Employer creates a new event.';
+      // $body = [
+      //   'job' => (object) [
+      //     'id' => $new_event->id,
+      //     'title' => $new_event->title,
+      //     'user_id' => $user->id
+      //   ],
+      //   'company_info' => $r_profile->only([
+      //     'id', 'company_name', 'verify', 'logo_image_link', 'user_id'
+      //   ]),
+      //   'updated_at' => $new_event->updated_at
+      // ];
+      // // Message (Notification)
+      // $new_notification = Message::create([
+      //   'title' => $title,
+      //   'body' => json_encode($body),
+      //   'type' => 'create-event',
+      //   'link' => $r_profile->logo_image_link,
+      // ]);
+
+      // // Message_user
+      // $list_students = DB::table('student_profiles')
+      //   ->join('follows', 'student_profiles.id', '=', 'follows.s_profile_id')
+      //   ->select(
+      //     'student_profiles.id as s_profile_id',
+      //     'student_profiles.user_id',
+      //     'follows.r_profile_id'
+      //   )
+      //   ->where('r_profile_id', $r_profile->id)
+      //   ->get()
+      //   ->toArray();
+
+      // $list_id = array_values(array_unique(array_column($list_students, 's_profile_id')));
+      // if (isset($new_notification)) {
+      //   foreach ($list_id as $id) {
+      //     UserMessage::create([
+      //       'message_id' => $new_notification->id,
+      //       's_profile_id' => $id,
+      //       'r_profile_id' => null,
+      //       'admin_id' => null,
+      //       'is_read' => false
+      //     ]);
+      //   }
+      // }
+
+      // $list_user_id = array_values(array_unique(array_column($list_students, 'user_id')));
+      // // push notification
+      // $deviceTokens = User::whereNotNull('device_token')
+      //   ->whereIn('id', $list_user_id)
+      //   // ->where('id', '!=', $user->id)
+      //   ->pluck('device_token')
+      //   ->all();
+      // if (isset($deviceTokens)) {
+      //   $title = 'Employer creates a new event.';
+      //   $body = [
+      //     'job' => (object) [
+      //       'id' => $new_event->id,
+      //       'title' => $new_event->title,
+      //       'user_id' => $user->id
+      //     ],
+      //     'company_info' => $r_profile->only([
+      //       'id', 'company_name', 'verify', 'logo_image_link', 'user_id'
+      //     ]),
+      //     'type' => 'create-event',
+      //     'is_read' => false,
+      //     'updated_at' => $new_event->updated_at
+      //   ];
+
+      //   PushNotificationJob::dispatch('sendBatchNotification', [
+      //     $deviceTokens,
+      //     [
+      //       'topicName' => 'create-event',
+      //       'title' => $title,
+      //       'body' => $body,
+      //       'image' => $r_profile->logo_image_link,
+      //     ],
+      //   ]);
+      // }
 
       return response()->json([
         'status' => 1,
@@ -664,7 +748,7 @@ class StudentEventController extends Controller
             'data' => $event
           ], 200);
         }
-        
+
         if (isset($r_profile)) {
           $event['is_creator'] = $r_profile->id === $event->r_profile_id;
 
@@ -708,7 +792,8 @@ class StudentEventController extends Controller
     }
   }
 
-  public function topEvents(Request $request) {
+  public function topEvents(Request $request)
+  {
     $events = Event::orderBy('created_at', 'desc')->get([
       'id', 'title', 'location', 'start_date', 'end_date', 'image_link', 'created_at'
     ]);
@@ -728,5 +813,44 @@ class StudentEventController extends Controller
       'code' => 200,
       'data' => array_slice($events, 0, $request['_limit']),
     ], 200);
+  }
+
+  // Search event
+  public function search(Request $request)
+  {
+    $events = Event::query();
+    $events = $events
+      ->event($request)
+      ->location($request)
+      ->start($request)
+      ->orderBy('created_at', 'desc')
+      ->get([
+        'id', 'title', 'location', 'start_date', 'end_date', 'image_link', 'created_at'
+      ]);
+
+    foreach ($events as $event) {
+      $count_participants = ParticipantEvent::where([
+        ['event_id', $event->id],
+        ['is_joined', true]
+      ])->get()->count();
+      $event['count_participants'] = $count_participants;
+    }
+
+    $perPage = $request["_limit"];
+    $current_page = LengthAwarePaginator::resolveCurrentPage();
+
+    $events = new LengthAwarePaginator(
+      collect($events)->forPage($current_page, $perPage)->values(),
+      count($events),
+      $perPage,
+      $current_page,
+      ['path' => url('api/find-event')]
+    );
+
+    return response()->json([
+      'status' => 1,
+      'code' => 200,
+      'data' => $events
+    ]);
   }
 }
