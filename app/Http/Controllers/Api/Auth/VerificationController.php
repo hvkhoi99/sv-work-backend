@@ -20,7 +20,7 @@ class VerificationController extends Controller
       $user->markEmailAsVerified();
     }
 
-    return redirect()->to("http://localhost:3000/auth/sign-in");
+    return redirect()->to("https://access-illumination-open.herokuapp.com/auth/sign-in");
   }
 
   public function resend(Request $request)
