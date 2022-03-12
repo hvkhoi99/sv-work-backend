@@ -65,7 +65,7 @@ Route::group([
     Route::put('{id}/close', [StudentEventController::class, 'close']);
     Route::put('{id}/update', [StudentEventController::class, 'update']);
     Route::delete('{id}', [StudentEventController::class, 'delete']);
-    Route::get('{id}', [StudentEventController::class, 'show']);
+    
   });
 
   Route::prefix('events')->group(function () {
@@ -418,3 +418,4 @@ Route::put('reset-password/{token}', [ResetPasswordController::class, 'resetPass
   Route::get('upcoming-events', [StudentEventController::class, 'listEvents']);
   Route::get('top-events', [StudentEventController::class, 'topEvents']);
   Route::get('find-event', [StudentEventController::class, 'search']);
+  Route::get('event-detail/{id}', [StudentEventController::class, 'show']);
