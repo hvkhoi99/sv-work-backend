@@ -65,7 +65,6 @@ Route::group([
     Route::put('{id}/close', [StudentEventController::class, 'close']);
     Route::put('{id}/update', [StudentEventController::class, 'update']);
     Route::delete('{id}', [StudentEventController::class, 'delete']);
-    
   });
 
   Route::prefix('events')->group(function () {

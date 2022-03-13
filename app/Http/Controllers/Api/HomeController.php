@@ -132,8 +132,8 @@ class HomeController extends Controller
     $user = $request->user('api');
 
     $jobs = Recruitment::where('is_closed', false)
-      ->orderBy('created_at', 'desc')
-      ->take(4)
+      // ->orderBy('created_at', 'desc')
+      // ->take(4)
       ->get(
         [
           'id', 'title', 'location', 'job_category', 'min_salary', 'max_salary',
@@ -142,7 +142,7 @@ class HomeController extends Controller
       );
 
     if (isset($jobs) && count($jobs) > 0) {
-      $new_jobs = [];
+      // $new_jobs = [];
       foreach ($jobs as $job) {
         // company info
         $company_info = RecruiterProfile::where([
@@ -189,13 +189,16 @@ class HomeController extends Controller
             'is_applied' => false,
             'is_saved' => false
           ];
-        array_push($new_jobs, $job);
+        // array_push($new_jobs, $job);
       }
+
+      $jobs = collect($jobs)->toArray();
+      usort($events, fn ($a, $b) => -1 * strcmp($a['count_participants'], $b['count_participants']));
 
       return response()->json([
         'status' => 1,
         'code' => 200,
-        'data' => $new_jobs
+        'data' => array_slice($jobs, 0, 4),
       ], 200);
     }
 
@@ -206,7 +209,8 @@ class HomeController extends Controller
     ], 200);
   }
 
-  public function getTotalJobs() {
+  public function getTotalJobs()
+  {
     $total_jobs = Recruitment::where('is_closed', false)->get()->count();
     return response()->json([
       'status' => 1,
