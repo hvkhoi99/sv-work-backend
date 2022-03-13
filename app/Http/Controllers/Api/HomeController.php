@@ -193,7 +193,7 @@ class HomeController extends Controller
       }
 
       $jobs = collect($jobs)->toArray();
-      usort($events, fn ($a, $b) => -1 * strcmp($a['count_participants'], $b['count_participants']));
+      usort($events, fn ($a, $b) => -1 * strcmp($a['count_applications'], $b['count_applications']));
 
       return response()->json([
         'status' => 1,
