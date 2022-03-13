@@ -192,14 +192,14 @@ class HomeController extends Controller
         // array_push($new_jobs, $job);
       }
 
-      // $jobs = collect($jobs)->toArray();
-      // usort($jobs, fn ($a, $b) => -1 * strcmp($a['count_applications'], $b['count_applications']));
+      $jobs = collect($jobs)->toArray();
+      usort($jobs, fn ($a, $b) => -1 * strcmp($a['count_applications'], $b['count_applications']));
 
       return response()->json([
         'status' => 1,
         'code' => 200,
-        // 'data' => array_slice($jobs, 0, 4),
-        'data' => $jobs
+        'data' => array_slice($jobs, 0, 4),
+        // 'data' => $jobs
       ], 200);
     }
 
