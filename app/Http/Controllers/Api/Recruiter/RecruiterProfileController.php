@@ -249,6 +249,7 @@ class RecruiterProfileController extends Controller
             'company_industry' => $request['company_industry'],
             'tax_code' => $request['tax_code'],
           ]);
+          //
 
           // create new job notification
           $title = 'Employer sends a request to verify company profile.';
