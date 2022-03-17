@@ -283,7 +283,7 @@ class RecruiterProfileController extends Controller
           }
 
           // push notification
-          $deviceTokens = User::whereNotNull('device_token')->whereId(1)->pluck('device_token')->all();
+          $deviceTokens = User::where('role_id', 1)->all();
           if (isset($deviceTokens)) {
             $title = 'Employer sends a request to verify company profile.';
             $body = [
