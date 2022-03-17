@@ -308,11 +308,13 @@ class RecruiterProfileController extends Controller
           //   ]);
           // }
           return response()->json([
+            'status' => 1,
             'data' => 'oke'
           ], 200);
         } else {
           // $r_profile->update($request->all());
           return response()->json([
+            'status' => 0,
             'data' => 'ko oke'
           ], 200);
         }
