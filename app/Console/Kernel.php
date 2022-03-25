@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use App\Console\Commands\EventCommand;
+use App\Console\Commands\RecruitmentCommand;
 use Carbon\Carbon;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -15,8 +17,10 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         //
-        'App\Console\Commands\EventCommand',
-        'App\Console\Commands\RecruitmentCommand'
+        // 'App\Console\Commands\EventCommand',
+        // 'App\Console\Commands\RecruitmentCommand'
+        EventCommand::class,
+        RecruitmentCommand::class
     ];
 
     /**
